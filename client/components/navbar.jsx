@@ -1,13 +1,9 @@
-import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import Grid from '@mui/material/Grid';
+import React from 'react';
+import { AppBar, Container, Grid, Toolbar, Typography } from '@mui/material';
 
 export default function Navbar() {
   return (
-    <AppBar position="static">
+    <AppBar position="sticky" top={0} left={0} right={0}>
       <Container maxWidth="lg" justifyContent="center">
         <Toolbar disableGutters>
           <Grid
