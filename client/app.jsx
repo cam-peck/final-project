@@ -1,8 +1,10 @@
 import React from 'react';
 import Home from './pages/home';
+import Navbar from './components/navbar';
 import Auth from './pages/auth';
 import NotFound from './pages/not-found';
 import { parseRoute } from './lib';
+import { Container } from '@mui/material';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -33,8 +35,10 @@ export default class App extends React.Component {
   render() {
     return (
       <>
-        {/* header */}
-        { this.renderPage() }
+        <Navbar />
+        <Container maxWidth="lg">
+          { this.renderPage() }
+        </Container>
       </>
     );
   }
