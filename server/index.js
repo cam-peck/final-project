@@ -24,19 +24,19 @@ app.get('/api/hello', (req, res) => {
 });
 
 app.post('/api/auth/sign-up', (req, res, next) => {
-  const { displayName, profilePhoto, email, birthday, password } = req.body;
-  if (!displayName || !profilePhoto || !email || !birthday || !password) {
-    throw new ClientError(400, 'displayName, profilePhoto, email, birthday, and password are required fields.');
+  const { displayName, profilePhoto, email, dateOfBirth, password } = req.body;
+  if (!displayName || !profilePhoto || !email || !dateOfBirth || !password) {
+    throw new ClientError(400, 'displayName, profilePhoto, email, dateOfBirth, and password are required fields.');
   }
   argon2
     .hash(password)
     .then(hashedPassword => {
       const sql = `
-      INSERT INTO "users" ("displayName", "profilePhoto", "email", "birthday", "password")
+      INSERT INTO "users" ("displayName", "profilePhoto", "email", "dateOfBirth", "password")
       VALUES ($1, $2, $3, $4, $5)
-      RETURNING "userId", "displayName", "profilePhoto", "email", "birthday", "createdAt"
+      RETURNING "userId", "displayName", "profilePhoto", "email", "dateOfBirth", "createdAt"
       `;
-      const params = [displayName, profilePhoto, email, birthday, hashedPassword];
+      const params = [displayName, profilePhoto, email, dateOfBirth, hashedPassword];
       return db.query(sql, params);
     })
     .then(result => {

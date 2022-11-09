@@ -8,7 +8,8 @@ export default class AuthForm extends React.Component {
       email: '',
       password: '',
       displayName: '',
-      dob: ''
+      dateOfBirth: '',
+      profilePhoto: 'example.png'
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -23,13 +24,34 @@ export default class AuthForm extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    // server code here
+    const { action } = this.props;
+    const req = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(this.state)
+    };
+    fetch(`/api/auth/${action}`, req)
+      .then(response => response.json())
+      .then(result => {
+        if (action === 'sign-up') {
+          window.location.hash = 'sign-in';
+        }
+      });
+    this.setState({
+      email: '',
+      password: '',
+      displayName: '',
+      dateOfBirth: '',
+      profilePhoto: 'example.png'
+    });
   }
 
   render() {
     const { action } = this.props; // either sign-in or sign-out
     const { handleChange, handleSubmit } = this;
-    const { email, password, displayName, dob } = this.state;
+    const { email, password, displayName, dateOfBirth } = this.state;
     const formButton = action === 'sign-in'
       ? 'Sign in'
       : 'Create Account';
@@ -37,7 +59,7 @@ export default class AuthForm extends React.Component {
       ? ''
       : <>
         <TextField fullWidth id="outlined-name-input" label="Display Name" type="text" name="displayName" value={displayName} onChange={handleChange} required />
-        <TextField fullWidth id="outlined-birthday-input" label="Date of Birth" type="date" name="dob" value={dob} onChange={handleChange} InputLabelProps={{ shrink: true, required: true }} required />
+        <TextField fullWidth id="outlined-birthday-input" label="Date of Birth" type="text" name="dateOfBirth" value={dateOfBirth} onChange={handleChange} required />
       </>;
     return (
       <form onSubmit={handleSubmit}>
