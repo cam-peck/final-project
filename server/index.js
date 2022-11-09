@@ -1,14 +1,49 @@
 require('dotenv/config');
+const pg = require('pg');
+const argon2 = require('argon2');
 const express = require('express');
 const staticMiddleware = require('./static-middleware');
 const errorMiddleware = require('./error-middleware');
+const ClientError = require('./client-error');
+
+const db = new pg.Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
 
 const app = express();
 
 app.use(staticMiddleware);
 
+app.use(express.json());
+
 app.get('/api/hello', (req, res) => {
   res.json({ hello: 'world' });
+});
+
+app.post('/api/auth/sign-up', (req, res, next) => {
+  const { displayName, profilePhoto, email, birthday, password } = req.body;
+  if (!displayName || !profilePhoto || !email || !birthday || !password) {
+    throw new ClientError(400, 'displayName, profilePhoto, email, birthday, and password are required fields.');
+  }
+  argon2
+    .hash(password)
+    .then(hashedPassword => {
+      const sql = `
+      INSERT INTO "users" ("displayName", "profilePhoto", "email", "birthday", "password")
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING "userId", "displayName", "profilePhoto", "email", "birthday", "createdAt"
+      `;
+      const params = [displayName, profilePhoto, email, birthday, hashedPassword];
+      return db.query(sql, params);
+    })
+    .then(result => {
+      const [user] = result.rows;
+      res.status(201).json(user);
+    })
+    .catch(err => next(err));
 });
 
 app.use(errorMiddleware);
