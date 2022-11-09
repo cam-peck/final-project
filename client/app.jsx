@@ -3,7 +3,7 @@ import Home from './pages/home';
 import Navbar from './components/navbar';
 import Auth from './pages/auth';
 import NotFound from './pages/not-found';
-import { parseRoute } from './lib';
+import { AppContext, parseRoute } from './lib';
 import { Container } from '@mui/material';
 
 export default class App extends React.Component {
@@ -33,13 +33,17 @@ export default class App extends React.Component {
   }
 
   render() {
+    const { route } = this.state;
+    const contextValue = { route };
     return (
-      <>
-        <Navbar />
-        <Container maxWidth="lg">
-          { this.renderPage() }
-        </Container>
-      </>
+      <AppContext.Provider value={contextValue}>
+        <>
+          <Navbar />
+          <Container maxWidth="lg">
+            { this.renderPage() }
+          </Container>
+        </>
+      </AppContext.Provider>
     );
   }
 }
