@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, TextField, Box, Button } from '@mui/material';
+import { Container, Box, TextField, Button } from '@mui/material';
 import { isDateOfBirthInvalid } from '../lib';
 
 export default class AuthForm extends React.Component {
@@ -49,7 +49,8 @@ export default class AuthForm extends React.Component {
       password: '',
       displayName: '',
       dateOfBirth: '',
-      profilePhoto: 'example.png'
+      profilePhoto: 'example.png',
+      accountWasCreated: true
     });
   }
 
