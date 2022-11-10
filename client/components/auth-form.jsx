@@ -16,6 +16,17 @@ export default class AuthForm extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
+  resetState() {
+    this.setState({
+      email: '',
+      password: '',
+      displayName: '',
+      dateOfBirth: '',
+      profilePhoto: 'example.png',
+      accountWasCreated: true
+    });
+  }
+
   handleChange(event) {
     const { name, value } = event.target;
     this.setState({
@@ -25,11 +36,13 @@ export default class AuthForm extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    const { dateOfBirth } = this.state;
-    if (isDateOfBirthInvalid(dateOfBirth) || Number(dateOfBirth.split('-')[0]) < 1000) { // additional check for unfinished years
-      return;
-    }
     const { action } = this.props;
+    if (action === 'sign-up') {
+      const { dateOfBirth } = this.state;
+      if (isDateOfBirthInvalid(dateOfBirth) || Number(dateOfBirth.split('-')[0]) < 1000) { // additional check for unfinished years
+        return;
+      }
+    }
     const req = {
       method: 'POST',
       headers: {
@@ -41,17 +54,19 @@ export default class AuthForm extends React.Component {
       .then(response => response.json())
       .then(result => {
         if (action === 'sign-up') {
+          this.resetState();
           window.location.hash = 'sign-in';
+
+        } else if (result.user && result.token) {
+          this.resetState();
+          this.props.onSignIn(result);
+          window.location.hash = '#';
+        } else {
+          // eslint-disable-next-line no-console
+          console.log('invalid signin');
         }
       });
-    this.setState({
-      email: '',
-      password: '',
-      displayName: '',
-      dateOfBirth: '',
-      profilePhoto: 'example.png',
-      accountWasCreated: true
-    });
+
   }
 
   render() {
