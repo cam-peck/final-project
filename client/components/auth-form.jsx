@@ -1,5 +1,6 @@
 import React from 'react';
 import { Container, TextField, Box, Button } from '@mui/material';
+import { isDateOfBirthInvalid } from '../lib';
 
 export default class AuthForm extends React.Component {
   constructor(props) {
@@ -24,6 +25,10 @@ export default class AuthForm extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
+    const { dateOfBirth } = this.state;
+    if (isDateOfBirthInvalid(dateOfBirth) || Number(dateOfBirth.split('-')[0]) < 1000) { // additional check for unfinished years
+      return;
+    }
     const { action } = this.props;
     const req = {
       method: 'POST',
@@ -52,6 +57,7 @@ export default class AuthForm extends React.Component {
     const { action } = this.props; // either sign-in or sign-out
     const { handleChange, handleSubmit } = this;
     const { email, password, displayName, dateOfBirth } = this.state;
+    const dateError = isDateOfBirthInvalid(dateOfBirth);
     const formButton = action === 'sign-in'
       ? 'Sign in'
       : 'Create Account';
@@ -59,13 +65,13 @@ export default class AuthForm extends React.Component {
       ? ''
       : <>
         <TextField fullWidth id="outlined-name-input" label="Display Name" type="text" name="displayName" value={displayName} onChange={handleChange} required />
-        <TextField fullWidth id="outlined-birthday-input" label="Date of Birth" type="text" name="dateOfBirth" value={dateOfBirth} onChange={handleChange} required />
+        <TextField fullWidth id="outlined-required" label="Date of Birth" type="date" max="2020-09-10" name="dateOfBirth" value={dateOfBirth} onChange={handleChange} InputLabelProps={{ shrink: true }} error={dateError} helperText={dateError ? 'Invalid Date' : ''}required />
       </>;
     return (
       <form onSubmit={handleSubmit}>
         <Container maxWidth="sm">
           <Box sx={{ marginTop: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
-            <TextField fullWidth id="outlined-email-input" label="Email" type="text" name="email" value= {email} onChange={handleChange} required/>
+            <TextField fullWidth id="outlined-email-input" label="Email" type="email" name="email" value= {email} onChange={handleChange} required/>
             <TextField fullWidth id="outlined-password-input" label="Password" type="password" name= "password" value= {password} onChange={handleChange} required/>
             {registerAccountInputs}
             <Button fullWidth variant="contained" type="submit" sx={{ p: 1.2, borderRadius: 2 }}>
