@@ -18,9 +18,12 @@ export default class AuthPage extends React.Component {
       : <a href='#sign-in'>Sign in</a>;
     return (
       <div>
-        <h1 className="welcome-message">{welcomeMessage}</h1>
+        <h1 className="font-lora font-medium text-3xl text-center mt-20">{welcomeMessage}</h1>
         <AuthForm action={route.path} onSignIn={handleSignIn}/>
-        <p className="sign-in-message">{signInMessage} {alternateAction}</p>
+        <div className="flex justify-center items-center mt-3">
+          <p className="font-roboto pr-1">{signInMessage}</p>
+          <p className="font-roboto text-blue-500 underline">{alternateAction}</p>
+        </div>
       </div>
     );
   }
