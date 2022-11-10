@@ -10,8 +10,12 @@ export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      user: null,
+      isAuthorizing: true,
       route: parseRoute(window.location.hash)
     };
+    this.handleSignIn = this.handleSignIn.bind(this);
+    this.handleSignOut = this.handleSignOut.bind(this);
   }
 
   componentDidMount() {
@@ -19,6 +23,16 @@ export default class App extends React.Component {
       const hashRoute = parseRoute(window.location.hash);
       this.setState({ route: hashRoute });
     });
+  }
+
+  handleSignIn(result) {
+    const { user, token } = result;
+    window.localStorage.setItem('runningfuze-project-jwt', token);
+    this.setState({ user, isAuthorizing: false });
+  }
+
+  handleSignOut() {
+
   }
 
   renderPage() {
