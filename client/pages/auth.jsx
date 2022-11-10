@@ -5,7 +5,7 @@ import AppContext from '../lib/app-context';
 export default class AuthPage extends React.Component {
   render() {
 
-    const { route } = this.context;
+    const { route, handleSignIn } = this.context;
 
     const welcomeMessage = route.path === 'sign-in'
       ? 'Sign in'
@@ -19,7 +19,7 @@ export default class AuthPage extends React.Component {
     return (
       <div>
         <h1 className="welcome-message">{welcomeMessage}</h1>
-        <AuthForm action={route.path}/>
+        <AuthForm action={route.path} onSignIn={handleSignIn}/>
         <p className="sign-in-message">{signInMessage} {alternateAction}</p>
       </div>
     );
