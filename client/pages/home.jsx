@@ -1,10 +1,10 @@
 import React from 'react';
-import HelloWorld from '../components/hello-world';
+import RunForm from '../components/run-form';
 
 export default function Home(props) {
   return (
     <div>
-      <HelloWorld />
+      <RunForm />
     </div>
   );
 }
