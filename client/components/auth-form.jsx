@@ -1,6 +1,6 @@
 import React from 'react';
-import { Container, Box, TextField, Button } from '@mui/material';
 import { isDateOfBirthInvalid } from '../lib';
+import FloatingInput from './floating-input';
 
 export default class AuthForm extends React.Component {
   constructor(props) {
@@ -80,22 +80,18 @@ export default class AuthForm extends React.Component {
     const registerAccountInputs = action === 'sign-in'
       ? ''
       : <>
-        <TextField fullWidth id="outlined-name-input" label="Display Name" type="text" name="displayName" value={displayName} onChange={handleChange} required />
-        <TextField fullWidth id="outlined-required" label="Date of Birth" type="date" max="2020-09-10" name="dateOfBirth" value={dateOfBirth} onChange={handleChange} InputLabelProps={{ shrink: true }} error={dateError} helperText={dateError ? 'Invalid Date' : ''}required />
+        <FloatingInput type="text" name="displayName" placeholder="Display Name" value={displayName} onChange={handleChange} />
+        <FloatingInput type="date" name="dateOfBirth" placeholder="Date of Birth" value={dateOfBirth} onChange={handleChange} />
       </>;
     return (
-      <form onSubmit={handleSubmit}>
-        <Container maxWidth="sm">
-          <Box sx={{ marginTop: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
-            <TextField fullWidth id="outlined-email-input" label="Email" type="email" name="email" value= {email} onChange={handleChange} required/>
-            <TextField fullWidth id="outlined-password-input" label="Password" type="password" name= "password" value= {password} onChange={handleChange} required/>
-            {registerAccountInputs}
-            <Button fullWidth variant="contained" type="submit" sx={{ p: 1.2, borderRadius: 2 }}>
-              {formButton}
-            </Button>
-          </Box>
-        </Container>
-      </form >
+      <div className="max-w-md mx-auto">
+        <form onSubmit={handleSubmit}>
+          <FloatingInput type="email" name="email" placeholder="Email Address" value={email} onChange={handleChange}/>
+          <FloatingInput type="password" name="password" placeholder="Password" value={password} onChange={handleChange} />
+          {registerAccountInputs}
+          <button className="w-full bg-blue-500 text-white p-2 rounded text-end">{formButton}</button>
+        </form>
+      </div>
     );
   }
 }
