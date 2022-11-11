@@ -83,6 +83,26 @@ app.post('/api/auth/sign-in', (req, res, next) => {
 
 app.use(authorizationMiddleware);
 
+app.post('/api/runs', (req, res, next) => {
+  const { userId } = req.user;
+  const { title, description, date, duration, distance, hasGpx } = req.body;
+  if (!title || !description || !date || !duration || !distance || !hasGpx) {
+    throw new ClientError(400, 'title, description, date, duration, and distance are required fields.');
+  }
+  const sql = `
+  INSERT INTO "runs" ("userId", "title", "description", "date", "duration", "distance", "hasGpx")
+  VALUES ($1, $2, $3, $4, $5, $6, $7)
+  RETURNING *
+  `;
+  const params = [userId, title, description, date, duration, distance, hasGpx];
+  db.query(sql, params)
+    .then(result => {
+      const [newRun] = result.rows;
+      res.status(201).json(newRun);
+    })
+    .catch(err => next(err));
+});
+
 app.use(errorMiddleware);
 
 app.listen(process.env.PORT, () => {
