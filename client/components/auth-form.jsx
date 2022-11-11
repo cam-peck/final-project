@@ -1,6 +1,5 @@
 import React from 'react';
-import { Container, Box, TextField, Button } from '@mui/material';
-import { isDateOfBirthInvalid } from '../lib';
+import FloatingInput from './floating-input';
 
 export default class AuthForm extends React.Component {
   constructor(props) {
@@ -10,7 +9,8 @@ export default class AuthForm extends React.Component {
       password: '',
       displayName: '',
       dateOfBirth: '',
-      profilePhoto: 'example.png'
+      profilePhoto: 'example.png',
+      signInWasInvalid: false
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -23,7 +23,7 @@ export default class AuthForm extends React.Component {
       displayName: '',
       dateOfBirth: '',
       profilePhoto: 'example.png',
-      accountWasCreated: true
+      signInWasInvalid: false
     });
   }
 
@@ -37,12 +37,6 @@ export default class AuthForm extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
     const { action } = this.props;
-    if (action === 'sign-up') {
-      const { dateOfBirth } = this.state;
-      if (isDateOfBirthInvalid(dateOfBirth) || Number(dateOfBirth.split('-')[0]) < 1000) { // additional check for unfinished years
-        return;
-      }
-    }
     const req = {
       method: 'POST',
       headers: {
@@ -62,8 +56,7 @@ export default class AuthForm extends React.Component {
           this.props.onSignIn(result);
           window.location.hash = '#';
         } else {
-          // eslint-disable-next-line no-console
-          console.log('invalid signin');
+          this.setState({ signInWasInvalid: true });
         }
       });
 
@@ -72,30 +65,31 @@ export default class AuthForm extends React.Component {
   render() {
     const { action } = this.props; // either sign-in or sign-out
     const { handleChange, handleSubmit } = this;
-    const { email, password, displayName, dateOfBirth } = this.state;
-    const dateError = isDateOfBirthInvalid(dateOfBirth);
+    const { email, password, displayName, dateOfBirth, signInWasInvalid } = this.state;
     const formButton = action === 'sign-in'
-      ? 'Sign in'
+      ? 'Log in'
       : 'Create Account';
     const registerAccountInputs = action === 'sign-in'
       ? ''
       : <>
-        <TextField fullWidth id="outlined-name-input" label="Display Name" type="text" name="displayName" value={displayName} onChange={handleChange} required />
-        <TextField fullWidth id="outlined-required" label="Date of Birth" type="date" max="2020-09-10" name="dateOfBirth" value={dateOfBirth} onChange={handleChange} InputLabelProps={{ shrink: true }} error={dateError} helperText={dateError ? 'Invalid Date' : ''}required />
+        <FloatingInput type="text" name="displayName" placeholder="Display Name" value={displayName} onChange={handleChange} />
+        <FloatingInput type="date" name="dateOfBirth" placeholder="Date of Birth" value={dateOfBirth} onChange={handleChange} />
       </>;
+    const invalidSignIn = signInWasInvalid
+      ? <p className="text-red-500 text-xs italic -mt-2.5 mb-4 ml-6">Invalid username or password</p>
+      : '';
     return (
-      <form onSubmit={handleSubmit}>
-        <Container maxWidth="sm">
-          <Box sx={{ marginTop: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
-            <TextField fullWidth id="outlined-email-input" label="Email" type="email" name="email" value= {email} onChange={handleChange} required/>
-            <TextField fullWidth id="outlined-password-input" label="Password" type="password" name= "password" value= {password} onChange={handleChange} required/>
-            {registerAccountInputs}
-            <Button fullWidth variant="contained" type="submit" sx={{ p: 1.2, borderRadius: 2 }}>
-              {formButton}
-            </Button>
-          </Box>
-        </Container>
-      </form >
+      <div className="max-w-md mx-auto">
+        <form onSubmit={handleSubmit}>
+          <FloatingInput type="email" name="email" placeholder="Email Address" value={email} onChange={handleChange}/>
+          <FloatingInput type="password" name="password" placeholder="Password" value={password} onChange={handleChange} />
+          {registerAccountInputs}
+          {invalidSignIn}
+          <div className="pl-4 pr-4">
+            <button className="w-full bg-blue-500 transition ease-in-out duration-300 hover:bg-blue-600 text-white p-3 rounded-lg font-bold text-lg">{formButton}</button>
+          </div>
+        </form>
+      </div>
     );
   }
 }
