@@ -89,7 +89,9 @@ export default class AuthForm extends React.Component {
           <FloatingInput type="email" name="email" placeholder="Email Address" value={email} onChange={handleChange}/>
           <FloatingInput type="password" name="password" placeholder="Password" value={password} onChange={handleChange} />
           {registerAccountInputs}
-          <button className="w-full bg-blue-500 text-white p-2 rounded text-end">{formButton}</button>
+          <div className="pl-4 pr-4">
+            <button className="w-full bg-blue-500 text-white p-2 rounded text-end">{formButton}</button>
+          </div>
         </form>
       </div>
     );
