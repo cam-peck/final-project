@@ -56,7 +56,6 @@ export default class AuthForm extends React.Component {
           this.props.onSignIn(result);
           window.location.hash = '#';
         } else {
-          // eslint-disable-next-line no-console
           this.setState({ signInWasInvalid: true });
         }
       });
