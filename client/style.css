@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  background-color: #fffbfe;
+  background-color: #f7f7f7;
 }
 
 .font-lora {
@@ -16,6 +16,16 @@ body {
 
 .logo-text {
   font-family: "Titan One", serif;
+}
+
+/* Imported Colors */
+
+.surface-bg-color {
+  background-color: #fdfcff;
+}
+
+.on-container-color {
+  color: #43474e;
 }
 
 /* Form Autofill */

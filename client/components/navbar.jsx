@@ -1,47 +1,15 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import { AppContext } from '../lib';
-import { Turn as Hamburger } from 'hamburger-react';
+import HomeNavbar from './home-nav';
+import SignInNavbar from './signin-nav';
 
 export default function Navbar(props) {
 
-  const { user, handleSignOut } = useContext(AppContext);
-  const [isOpen, setOpen] = useState(false);
+  const { user } = useContext(AppContext);
 
-  const signInNavbar = (
-    <nav className="container-lg mx-auto py-5 bg-blue-600">
-      <div className="flex items-center justify-center">
-        {/* Logo */}
-        <div>
-          <h1 className="logo-text text-white text-2xl">RunningFuze</h1>
-        </div>
-      </div>
-    </nav>
-  );
-
-  const homeNavbar = (
-    <header className="w-full p-6 bg-blue-600">
-      <nav className="max-w-6xl mx-auto flex items-center justify-between">
-        {/* Logo */}
-        <div className='flex gap-3'>
-          <i className="fa-solid fa-person-running text-white text-3xl" />
-          <h1 className="logo-text text-white text-2xl">RunningFuze</h1>
-        </div>
-        {/* Menu Items */}
-        <div className="space-x-6 text-white items-center hidden md:block">
-          <a href="#" className="hover:text-darkGrayishBlue">My Runs</a>
-          <a href="#" className="hover:text-darkGrayishBlue">My Workouts</a>
-          {/* Button */}
-          <button onClick={handleSignOut} className="text-white bg-red-500 p-3 rounded-xl">Sign out</button>
-        </div>
-        <div className="md:hidden">
-          <Hamburger toggled={isOpen} toggle={setOpen} color="white" />
-        </div>
-      </nav>
-    </header>
-  );
   const navBar = user === null
-    ? signInNavbar
-    : homeNavbar;
+    ? <SignInNavbar />
+    : <HomeNavbar />;
   return (
     navBar
   );
