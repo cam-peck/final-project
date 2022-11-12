@@ -1,5 +1,7 @@
 import React from 'react';
 import FloatingInput from './floating-input';
+import DistanceInput from './distance-input';
+import DurationInput from './duration-input';
 
 export default class RunForm extends React.Component {
   constructor(props) {
@@ -8,11 +10,14 @@ export default class RunForm extends React.Component {
       title: '',
       description: '',
       date: '',
-      duration: '',
-      distance: 0,
-      hasGpx: null
+      durationHours: '',
+      durationMinutes: '',
+      durationSeconds: '',
+      distance: '',
+      hasGpx: false
     };
     this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   handleChange(event) {
@@ -24,22 +29,25 @@ export default class RunForm extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    // handelSubmit code here
-
   }
 
   render() {
-    const { title, description, date, duration, distance, hasGpx } = this.state;
+    // console.log('State After: ', this.state);
+    const { title, description, date, distance, durationHours, durationMinutes, durationSeconds } = this.state;
     const { handleChange, handleSubmit } = this;
+    const durationObj = { durationHours, durationMinutes, durationSeconds };
     return (
       <div className="max-w-md mx-auto">
-        <form onSubmit={this.handleSubmit}>
-          <FloatingInput type="date" name="date" placeholder="Email Address" value={date} onChange={handleChange} />
-          <FloatingInput type="time" name="duration" placeholder="" value={duration} onChange={handleChange} />
-          <FloatingInput type="text" name="distance" placeholder="0.00 mi" value={distance} onChange={handleChange} />
-          <FloatingInput type="string" name="pace" placeholder="0:00 / mi" onChange={handleChange} />
-          <div className="pl-4 pr-4">
-            <button className="w-full bg-blue-500 transition ease-in-out duration-300 hover:bg-blue-600 text-white p-3 rounded-lg font-bold text-lg">Add run</button>
+        <form className="mt-4" onSubmit={this.handleSubmit}>
+          <h1 className="text-2xl font-lora font-medium pl-4 mb-4">Add Run</h1>
+          <FloatingInput type="text" name="title" placeholder="Morning Sun Run" value={title} onChange={handleChange}/>
+          <FloatingInput type="text" name="description" placeholder="Easy run with great weather -- nice recovery day" value={description} onChange={handleChange} />
+          <img src="https://www.giantbomb.com/a/uploads/original/0/6087/2437347-pikachu.png" alt="" />
+          <FloatingInput type="date" name="date" placeholder="" value={date} onChange={handleChange} />
+          <DistanceInput value={distance} onChange={handleChange}/>
+          <DurationInput value={durationObj} onChange={handleChange}/>
+          <div className="pl-4 pr-4 mt-8">
+            <button onClick={handleSubmit} className="w-full bg-blue-500 transition ease-in-out duration-300 hover:bg-blue-600 text-white p-3 rounded-lg font-bold text-lg">Add run</button>
           </div>
         </form>
       </div>

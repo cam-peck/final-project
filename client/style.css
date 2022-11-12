@@ -48,6 +48,20 @@ input[type="date"]:invalid::-webkit-datetime-edit {
   color: #999;
 }
 
+/* Remove Form Number Field Arrows */
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  appearance: textfield;
+}
+
 /* Hamburger Menu */
 
 .bar {
