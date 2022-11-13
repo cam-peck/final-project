@@ -72,8 +72,8 @@ export default class AuthForm extends React.Component {
     const registerAccountInputs = action === 'sign-in'
       ? ''
       : <>
-        <FloatingInput type="text" name="displayName" placeholder="Display Name" value={displayName} onChange={handleChange} />
-        <FloatingInput type="date" name="dateOfBirth" placeholder="Date of Birth" value={dateOfBirth} onChange={handleChange} />
+        <FloatingInput type="text" name="displayName" placeholder="Display Name" value={displayName} showLabel={false} onChange={handleChange} />
+        <FloatingInput type="date" name="dateOfBirth" placeholder="Date of Birth" value={dateOfBirth} showLabel={false} onChange={handleChange} />
       </>;
     const invalidSignIn = signInWasInvalid
       ? <p className="text-red-500 text-xs italic -mt-2.5 mb-4 ml-6">Invalid username or password</p>
@@ -81,8 +81,8 @@ export default class AuthForm extends React.Component {
     return (
       <div className="max-w-md mx-auto">
         <form onSubmit={handleSubmit}>
-          <FloatingInput type="email" name="email" placeholder="Email Address" value={email} onChange={handleChange}/>
-          <FloatingInput type="password" name="password" placeholder="Password" value={password} onChange={handleChange} />
+          <FloatingInput type="email" name="email" placeholder="Email Address" value={email} showLabel={false} onChange={handleChange}/>
+          <FloatingInput type="password" name="password" placeholder="Password" value={password} showLabel={false} onChange={handleChange} />
           {registerAccountInputs}
           {invalidSignIn}
           <div className="pl-4 pr-4">
