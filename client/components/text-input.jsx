@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function FloatingInput(props) {
+export default function TextInput(props) {
   const showLabel = props.showLabel
     ? ''
     : 'hidden';

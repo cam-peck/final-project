@@ -1,6 +1,7 @@
 import React from 'react';
-import { calculatePace } from '../lib';
-import FloatingInput from './floating-input';
+import { calculatePace, todaysDate } from '../lib';
+import TextInput from './text-input';
+import DateInput from './date-input';
 import DistanceInput from './distance-input';
 import DurationInput from './duration-input';
 import UploadRunCard from './upload-run-card';
@@ -42,6 +43,7 @@ export default class RunForm extends React.Component {
     const { handleChange, handleSubmit } = this;
     const durationObj = { durationHours, durationMinutes, durationSeconds };
     const pace = calculatePace(distance, distanceType, durationHours, durationMinutes, durationSeconds);
+    const today = todaysDate();
     return (
       <div className="max-w-md md:max-w-6xl mx-auto px-6">
         <form className="mt-4" onSubmit={handleSubmit}>
@@ -51,14 +53,14 @@ export default class RunForm extends React.Component {
               <UploadRunCard />
             </div>
             <div className="md:w-2/4 w-full">
-              <FloatingInput type="date" name="date" placeholder="" value={date} showLabel={true} label="Date" onChange={handleChange} />
+              <DateInput type="date" name="date" placeholder="" value={date} dateMin="1942-01-01" dateMax={today} showLabel={true} label="Date" onChange={handleChange} />
               <DistanceInput distanceValue={distance} distanceTypeValue={distanceType} onChange={handleChange}/>
               <DurationInput value={durationObj} onChange={handleChange}/>
-              <FloatingInput type="pace" name="pace" placeholder="0:00 / mi" value={pace} showLabel={true} label="Pace" onChange={handleChange} />
+              <TextInput type="pace" name="pace" placeholder="0:00 / mi" value={pace} showLabel={true} label="Pace" onChange={handleChange} />
             </div>
           </div>
-          <FloatingInput type="text" name="title" showLabel={true} label="Title" placeholder="Morning Sun Run" value={title} onChange={handleChange} />
-          <FloatingInput type="text" name="description" showLabel={true} label="Description" placeholder="Easy run with great weather -- nice recovery day" value={description} onChange={handleChange} />
+          <TextInput type="text" name="title" showLabel={true} label="Title" placeholder="Morning Sun Run" value={title} onChange={handleChange} />
+          <TextInput type="text" name="description" showLabel={true} label="Description" placeholder="Easy run with great weather -- nice recovery day" value={description} onChange={handleChange} />
           <div className="flex justify-end mt-2 mb-8">
             <button className="md:w-1/4 w-full bg-blue-500 transition ease-in-out duration-300 hover:bg-blue-600 text-white p-3 rounded-lg font-bold text-lg">Add run</button>
           </div>

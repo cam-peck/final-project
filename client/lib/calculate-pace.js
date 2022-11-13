@@ -16,5 +16,4 @@ export default function calculatePace(distance, distanceType, hrs, min, sec) { /
   const paceMinutes = paceAsInt.split('.')[0];
   const paceSeconds = ((paceAsInt.split('.')[1]) * 0.006).toFixed(2).split('.')[1];
   return `${paceMinutes}:${paceSeconds} / ${distanceShorthand}`;
-  // return pace;
 }
