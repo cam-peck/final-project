@@ -1,9 +1,10 @@
 import React from 'react';
 import jwtDecode from 'jwt-decode';
 import Home from './pages/home';
-import Navbar from './components/navbar';
 import Auth from './pages/auth';
+import Runs from './pages/runs';
 import NotFound from './pages/not-found';
+import Navbar from './components/navbar';
 import { AppContext, parseRoute } from './lib';
 
 export default class App extends React.Component {
@@ -47,6 +48,9 @@ export default class App extends React.Component {
     }
     if (path === 'sign-in' || path === 'sign-up') {
       return <Auth />;
+    }
+    if (path === 'add-run' || path === 'edit-run') {
+      return <Runs />;
     }
     return <NotFound />;
   }

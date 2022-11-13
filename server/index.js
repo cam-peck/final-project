@@ -85,10 +85,11 @@ app.use(authorizationMiddleware);
 
 app.post('/api/runs', (req, res, next) => {
   const { userId } = req.user;
-  const { title, description, date, duration, distance, distanceUnits, hasGpx } = req.body;
-  if (!title || !description || !date || !duration || !distance || !distanceUnits || !hasGpx) {
-    throw new ClientError(400, 'title, description, date, duration, distance, and distanceUnits are required fields.');
+  const { title, description, date, durationHours, durationMinutes, durationSeconds, distance, distanceUnits, hasGpx } = req.body;
+  if (!title || !description || !date || !durationHours || !durationMinutes || !durationSeconds || !distance || !distanceUnits) {
+    throw new ClientError(400, 'title, description, date, durationHours, durationMinutes, durationSeconds, distance, and distanceUnits are required fields.');
   }
+  const duration = `${durationHours}:${durationMinutes}:${durationSeconds}`;
   const sql = `
   INSERT INTO "runs" ("userId", "title", "description", "date", "duration", "distance", "distanceUnits", "hasGpx")
   VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
