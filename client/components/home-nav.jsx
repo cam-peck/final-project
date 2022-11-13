@@ -15,7 +15,7 @@ export default function HomeNavbar(props) {
   return (
     (
       <header className="w-full pl-2 pr-2 bg-blue-600">
-        <nav className="max-w-6xl mx-auto flex items-center justify-between">
+        <nav className="max-w-6xl px-6 mx-auto flex items-center justify-between">
           {/* Logo */}
           <div className='flex gap-3 pt-2 pb-2'>
             <i className="fa-solid fa-person-running text-white text-3xl" />

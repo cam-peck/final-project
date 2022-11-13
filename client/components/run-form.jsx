@@ -40,17 +40,24 @@ export default class RunForm extends React.Component {
     const { handleChange, handleSubmit } = this;
     const durationObj = { durationHours, durationMinutes, durationSeconds };
     return (
-      <div className="max-w-md mx-auto">
+      <div className="max-w-md md:max-w-6xl mx-auto px-6">
         <form className="mt-4" onSubmit={handleSubmit}>
-          <h1 className="text-2xl font-lora font-medium pl-4 mb-4">Add Run</h1>
+          <h1 className="text-3xl font-lora font-bold mb-4">Add Run</h1>
           <FloatingInput type="text" name="title" showLabel={true} label="Title" placeholder="Morning Sun Run" value={title} onChange={handleChange}/>
           <FloatingInput type="text" name="description" showLabel={true} label="Description" placeholder="Easy run with great weather -- nice recovery day" value={description} onChange={handleChange} />
-          <UploadRunCard />
-          <FloatingInput type="date" name="date" placeholder="" value={date} showLabel={true} label="Date" onChange={handleChange} />
-          <DistanceInput value={distance} onChange={handleChange}/>
-          <DurationInput value={durationObj} onChange={handleChange}/>
-          <div className="pl-4 pr-4 mt-8 mb-8">
-            <button className="w-full bg-blue-500 transition ease-in-out duration-300 hover:bg-blue-600 text-white p-3 rounded-lg font-bold text-lg">Add run</button>
+          <div className="md:flex md:gap-6">
+            <div className="md:w-2/4 w-full">
+              <UploadRunCard />
+            </div>
+            <div className="md:w-2/4 w-full">
+              <FloatingInput type="date" name="date" placeholder="" value={date} showLabel={true} label="Date" onChange={handleChange} />
+              <DistanceInput value={distance} onChange={handleChange}/>
+              <DurationInput value={durationObj} onChange={handleChange}/>
+              <FloatingInput type="pace" name="pace" placeholder="0:00 / mi" value={date} showLabel={true} label="Date" onChange={handleChange} />
+            </div>
+          </div>
+          <div className="flex justify-end mt-2 mb-8">
+            <button className="md:w-1/4 w-full bg-blue-500 transition ease-in-out duration-300 hover:bg-blue-600 text-white p-3 rounded-lg font-bold text-lg">Add run</button>
           </div>
         </form>
       </div>
