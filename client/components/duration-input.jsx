@@ -11,12 +11,12 @@ export default function DurationInput(props) {
       </div>
       {/* Minutes */}
       <div className="flex flex-grow">
-        <input type="number" name="durationMinutes" min="0" max="99" value={props.value.durationMinutes} onChange={props.onChange} className="w-full text-center border border-gray-300 text-gray-900 rounded-tl-lg rounded-bl-lg px-3 py-3.5" placeholder="40" required />
+        <input type="number" name="durationMinutes" min="0" max="59" value={props.value.durationMinutes} onChange={props.onChange} className="w-full text-center border border-gray-300 text-gray-900 rounded-tl-lg rounded-bl-lg px-3 py-3.5" placeholder="40" required />
         <h1 className="bg-blue-500 text-white rounded-tr-lg rounded-br-lg flex items-center px-3 py-3.5">min</h1>
       </div>
       {/* Seconds */}
       <div className="flex flex-grow">
-        <input type="number" name="durationSeconds" min="0" max="99" value={props.value.durationSeconds} onChange={props.onChange} className="w-full text-center border border-gray-300 text-gray-900 rounded-tl-lg rounded-bl-lg px-3 py-3.5" placeholder="00" required />
+        <input type="number" name="durationSeconds" min="0" max="59" value={props.value.durationSeconds} onChange={props.onChange} className="w-full text-center border border-gray-300 text-gray-900 rounded-tl-lg rounded-bl-lg px-3 py-3.5" placeholder="00" required />
         <h1 className="bg-blue-500 text-white rounded-tr-lg rounded-br-lg flex items-center px-3 3.5">sec</h1>
       </div>
     </fieldset>
