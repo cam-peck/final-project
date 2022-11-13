@@ -25,6 +25,7 @@ CREATE TABLE "public"."runs" (
 	"date" DATE NOT NULL,
 	"duration" TIME NOT NULL,
 	"distance" REAL NOT NULL,
+  "distanceUnits" TEXT NOT NULL,
 	"hasGpx" BOOLEAN NOT NULL,
 	"createdAt" TIMESTAMPTZ NOT NULL default now(),
 	"userId" integer NOT NULL,

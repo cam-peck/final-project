@@ -33,8 +33,20 @@ export default class RunForm extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    // eslint-disable-next-line no-console
-    console.log('submit successful: ', this.state);
+    // placeholder for edit run --> prefill the form and code up a new fetch request if inputs have changed
+    const req = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
+      },
+      body: JSON.stringify(this.state)
+    };
+    fetch('/api/runs', req)
+      .then(response => response.json())
+      .then(result => {
+        console.log('submit successful: ', this.state);
+      });
   }
 
   render() {
