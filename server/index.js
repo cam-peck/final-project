@@ -104,6 +104,21 @@ app.post('/api/runs', (req, res, next) => {
     .catch(err => next(err));
 });
 
+app.get('/api/runs', (req, res, next) => {
+  const userId = req.user.userId;
+  const sql = `
+  SELECT "title", "description", "date", "duration", "distance", "distanceUnits"
+    FROM "runs"
+   WHERE "userId" = '${userId}'
+  `;
+  db.query(sql)
+    .then(result => {
+      const data = result.rows;
+      res.json(data);
+    })
+    .catch(err => next(err));
+});
+
 app.use(errorMiddleware);
 
 app.listen(process.env.PORT, () => {
