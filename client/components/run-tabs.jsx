@@ -7,7 +7,6 @@ export default function RunTabs({ children, tab }) {
   const handleClick = (event, newActiveTab) => {
     event.preventDefault();
     window.location.hash = `#home?tab=${newActiveTab}`;
-    setActiveTab(newActiveTab);
   };
 
   useEffect(() => {
