@@ -7,9 +7,9 @@ import Profile from '../components/profile';
 export default class Home extends React.Component {
   render() {
     return (
-      <main>
+      <main >
         <RunTabs tab={this.props.tab}>
-          <div label="Progress" className="mb-6">
+          <div label="Progress">
             <h1>Progress</h1>
             <Progress />
           </div>
