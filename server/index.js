@@ -5,6 +5,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const ClientError = require('./client-error');
 const staticMiddleware = require('./static-middleware');
+const authorizationMiddleware = require('./authorization-middleware');
 const errorMiddleware = require('./error-middleware');
 
 const db = new pg.Pool({
@@ -76,6 +77,29 @@ app.post('/api/auth/sign-in', (req, res, next) => {
           const token = jwt.sign(payload, process.env.TOKEN_SECRET);
           res.json({ token, user: payload });
         });
+    })
+    .catch(err => next(err));
+});
+
+app.use(authorizationMiddleware);
+
+app.post('/api/runs', (req, res, next) => {
+  const { userId } = req.user;
+  const { title, description, date, durationHours, durationMinutes, durationSeconds, distance, distanceUnits, hasGpx } = req.body;
+  if (!title || !description || !date || !durationHours || !durationMinutes || !durationSeconds || !distance || !distanceUnits) {
+    throw new ClientError(400, 'title, description, date, durationHours, durationMinutes, durationSeconds, distance, and distanceUnits are required fields.');
+  }
+  const duration = `${durationHours}:${durationMinutes}:${durationSeconds}`;
+  const sql = `
+  INSERT INTO "runs" ("userId", "title", "description", "date", "duration", "distance", "distanceUnits", "hasGpx")
+  VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+  RETURNING *
+  `;
+  const params = [userId, title, description, date, duration, distance, distanceUnits, hasGpx];
+  db.query(sql, params)
+    .then(result => {
+      const [newRun] = result.rows;
+      res.status(201).json(newRun);
     })
     .catch(err => next(err));
 });

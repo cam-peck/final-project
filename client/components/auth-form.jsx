@@ -1,5 +1,6 @@
 import React from 'react';
-import FloatingInput from './floating-input';
+import TextInput from './text-input';
+import DateInput from './date-input';
 
 export default class AuthForm extends React.Component {
   constructor(props) {
@@ -72,8 +73,8 @@ export default class AuthForm extends React.Component {
     const registerAccountInputs = action === 'sign-in'
       ? ''
       : <>
-        <FloatingInput type="text" name="displayName" placeholder="Display Name" value={displayName} onChange={handleChange} />
-        <FloatingInput type="date" name="dateOfBirth" placeholder="Date of Birth" value={dateOfBirth} onChange={handleChange} />
+        <TextInput type="text" name="displayName" placeholder="Display Name" value={displayName} showLabel={false} onChange={handleChange} />
+        <DateInput type="date" name="dateOfBirth" placeholder="Date of Birth" value={dateOfBirth} dateMin="1922-01-01" dateMax="2018-01-01" showLabel={false} onChange={handleChange} />
       </>;
     const invalidSignIn = signInWasInvalid
       ? <p className="text-red-500 text-xs italic -mt-2.5 mb-4 ml-6">Invalid username or password</p>
@@ -81,8 +82,8 @@ export default class AuthForm extends React.Component {
     return (
       <div className="max-w-md mx-auto">
         <form onSubmit={handleSubmit}>
-          <FloatingInput type="email" name="email" placeholder="Email Address" value={email} onChange={handleChange}/>
-          <FloatingInput type="password" name="password" placeholder="Password" value={password} onChange={handleChange} />
+          <TextInput type="email" name="email" placeholder="Email Address" value={email} showLabel={false} onChange={handleChange}/>
+          <TextInput type="password" name="password" placeholder="Password" value={password} showLabel={false} onChange={handleChange} />
           {registerAccountInputs}
           {invalidSignIn}
           <div className="pl-4 pr-4">

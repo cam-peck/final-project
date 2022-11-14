@@ -1,10 +1,9 @@
 import React from 'react';
-import HelloWorld from '../components/hello-world';
 
 export default function Home(props) {
   return (
-    <div>
-      <HelloWorld />
+    <div className="flex justify-center">
+      <a className="mt-4 bg-pink-600 text-white p-8 rounded-xl" href="#add-run">Add run</a>
     </div>
   );
 }

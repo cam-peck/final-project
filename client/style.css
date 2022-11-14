@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  background-color: #fffbfe;
+  background-color: #f7f7f7;
 }
 
 .font-lora {
@@ -17,6 +17,18 @@ body {
 .logo-text {
   font-family: "Titan One", serif;
 }
+
+/* Imported Colors */
+
+.surface-bg-color {
+  background-color: #fdfcff;
+}
+
+.on-container-color {
+  color: #43474e;
+}
+
+/* Form Autofill */
 
 input:-webkit-autofill {
   box-shadow: 0 0 0 50px white inset;
@@ -34,4 +46,41 @@ input:-webkit-autofill:focus {
 
 input[type="date"]:invalid::-webkit-datetime-edit {
   color: #999;
+}
+
+/* Remove Form Number Field Arrows */
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  appearance: textfield;
+}
+
+/* Hamburger Menu */
+
+.bar {
+  display: block;
+  width: 25px;
+  height: 3px;
+  margin: 5px auto;
+  transition: all 0.3s ease-in-out;
+  background-color: white;
+}
+
+.hamburger.active .bar:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.active .bar:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+}
+
+.hamburger.active .bar:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
 }
