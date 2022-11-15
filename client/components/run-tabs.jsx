@@ -18,7 +18,7 @@ export default class RunTabs extends React.Component {
             const { label } = tab.props;
             return (
               <li key={label} className={`${label === this.props.tab ? 'border-b-2 border-purple-700' : 'border-b-2 border-blue-200'} w-1/3 p-4`}>
-                <a href={`#home?tab=${label}`} >{label}</a>
+                <a href={`#home?tab=${label}`} >{label.charAt(0).toUpperCase() + label.slice(1)}</a>
               </li>
             );
           })}
@@ -26,7 +26,7 @@ export default class RunTabs extends React.Component {
         <div>
           {children.map(tabContent => {
             const { label, children } = tabContent.props;
-            if (tabContent.props.label === this.props.tab) {
+            if (label === this.props.tab) {
               return (
                 <div key={label}>{children}</div>
               );

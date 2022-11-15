@@ -10,10 +10,10 @@ export default class RunMainCard extends React.Component {
     return (
       <div onClick={event => { if (event.target.id === 'background') { closeModal(); } }} id="background" className="w-full h-screen fixed flex justify-center items-center top-0 left-0 bg-gray-800 bg-opacity-30">
         <div className="relative bg-white rounded-xl p-6 max-w-2xl ml-6 mr-6">
-          <button onClick={closeModal} className="absolute -top-4 -right-5 w-10 h-10 rounded-full bg-blue-800 text-white"><i className="fa-regular fa-xl fa-circle-xmark" /></button>
+          <button onClick={closeModal} className="absolute -top-4 -right-5 w-10 h-10 rounded-full bg-red-600 text-white"><i className="fa-regular fa-xl fa-circle-xmark" /></button>
           {/* hero-img */}
           <div className="mb-6">
-            <img className="w-full h-56 xxs:h-64 xs:h-80 object-cover rounded-xl" src="/images/placeholder-img-sq.jpg" alt="" />
+            <img className="w-full h-56 xxs:h-64 xs:h-80 object-cover rounded-xl" src="/images/placeholder-map.png" alt="" />
           </div>
           {/* content */}
           <div className="pl-1">

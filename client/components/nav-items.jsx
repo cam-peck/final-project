@@ -11,7 +11,7 @@ export default class NavItems extends React.Component {
   }
 
   handleClick(event) {
-    if (event.target.tagName === 'BUTTON') {
+    if (event.target.tagName === 'BUTTON' && this.state.myRunsNav === false) {
       this.setState({ myRunsNav: true });
     } else {
       this.setState({ myRunsNav: false });
@@ -29,7 +29,7 @@ export default class NavItems extends React.Component {
         <div className="flex items-center hover:cursor-pointer p-4 m-2 transition-all ease-in-out duration-200 hover:bg-gray-400 hover:bg-opacity-20">
           <i className="fa-solid fa-person-running text-2xl pr-3" />
           <button onClick={handleClick} className="text-lg">My Runs</button>
-          <div onClick={handleClick} className={`hidden absolute top-16 ${showMyRuns} z-10 flex-col bg-gray-100 text-black rounded-sm`}>
+          <div onClick={handleClick} className={`hidden absolute top-16 ${showMyRuns} z-10 flex-col bg-gray-100 text-black rounded-sm shadow-md`}>
             <a className="hover:bg-blue-300 w-40 py-4 text-center" href="#home?tab=progress">Progress</a>
             <a className="hover:bg-blue-300 w-40 py-4 text-center" href="#home?tab=activities">Activities</a>
             <a className="hover:bg-blue-300 w-40 py-4 text-center" href="#home?tab=profile">Profile</a>
