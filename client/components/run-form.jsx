@@ -57,6 +57,7 @@ export default class RunForm extends React.Component {
           distanceUnits: 'miles',
           hasGpx: false
         });
+        window.location.hash = '#home?tab=activities';
       });
   }
 
