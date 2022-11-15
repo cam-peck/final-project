@@ -10,15 +10,12 @@ export default class Home extends React.Component {
       <main >
         <RunTabs tab={this.props.tab}>
           <div label="Progress">
-            <h1>Progress</h1>
             <Progress />
           </div>
-          <div label="Activities" className="mb-6">
-            <h1>Activities</h1>
+          <div label="Activities">
             <Activities />
           </div>
-          <div label="Profile" className="mb-6">
-            <h1>Profile</h1>
+          <div label="Profile">
             <Profile />
           </div>
         </RunTabs>
