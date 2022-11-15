@@ -8,14 +8,14 @@ export default class Home extends React.Component {
   render() {
     return (
       <main>
-        <RunTabs>
-          <div label="Progress">
+        <RunTabs tab={this.props.tab}>
+          <div label="progress">
             <Progress />
           </div>
-          <div label="Activities">
+          <div label="activities">
             <Activities />
           </div>
-          <div label="Profile">
+          <div label="profile">
             <Profile />
           </div>
         </RunTabs>

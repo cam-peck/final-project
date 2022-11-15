@@ -43,8 +43,10 @@ export default class App extends React.Component {
 
   renderPage() {
     const { path } = this.state.route;
+    const { route } = this.state;
     if (path === 'home' || '') {
-      return <Home />;
+      const homeId = route.params.get('tab');
+      return <Home tab={homeId}/>;
     }
     if (path === 'sign-in' || path === 'sign-up') {
       return <Auth />;

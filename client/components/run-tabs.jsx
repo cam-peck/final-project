@@ -4,19 +4,12 @@ export default class RunTabs extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      activeTab: 'Activities'
+      activeTab: 'activities'
     };
-    this.handleClick = this.handleClick.bind(this);
   }
 
-  handleClick = (event, newActiveTab) => {
-    this.setState({ activeTab: newActiveTab });
-  };
-
   render() {
-    const { activeTab } = this.state;
     const { children } = this.props;
-    const { handleClick } = this;
 
     return (
       <div>
@@ -24,8 +17,8 @@ export default class RunTabs extends React.Component {
           {children.map(tab => {
             const { label } = tab.props;
             return (
-              <li key={label} className={`${label === activeTab ? 'border-b-2 border-purple-700' : 'border-b-2 border-blue-200'} w-1/3 p-4`}>
-                <button onClick={event => handleClick(event, label)}>{label}</button>
+              <li key={label} className={`${label === this.props.tab ? 'border-b-2 border-purple-700' : 'border-b-2 border-blue-200'} w-1/3 p-4`}>
+                <a href={`#home?tab=${label}`} >{label}</a>
               </li>
             );
           })}
@@ -33,7 +26,7 @@ export default class RunTabs extends React.Component {
         <div>
           {children.map(tabContent => {
             const { label, children } = tabContent.props;
-            if (tabContent.props.label === activeTab) {
+            if (tabContent.props.label === this.props.tab) {
               return (
                 <div key={label}>{children}</div>
               );
