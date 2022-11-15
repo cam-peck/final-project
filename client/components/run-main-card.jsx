@@ -20,9 +20,9 @@ export default class RunMainCard extends React.Component {
             {/* content-header */}
             <div className="mb-4">
               <h1 className="font-lora text-xl font-bold">{title}</h1>
-              <p className="flex-col xs:flex-row flex gap-1 font-lora">
-                <span>{formattedDate}</span>  |
-                <span>{distance} {distanceUnits}</span>  |
+              <p className="flex-col x2s:flex-row flex gap-2 font-lora text-lg">
+                <span>{formattedDate}</span>  <span className="hidden x2s:block">|</span>
+                <span>{distance} {distanceUnits}</span>   <span className="hidden x2s:block">|</span>
                 <span>{pace}</span>
               </p>
             </div>

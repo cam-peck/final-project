@@ -56,7 +56,8 @@ export default class Activities extends React.Component {
       : '';
     return (
       <>
-        <section className="pl-6 pr-6 max-w-lg md:max-w-2xl lg:max-w-6xl m-auto mt-8">
+        <section className="pl-6 pr-6 max-w-lg md:max-w-2xl lg:max-w-6xl m-auto mt-6">
+          <h1 className="font-lora font-medium text-2xl mb-4">My Activities</h1>
           <TextInput placeholder="Searchbar"/>
           <div className="lg:grid lg:grid-cols-2 lg:gap-8">
             {runData.map(run => {
