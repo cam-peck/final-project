@@ -26,22 +26,22 @@ export default class Activities extends React.Component {
 
   render() {
     const { runData } = this.state;
-    console.log(runData);
     return (
-      <section className="pl-6 pr-6 mb-8 max-w-md md:max-w-6xl m-auto">
-        <TextInput />
-        {runData.map(run => {
-          return (
-            <RunMiniCard
+      <section className="pl-6 pr-6 max-w-lg md:max-w-2xl lg:max-w-6xl m-auto mt-8">
+        <TextInput placeholder="Searchbar"/>
+        <div className="lg:grid lg:grid-cols-2 lg:gap-8">
+          {runData.map(run => {
+            return (
+              <RunMiniCard
             key={run.entryId}
             date={run.date}
             distance={run.distance}
             distanceUnits={run.distanceUnits}
             duration={run.duration}
             />
-          );
-        })}
-
+            );
+          })}
+        </div>
       </section>
     );
   }
