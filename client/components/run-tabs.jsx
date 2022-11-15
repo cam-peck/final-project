@@ -20,7 +20,7 @@ export default class RunTabs extends React.Component {
 
     return (
       <div>
-        <ul className="flex w-full text-center bg-blue-200">
+        <ul className="flex w-full text-center bg-blue-200 md:hidden">
           {children.map(tab => {
             const { label } = tab.props;
             return (

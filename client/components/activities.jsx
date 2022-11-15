@@ -48,8 +48,8 @@ export default class Activities extends React.Component {
           title={this.state.openRun.title}
           date={this.state.openRun.date}
           distance={this.state.openRun.distance}
+          duration={this.state.openRun.duration}
           distanceUnits={this.state.openRun.distanceUnits}
-          pace='8:15 / mi'
           description={this.state.openRun.description}
           closeModal={this.closeModal}
         />
