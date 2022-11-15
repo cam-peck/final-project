@@ -107,7 +107,7 @@ app.post('/api/runs', (req, res, next) => {
 app.get('/api/runs', (req, res, next) => {
   const userId = req.user.userId;
   const sql = `
-  SELECT "title", "description", "date", "duration", "distance", "distanceUnits"
+  SELECT "title", "description", "date", "duration", "distance", "distanceUnits", "entryId"
     FROM "runs"
    WHERE "userId" = '${userId}'
   `;
