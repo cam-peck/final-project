@@ -14,6 +14,7 @@ export default class Activities extends React.Component {
     };
     this.openModal = this.openModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
+    this.deleteRun = this.deleteRun.bind(this);
   }
 
   componentDidMount() {
@@ -41,6 +42,27 @@ export default class Activities extends React.Component {
     this.setState({ modalIsOpen: false, openRun: {} });
   }
 
+  deleteRun(entryId) {
+    const { user } = this.context;
+    const { runData } = this.state;
+    const req = {
+      method: 'DELETE',
+      headers: {
+        'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
+      },
+      user
+    };
+    fetch(`/api/runs/${entryId}`, req)
+      .then(response => response.json())
+      .then(result => {
+        const indexToRemove = runData.findIndex(run => run.entryId === entryId);
+        const newRunData = Array.from(runData);
+        newRunData.splice(indexToRemove, 1);
+        this.setState({ openRun: {}, runData: newRunData });
+        this.closeModal();
+      });
+  }
+
   render() {
     const { runData } = this.state;
     const modal = this.state.modalIsOpen === true
@@ -53,6 +75,7 @@ export default class Activities extends React.Component {
           distanceUnits={this.state.openRun.distanceUnits}
           description={this.state.openRun.description}
           closeModal={this.closeModal}
+          deleteRun={this.deleteRun}
         />
       : '';
     return (

@@ -36,7 +36,7 @@ app.post('/api/auth/sign-up', (req, res, next) => {
       const sql = `
       INSERT INTO "users" ("displayName", "profilePhoto", "email", "dateOfBirth", "password")
       VALUES ($1, $2, $3, $4, $5)
-      RETURNING "userId", "displayName", "profilePhoto", "email", "dateOfBirth", "createdAt"
+      RETURNING "userId", "displayName", "profilePhoto", "email", "dateOfBirth", "createdAt";
       `;
       const params = [displayName, profilePhoto, email, dateOfBirth, hashedPassword];
       return db.query(sql, params);
@@ -57,7 +57,7 @@ app.post('/api/auth/sign-in', (req, res, next) => {
   SELECT "userId",
          "password"
     FROM "users"
-   WHERE "email" = $1
+   WHERE "email" = $1;
   `;
   const params = [email];
   db.query(sql, params)
@@ -93,7 +93,7 @@ app.post('/api/runs', (req, res, next) => {
   const sql = `
   INSERT INTO "runs" ("userId", "title", "description", "date", "duration", "distance", "distanceUnits", "hasGpx")
   VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-  RETURNING *
+  RETURNING *;
   `;
   const params = [userId, title, description, date, duration, distance, distanceUnits, hasGpx];
   db.query(sql, params)
@@ -109,7 +109,7 @@ app.get('/api/runs', (req, res, next) => {
   const sql = `
   SELECT "title", "description", "date", "duration", "distance", "distanceUnits", "entryId"
     FROM "runs"
-   WHERE "userId" = $1
+   WHERE "userId" = $1;
   `;
   const params = [userId];
   db.query(sql, params)
@@ -126,7 +126,7 @@ app.get('/api/runs/:entryId', (req, res, next) => {
   const sql = `
   SELECT "title", "description", "date", "duration", "distance", "distanceUnits", "hasGpx"
     FROM "runs"
-   WHERE "userId" = $1 AND "entryId" = $2
+   WHERE "userId" = $1 AND "entryId" = $2;
   `;
   const params = [userId, entryId];
   db.query(sql, params)
@@ -155,13 +155,31 @@ app.put('/api/runs/:entryId', (req, res, next) => {
          "distanceUnits" = $6,
          "hasGpx"        = $7
    WHERE "entryId" = $8 AND "userId" = $9
-   RETURNING *
+   RETURNING *;
   `;
   const params = [title, description, date, duration, distance, distanceUnits, hasGpx, entryId, userId];
   db.query(sql, params)
     .then(result => {
       const [editedRun] = result.rows;
       res.json(editedRun);
+    })
+    .catch(err => next(err));
+});
+
+app.delete('/api/runs/:entryId', (req, res, next) => {
+  const { userId } = req.user;
+  const { entryId } = req.params;
+  const sql = `
+  DELETE
+    FROM "runs"
+   WHERE "userId" = $1 AND "entryId" = $2
+   RETURNING *;
+  `;
+  const params = [userId, entryId];
+  db.query(sql, params)
+    .then(result => {
+      const deletedRow = result.rows;
+      res.json(deletedRow);
     })
     .catch(err => next(err));
 });
