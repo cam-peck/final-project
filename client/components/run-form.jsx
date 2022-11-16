@@ -101,6 +101,9 @@ export default class RunForm extends React.Component {
     const durationObj = { durationHours, durationMinutes, durationSeconds };
     const pace = calculatePace(distance, distanceUnits, durationHours, durationMinutes, durationSeconds);
     const today = todaysDate();
+    const buttonText = this.context.route.params.get('mode') === 'add'
+      ? 'Add Run'
+      : 'Save Changes';
     return (
       <form onSubmit={handleSubmit}>
         <div className="md:flex md:gap-6">
@@ -117,7 +120,7 @@ export default class RunForm extends React.Component {
         <TextInput type="text" name="title" showLabel={true} label="Title" placeholder="Morning Sun Run" value={title} onChange={handleChange} />
         <TextInput type="text" name="description" showLabel={true} label="Description" placeholder="Easy run with great weather -- nice recovery day" value={description} onChange={handleChange} />
         <div className="flex justify-end mt-2 mb-8">
-          <button className="md:w-1/4 w-full bg-blue-500 transition ease-in-out duration-300 hover:bg-blue-600 text-white p-3 rounded-lg font-bold text-lg">Add run</button>
+          <button className="md:w-1/4 w-full bg-blue-500 transition ease-in-out duration-300 hover:bg-blue-600 text-white p-3 rounded-lg font-bold text-lg">{buttonText}</button>
         </div>
       </form>
     );
