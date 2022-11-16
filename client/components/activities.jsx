@@ -45,6 +45,7 @@ export default class Activities extends React.Component {
     const { runData } = this.state;
     const modal = this.state.modalIsOpen === true
       ? <RunMainCard
+          entryId={this.state.openRun.entryId}
           title={this.state.openRun.title}
           date={this.state.openRun.date}
           distance={this.state.openRun.distance}
