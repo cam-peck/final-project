@@ -6,7 +6,7 @@ export default class Runs extends React.Component {
   render() {
     const { route } = this.context;
 
-    const titleMessage = route.path === 'add-run'
+    const titleMessage = route.params.get('mode') === 'add'
       ? 'Add Run'
       : 'Edit Run';
 

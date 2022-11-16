@@ -45,6 +45,7 @@ export default class Activities extends React.Component {
     const { runData } = this.state;
     const modal = this.state.modalIsOpen === true
       ? <RunMainCard
+          entryId={this.state.openRun.entryId}
           title={this.state.openRun.title}
           date={this.state.openRun.date}
           distance={this.state.openRun.distance}
@@ -76,7 +77,7 @@ export default class Activities extends React.Component {
           </div>
           <div className="flex justify-end">
             <div className="flex justify-center items-center bg-blue-100 w-20 h-20 rounded-2xl shadow-2xl border-2 border-blue-200 fixed bottom-8">
-              <a className="text-5xl font-bold text-blue-800" href="#add-run">+</a>
+              <a className="text-5xl font-bold text-blue-800" href="#run-form?mode=add">+</a>
             </div>
           </div>
         </section>

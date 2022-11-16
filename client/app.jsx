@@ -45,13 +45,13 @@ export default class App extends React.Component {
     const { path } = this.state.route;
     const { route } = this.state;
     if (path === 'home' || '') {
-      const homeId = route.params.get('tab');
+      const homeId = route.params.get('tab'); // possible values: progress, activites, profile
       return <Home tab={homeId}/>;
     }
     if (path === 'sign-in' || path === 'sign-up') {
       return <Auth />;
     }
-    if (path === 'add-run' || path === 'edit-run') {
+    if (path === 'run-form') {
       return <Runs />;
     }
     return <NotFound />;

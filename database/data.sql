@@ -15,12 +15,3 @@ values (1, 'Morning Sun Run', 'Lorem ipsum dolor, sit amet consectetur adipisici
 
 insert into "runs" ("userId", "title", "description", "date", "duration", "distance", "distanceUnits", "hasGpx")
 values (1, 'Morning Sun Run', 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Vitae quod est labore odit id possimus, placeat cum nemo doloremque doloribus sed a maxime temporibus in quasi dolores corrupti at facilis.', '2022-03-10', '00:40:30', 8.1, 'miles', false);
-
-insert into "runs" ("userId", "title", "description", "date", "duration", "distance", "distanceUnits", "hasGpx")
-values (1, 'Morning Sun Run', 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Vitae quod est labore odit id possimus, placeat cum nemo doloremque doloribus sed a maxime temporibus in quasi dolores corrupti at facilis.', '2022-03-10', '00:40:30', 8.1, 'miles', false);
-
-insert into "runs" ("userId", "title", "description", "date", "duration", "distance", "distanceUnits", "hasGpx")
-values (1, 'Morning Sun Run', 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Vitae quod est labore odit id possimus, placeat cum nemo doloremque doloribus sed a maxime temporibus in quasi dolores corrupti at facilis.', '2022-03-10', '00:40:30', 8.1, 'miles', false);
-
-insert into "runs" ("userId", "title", "description", "date", "duration", "distance", "distanceUnits", "hasGpx")
-values (1, 'Morning Sun Run', 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Vitae quod est labore odit id possimus, placeat cum nemo doloremque doloribus sed a maxime temporibus in quasi dolores corrupti at facilis.', '2022-03-10', '00:40:30', 8.1, 'miles', false);
