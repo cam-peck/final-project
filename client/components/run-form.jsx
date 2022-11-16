@@ -26,7 +26,34 @@ export default class RunForm extends React.Component {
 
   componentDidMount() {
     if (this.props.mode === 'edit') {
-      console.log('edit mode detected');
+      const { route, user } = this.context;
+      const entryId = Number(route.params.get('entryId'));
+      const req = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
+        },
+        user
+      };
+      fetch(`api/runs/${entryId}`, req)
+        .then(response => response.json())
+        .then(result => {
+          const { title, description, date, duration, distance, distanceUnits, hasGpx } = result[0];
+          const splitDuration = duration.split(':');
+          const formattedDate = date.split('T')[0];
+          this.setState({
+            title,
+            description,
+            date: formattedDate,
+            durationHours: splitDuration[0],
+            durationMinutes: splitDuration[1],
+            durationSeconds: splitDuration[2],
+            distance,
+            distanceUnits,
+            hasGpx
+          });
+        });
     }
   }
 
