@@ -105,7 +105,7 @@ app.post('/api/runs', (req, res, next) => {
 });
 
 app.get('/api/runs', (req, res, next) => {
-  const userId = req.user.userId;
+  const { userId } = req.user;
   const sql = `
   SELECT "title", "description", "date", "duration", "distance", "distanceUnits", "entryId"
     FROM "runs"
@@ -115,6 +115,35 @@ app.get('/api/runs', (req, res, next) => {
     .then(result => {
       const data = result.rows;
       res.json(data);
+    })
+    .catch(err => next(err));
+});
+
+app.put('/api/runs/:entryId', (req, res, next) => {
+  const { userId } = req.user;
+  const { entryId } = req.params;
+  const { title, description, date, durationHours, durationMinutes, durationSeconds, distance, distanceUnits, hasGpx } = req.body;
+  if (!title || !description || !date || !durationHours || !durationMinutes || !durationSeconds || !distance || !distanceUnits) {
+    throw new ClientError(400, 'title, description, date, durationHours, durationMinutes, durationSeconds, distance, and distanceUnits are required fields.');
+  }
+  const duration = `${durationHours}:${durationMinutes}:${durationSeconds}`;
+  const sql = `
+  UPDATE "runs"
+     SET "title"         = $1,
+         "description"   = $2,
+         "date"          = $3,
+         "duration"      = $4,
+         "distance"      = $5,
+         "distanceUnits" = $6,
+         "hasGpx"        = $7
+   WHERE "entryId" = $8 AND "userId" = $9
+   RETURNING *
+  `;
+  const params = [title, description, date, duration, distance, distanceUnits, hasGpx, entryId, userId];
+  db.query(sql, params)
+    .then(result => {
+      const [editedRun] = result.rows;
+      res.json(editedRun);
     })
     .catch(err => next(err));
 });
