@@ -1,11 +1,12 @@
 import React from 'react';
 import RunForm from '../components/run-form';
+import AppContext from '../lib/app-context';
 
 export default class Runs extends React.Component {
   render() {
-    const { mode } = this.props;
+    const { route } = this.context;
 
-    const titleMessage = mode === 'add'
+    const titleMessage = route.params.get('mode') === 'add'
       ? 'Add Run'
       : 'Edit Run';
 
@@ -13,10 +14,11 @@ export default class Runs extends React.Component {
       <main>
         <div className="max-w-md md:max-w-6xl mx-auto px-6 mt-4">
           <h1 className="text-3xl font-lora font-bold mb-4">{titleMessage}</h1>
-          <RunForm mode={mode}/>
+          <RunForm />
         </div>
       </main>
     );
   }
 
 }
+Runs.contextType = AppContext;

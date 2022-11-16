@@ -25,8 +25,8 @@ export default class RunForm extends React.Component {
   }
 
   componentDidMount() {
-    if (this.props.mode === 'edit') {
-      const { route, user } = this.context;
+    const { route, user } = this.context;
+    if (route.params.get('mode') === 'edit') {
       const entryId = Number(route.params.get('entryId'));
       const req = {
         method: 'GET',
@@ -66,17 +66,18 @@ export default class RunForm extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    // placeholder for edit run --> prefill the form and code up a new fetch request if inputs have changed
+    const { route, user } = this.context;
+    const mode = route.params.get('mode');
     const req = {
-      method: 'POST',
+      method: `${mode === 'add' ? 'POST' : 'PUT'}`,
       headers: {
         'Content-Type': 'application/json',
         'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
       },
-      user: this.context.user,
+      user,
       body: JSON.stringify(this.state)
     };
-    fetch('/api/runs', req)
+    fetch(`${mode === 'add' ? '/api/runs' : 'api/runs/' + route.params.get('entryId')}`, req)
       .then(response => response.json())
       .then(result => {
         this.setState({

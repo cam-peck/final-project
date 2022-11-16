@@ -52,8 +52,7 @@ export default class App extends React.Component {
       return <Auth />;
     }
     if (path === 'run-form') {
-      const modeType = route.params.get('mode'); // possible values: add, edit
-      return <Runs mode={modeType}/>;
+      return <Runs />;
     }
     return <NotFound />;
   }
