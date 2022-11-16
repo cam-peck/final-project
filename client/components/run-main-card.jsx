@@ -10,16 +10,17 @@ export default class RunMainCard extends React.Component {
       snackbarIsOpen: false
     };
     this.handleClick = this.handleClick.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
     this.toggleMenu = this.toggleMenu.bind(this);
-    this.openSnackbar = this.openSnackbar.bind(this);
+    this.toggleSnack = this.toggleSnack.bind(this);
   }
 
   toggleMenu() {
     this.setState({ toggleMenuIsOpen: !this.state.toggleMenuIsOpen });
   }
 
-  openSnackbar() {
-    this.setState({ snackbarIsOpen: true });
+  toggleSnack() {
+    this.setState({ snackbarIsOpen: !this.state.snackbarIsOpen });
   }
 
   handleClick(event, entryId) {
@@ -28,8 +29,13 @@ export default class RunMainCard extends React.Component {
       window.location.hash = `#run-form?mode=edit&entryId=${entryId}`;
     }
     if (event.target.id === 'delete') {
-      this.props.deleteRun(entryId);
+      this.setState({ snackbarIsOpen: true });
+      this.toggleMenu();
     }
+  }
+
+  handleDelete(entryId) {
+    this.props.deleteRun(entryId);
   }
 
   render() {
@@ -39,7 +45,7 @@ export default class RunMainCard extends React.Component {
     const formattedDate = formatDate(date);
 
     const { toggleMenuIsOpen, snackbarIsOpen } = this.state;
-    const { handleClick, toggleMenu } = this;
+    const { handleClick, handleDelete, toggleMenu, toggleSnack } = this;
     return (
       <div onClick={event => { if (event.target.id === 'background') { closeModal(); } }} id="background" className="w-full h-screen fixed flex justify-center items-center top-0 left-0 bg-gray-800 bg-opacity-30">
         <div className="relative bg-white rounded-xl p-6 max-w-2xl ml-6 mr-6">
@@ -89,7 +95,7 @@ export default class RunMainCard extends React.Component {
           </div> */}
         </div>
         {snackbarIsOpen === true
-          ? <DeleteSnackbar openSnackbar={this.openSnackbar} />
+          ? <DeleteSnackbar isOpen={snackbarIsOpen} toggle={toggleSnack} entryId={entryId} handleDelete={handleDelete}/>
           : '' }
       </div>
     );
