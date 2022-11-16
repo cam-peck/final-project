@@ -84,3 +84,9 @@ input[type="number"] {
 .hamburger.active .bar:nth-child(3) {
   transform: translateY(-8px) rotate(-45deg);
 }
+
+/* Button Goodies */
+
+button:active {
+  transform: translateY(0.1rem);
+}
