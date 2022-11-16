@@ -24,6 +24,12 @@ export default class RunForm extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
+  componentDidMount() {
+    if (this.props.mode === 'edit') {
+      console.log('edit mode detected');
+    }
+  }
+
   handleChange(event) {
     const { name, value } = event.target;
     this.setState({
@@ -64,6 +70,7 @@ export default class RunForm extends React.Component {
   render() {
     const { title, description, date, distance, distanceUnits, durationHours, durationMinutes, durationSeconds } = this.state;
     const { handleChange, handleSubmit } = this;
+    const { mode } = this.props;
     const durationObj = { durationHours, durationMinutes, durationSeconds };
     const pace = calculatePace(distance, distanceUnits, durationHours, durationMinutes, durationSeconds);
     const today = todaysDate();

@@ -18,7 +18,7 @@ export default class RunMainCard extends React.Component {
   handleClick(event, entryId) {
     event.preventDefault();
     if (event.target.id === 'edit') {
-      window.location.hash = `#edit-run?entryId=${entryId}`;
+      window.location.hash = `#run-form?mode=edit?entryId=${entryId}`;
     }
   }
 
