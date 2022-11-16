@@ -70,7 +70,6 @@ export default class RunForm extends React.Component {
   render() {
     const { title, description, date, distance, distanceUnits, durationHours, durationMinutes, durationSeconds } = this.state;
     const { handleChange, handleSubmit } = this;
-    const { mode } = this.props;
     const durationObj = { durationHours, durationMinutes, durationSeconds };
     const pace = calculatePace(distance, distanceUnits, durationHours, durationMinutes, durationSeconds);
     const today = todaysDate();

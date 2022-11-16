@@ -109,9 +109,27 @@ app.get('/api/runs', (req, res, next) => {
   const sql = `
   SELECT "title", "description", "date", "duration", "distance", "distanceUnits", "entryId"
     FROM "runs"
-   WHERE "userId" = '${userId}'
+   WHERE "userId" = $1
   `;
-  db.query(sql)
+  const params = [userId];
+  db.query(sql, params)
+    .then(result => {
+      const data = result.rows;
+      res.json(data);
+    })
+    .catch(err => next(err));
+});
+
+app.get('/api/runs/:entryId', (req, res, next) => {
+  const { userId } = req.user;
+  const { entryId } = req.params;
+  const sql = `
+  SELECT "title", "description", "date", "duration", "distance", "distanceUnits", "hasGpx"
+    FROM "runs"
+   WHERE "userId" = $1 AND "entryId" = $2
+  `;
+  const params = [userId, entryId];
+  db.query(sql, params)
     .then(result => {
       const data = result.rows;
       res.json(data);
