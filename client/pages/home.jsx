@@ -1,8 +1,8 @@
 import React from 'react';
-import RunTabs from '../components/run-tabs';
-import Progress from '../components/progress';
-import Activities from '../components/activities';
-import Profile from '../components/profile';
+import RunTabs from '../components/runs/run-tabs';
+import Progress from '../components/runs/progress';
+import Activities from '../components/runs/activities';
+import Profile from '../components/runs/profile';
 
 export default class Home extends React.Component {
   render() {
