@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import NavItems from './nav-items';
-import { AppContext } from '../lib';
+import { AppContext } from '../../lib';
 
 export default function DrawerMenu(props) {
   const { handleSignOut } = useContext(AppContext);

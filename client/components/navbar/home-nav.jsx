@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import DrawerMenu from './drawer-menu';
 import NavItems from './nav-items';
-import { AppContext } from '../lib';
+import { AppContext } from '../../lib';
 import { Turn as Hamburger } from 'hamburger-react';
 
 export default function HomeNavbar(props) {

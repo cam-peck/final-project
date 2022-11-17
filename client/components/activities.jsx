@@ -1,7 +1,7 @@
 import React from 'react';
-import TextInput from './text-input';
-import RunMiniCard from './run-mini-card';
-import RunMainCard from './run-main-card';
+import TextInput from './inputs/text-input';
+import RunMiniCard from './cards/run-mini-card';
+import RunMainCard from './cards/run-main-card';
 import AppContext from '../lib/app-context';
 
 export default class Activities extends React.Component {

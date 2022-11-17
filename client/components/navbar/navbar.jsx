@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { AppContext } from '../lib';
+import { AppContext } from '../../lib';
 import HomeNavbar from './home-nav';
 import SignInNavbar from './signin-nav';
 

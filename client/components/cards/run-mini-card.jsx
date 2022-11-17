@@ -1,5 +1,5 @@
 import React from 'react';
-import { calculatePace, formatDate } from '../lib';
+import { calculatePace, formatDate } from '../../lib';
 
 export default function RunMiniCard(props) {
 
