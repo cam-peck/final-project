@@ -2,7 +2,7 @@ import React from 'react';
 import TextInput from '../inputs/text-input';
 import RunMiniCard from '../cards/run-mini-card';
 import RunMainCard from '../cards/run-main-card';
-import AppContext from '../../lib/app-context';
+import { AppContext } from '../../lib';
 
 export default class Activities extends React.Component {
   constructor(props) {

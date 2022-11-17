@@ -14,12 +14,13 @@ function getSquaresData(runData, restData) {
     const dateAsJSON = date.toJSON(); // grab 'YEAR-MO-DA' format
 
     const loopResult = {};
+    loopResult.date = dateAsJSON;
     if (runData.includes(dateAsJSON)) {
-      loopResult[dateAsJSON] = 'run';
+      loopResult.runStatus = 'run';
     } else if (restData.includes(dateAsJSON)) {
-      loopResult[dateAsJSON] = 'rest';
+      loopResult.runStatus = 'rest';
     } else {
-      loopResult[dateAsJSON] = 'norun';
+      loopResult.runStatus = 'norun';
     }
 
     dates.push(loopResult);

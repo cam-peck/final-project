@@ -90,3 +90,9 @@ input[type="number"] {
 button:active {
   transform: translateY(0.1rem);
 }
+
+/* Additional Grid CSS */
+
+.grid-52 {
+  grid-template-columns: repeat(52, minmax(0, 1fr));
+}

@@ -199,7 +199,7 @@ app.get('/api/runningSquares', (req, res, next) => {
     .then(result => {
       const runDates = result.rows;
       const mappedRuns = runDates.map(object => object.date.toJSON());
-      const squaresData = getSquaresData(mappedRuns, []);
+      const squaresData = getSquaresData(mappedRuns, []); // second argument is placeholder for rest day array!
       res.json(squaresData);
     })
     .catch(err => next(err));
