@@ -7,6 +7,7 @@ const ClientError = require('./client-error');
 const staticMiddleware = require('./static-middleware');
 const authorizationMiddleware = require('./authorization-middleware');
 const errorMiddleware = require('./error-middleware');
+const getSquaresData = require('./get-squares-data');
 
 const db = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
@@ -21,9 +22,7 @@ app.use(staticMiddleware);
 
 app.use(express.json());
 
-app.get('/api/hello', (req, res) => {
-  res.json({ hello: 'world' });
-});
+// Auth Routes //
 
 app.post('/api/auth/sign-up', (req, res, next) => {
   const { displayName, profilePhoto, email, dateOfBirth, password } = req.body;
@@ -82,6 +81,8 @@ app.post('/api/auth/sign-in', (req, res, next) => {
 });
 
 app.use(authorizationMiddleware);
+
+// CRUD Runs Routes //
 
 app.post('/api/runs', (req, res, next) => {
   const { userId } = req.user;
@@ -180,6 +181,26 @@ app.delete('/api/runs/:entryId', (req, res, next) => {
     .then(result => {
       const deletedRow = result.rows;
       res.json(deletedRow);
+    })
+    .catch(err => next(err));
+});
+
+// Specific Run Data Routes //
+
+app.get('/api/runningSquares', (req, res, next) => {
+  const { userId } = req.user;
+  const sql = `
+  SELECT "date"
+    FROM "runs"
+   WHERE "userId" = $1
+  `;
+  const params = [userId];
+  db.query(sql, params)
+    .then(result => {
+      const runDates = result.rows;
+      const mappedRuns = runDates.map(object => object.date.toJSON());
+      const squaresData = getSquaresData(mappedRuns, []);
+      res.json(squaresData);
     })
     .catch(err => next(err));
 });
