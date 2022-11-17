@@ -1,6 +1,6 @@
 import React from 'react';
-import { calculatePace, formatDate } from '../lib';
-import DeleteSnackbar from './delete-snackbar';
+import { calculatePace, formatDate } from '../../lib';
+import DeleteSnackbar from '../delete-snackbar';
 
 export default class RunMainCard extends React.Component {
   constructor(props) {

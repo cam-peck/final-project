@@ -1,10 +1,10 @@
 import React from 'react';
-import { calculatePace, todaysDate, AppContext } from '../lib';
-import TextInput from './text-input';
-import DateInput from './date-input';
-import DistanceInput from './distance-input';
-import DurationInput from './duration-input';
-import UploadRunCard from './upload-run-card';
+import { calculatePace, todaysDate, AppContext } from '../../lib';
+import TextInput from '../inputs/text-input';
+import DateInput from '../inputs/date-input';
+import DistanceInput from '../inputs/distance-input';
+import DurationInput from '../inputs/duration-input';
+import UploadRunCard from '../cards/upload-run-card';
 
 export default class RunForm extends React.Component {
   constructor(props) {

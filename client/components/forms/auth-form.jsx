@@ -1,6 +1,6 @@
 import React from 'react';
-import TextInput from './text-input';
-import DateInput from './date-input';
+import TextInput from '../inputs/text-input';
+import DateInput from '../inputs/date-input';
 
 export default class AuthForm extends React.Component {
   constructor(props) {

@@ -1,5 +1,5 @@
 import React from 'react';
-import RunForm from '../components/run-form';
+import RunForm from '../components/forms/run-form';
 import AppContext from '../lib/app-context';
 
 export default class Runs extends React.Component {

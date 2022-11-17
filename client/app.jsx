@@ -4,7 +4,7 @@ import Home from './pages/home';
 import Auth from './pages/auth';
 import Runs from './pages/runs';
 import NotFound from './pages/not-found';
-import Navbar from './components/navbar';
+import Navbar from './components/navbar/navbar';
 import { AppContext, parseRoute } from './lib';
 
 export default class App extends React.Component {
