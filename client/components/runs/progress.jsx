@@ -1,6 +1,6 @@
 import React from 'react';
 import { AppContext } from '../../lib';
-import ProgressSquares from './progress-squares';
+import ProgressSquares from '../progress-squares/progress-squares';
 
 export default class Progress extends React.Component {
   constructor(props) {
