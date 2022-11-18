@@ -1,5 +1,5 @@
 import React from 'react';
-import { getMonthName } from '../../lib';
+import ProgressSquare from './progress-square';
 
 export default class ProgressSquares extends React.Component {
   constructor(props) {
@@ -9,14 +9,11 @@ export default class ProgressSquares extends React.Component {
       isDown: false,
       startX: 0,
       scrollLeft: 0,
-      hoveredIndex: null,
       dataHasLoaded: false
     };
     this.setMouseDown = this.setMouseDown.bind(this);
     this.setMouseUp = this.setMouseUp.bind(this);
     this.drag = this.drag.bind(this);
-    this.showLabel = this.showLabel.bind(this);
-    this.hideLabel = this.hideLabel.bind(this);
   }
 
   componentDidUpdate() { // scroll activity doesn't work before data has arrived to component (which happens AFTER component did mount)
@@ -42,22 +39,9 @@ export default class ProgressSquares extends React.Component {
     this.ref.current.scrollLeft = scrollLeft - walk;
   }
 
-  showLabel(index) {
-    this.setState({
-      hoveredIndex: index
-    });
-  }
-
-  hideLabel() {
-    this.setState({
-      hoveredIndex: null
-    });
-  }
-
   render() {
     const { progressData } = this.props;
-    const { hoveredIndex } = this.state;
-    const { showLabel, hideLabel, setMouseDown, setMouseUp, drag, ref } = this;
+    const { setMouseDown, setMouseUp, drag, ref } = this;
     return (
       <div className="bg-white p-6 rounded-xl border border-gray-300 shadow-sm">
         {
@@ -82,26 +66,7 @@ export default class ProgressSquares extends React.Component {
             </div>
             <div className="grid grid-52 gap-2.5 relative mt-10">
               {progressData.length !== 0
-                ? progressData.squaresData.map((square, index) => {
-                  return (
-                    <div key={square.date} onMouseLeave={() => hideLabel()}>
-                      { square.date.split('T')[0].split('-')[2] === '01' // add month labels on top of chart
-                        ? <h1 className="absolute -top-8">{getMonthName(square.date.split('-')[1])}</h1>
-                        : ''
-                      }
-                      <div className="relative">
-                        {/* Square */}
-                        <svg id={square.date} height="20" width="20">
-                          <rect onMouseOver={() => showLabel(index)} width="20" height="20" rx="5" fill={square.runStatus === 'run' ? 'green' : 'lightgray'} />
-                        </svg>
-                        {/* Label */}
-                        <div onMouseLeave={hideLabel} className={`${index === hoveredIndex ? 'flex' : 'hidden'} w-32 justify-center absolute ${index > 349 ? 'right-4 -top-[8px]' : '-right-14 -top-[36px]'} z-10 bg-black text-white opacity-70 p-2 rounded-lg`}>
-                          <h1>{square.date.split('T')[0]}</h1>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })
+                ? progressData.squaresData.map((square, index) => { return <ProgressSquare key={square.date} square={square} index={index}/>; })
                 : 'loading'
             }
             </div>
