@@ -9,13 +9,25 @@ export default class ProgressSquares extends React.Component {
       isDown: false,
       startX: 0,
       scrollLeft: 0,
-      hoveredIndex: null
+      hoveredIndex: null,
+      hasLoaded: false
     };
     this.setMouseDown = this.setMouseDown.bind(this);
     this.setMouseUp = this.setMouseUp.bind(this);
     this.drag = this.drag.bind(this);
     this.showLabel = this.showLabel.bind(this);
     this.hideLabel = this.hideLabel.bind(this);
+  }
+
+  // componentDidMount() {
+  //   this.ref.current.scrollTo(0, 0);
+  // }
+
+  componentDidUpdate() {
+    if (this.state.hasLoaded === false) {
+      this.ref.current.scrollTo(546, 0);
+      this.setState({ hasLoaded: true });
+    }
   }
 
   setMouseDown(event) {
@@ -52,7 +64,7 @@ export default class ProgressSquares extends React.Component {
     const { showLabel, hideLabel, setMouseDown, setMouseUp, drag, ref } = this;
     return (
       <div className="bg-white p-6 rounded-xl border border-gray-300 shadow-sm">
-        <p className="font-lora text-lg font-medium mb-4">21 runs this month | 212 runs this year</p>
+        <p className="font-lora text-lg font-medium mb-4">1 run this month | 12 runs this year</p>
         <div
         ref={ref}
         onMouseDown={event => setMouseDown(event)}
@@ -61,7 +73,7 @@ export default class ProgressSquares extends React.Component {
         className="overflow-scroll overflow-y-hidden overflow-x-hidden active:cursor-grabbing active:scale-[1.01]"
         >
           <div className="flex">
-            <div className="flex flex-col justify-evenly gap-2 items-center mr-4 mt-8">
+            <div className="flex flex-col justify-evenly gap-2 items-center mr-4 mt-10">
               <h1>Mon</h1>
               <h1>Wed</h1>
               <h1>Fri</h1>
