@@ -34,7 +34,6 @@ export default class Progress extends React.Component {
   }
 
   render() {
-    console.log(this.state);
     const { progressSquaresData } = this.state;
     return (
       <section className="pl-6 pr-6 max-w-lg md:max-w-2xl lg:max-w-6xl m-auto mt-6">

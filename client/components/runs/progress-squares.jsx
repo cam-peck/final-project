@@ -9,9 +9,7 @@ export default class ProgressSquares extends React.Component {
       isDown: false,
       startX: 0,
       scrollLeft: 0,
-      labelContents: '',
-      labelX: 0,
-      labelY: 0
+      hoveredIndex: null
     };
     this.setMouseDown = this.setMouseDown.bind(this);
     this.setMouseUp = this.setMouseUp.bind(this);
@@ -36,28 +34,21 @@ export default class ProgressSquares extends React.Component {
     this.ref.current.scrollLeft = scrollLeft - walk;
   }
 
-  showLabel(label, event) {
-    const labelDate = label.split('T')[0];
-    console.log(event);
+  showLabel(index) {
     this.setState({
-      labelContents: labelDate,
-      labelX: event.pageX,
-      labelY: event.pageY
+      hoveredIndex: index
     });
   }
 
   hideLabel() {
     this.setState({
-      labelContents: '',
-      labelX: 0,
-      labelY: 0
+      hoveredIndex: null
     });
   }
 
   render() {
-    console.log('State: ', this.state);
     const { progressData } = this.props;
-    const { labelContents, labelX, labelY } = this.state;
+    const { hoveredIndex } = this.state;
     const { showLabel, hideLabel, setMouseDown, setMouseUp, drag, ref } = this;
     return (
       <div className="bg-white p-6 rounded-xl border border-gray-300 shadow-sm">
@@ -75,7 +66,7 @@ export default class ProgressSquares extends React.Component {
               <h1>Wed</h1>
               <h1>Fri</h1>
             </div>
-            <div className="grid grid-52 gap-2.5 relative mt-8">
+            <div className="grid grid-52 gap-2.5 relative mt-10">
               {progressData.length !== 0
                 ? progressData.map((square, index) => {
                   return (
@@ -84,21 +75,20 @@ export default class ProgressSquares extends React.Component {
                         ? <h1 className="absolute -top-8">{getMonthName(square.date.split('-')[1])}</h1>
                         : ''
                       }
-                      <svg className="relative" height="20" width="20">
-                        <rect onMouseOver={event => showLabel(square.date, event)} width="20" height="20" rx="5" fill={square.runStatus === 'run' ? 'green' : 'lightgray'} />
-                      </svg>
+                      <div className="relative">
+                        <svg id={square.date} height="20" width="20">
+                          <rect onMouseOver={() => showLabel(index)} width="20" height="20" rx="5" fill={square.runStatus === 'run' ? 'green' : 'lightgray'} />
+                        </svg>
+                        <div onMouseLeave={hideLabel} className={`${index === hoveredIndex ? 'flex' : 'hidden'} w-32 justify-center absolute -top-[36px] -right-14 z-10 bg-black text-white opacity-70 p-2 rounded-lg`}>
+                          <h1>{square.date.split('T')[0]}</h1>
+                        </div>
+                      </div>
                     </div>
                   );
                 })
                 : 'loading'
             }
             </div>
-            { labelContents !== ''
-              ? <div className="bg-gray-200 shadow-xl p-2 rounded-lg" style={{ position: 'absolute', top: labelY - 60, left: labelX - 30 }}>
-                <h1>{labelContents}</h1>
-              </div>
-              : ''
-            }
           </div>
         </div>
       </div>
