@@ -1,6 +1,7 @@
 import React from 'react';
 import { AppContext } from '../../lib';
 import ProgressSquares from '../progress-squares/progress-squares';
+import WeeklyRunChart from '../weekly-run-chart';
 
 export default class Progress extends React.Component {
   constructor(props) {
@@ -34,7 +35,12 @@ export default class Progress extends React.Component {
     return (
       <section className="pl-6 pr-6 max-w-3xl md:max-w-5xl lg:max-w-6xl m-auto mt-6">
         <h1 className="font-lora font-medium text-2xl mb-6">My Progress</h1>
-        <ProgressSquares progressData={progressSquaresData}/>
+        <div className='mb-4'>
+          <ProgressSquares progressData={progressSquaresData}/>
+        </div>
+        <div>
+          <WeeklyRunChart />
+        </div>
       </section>
     );
   }
