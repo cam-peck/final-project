@@ -81,12 +81,12 @@ export default class AuthForm extends React.Component {
       : '';
     return (
       <div className="max-w-md mx-auto">
-        <form onSubmit={handleSubmit}>
+        <form className="pl-4 pr-4" onSubmit={handleSubmit}>
           <TextInput type="email" name="email" placeholder="Email Address" value={email} showLabel={false} onChange={handleChange}/>
           <TextInput type="password" name="password" placeholder="Password" value={password} showLabel={false} onChange={handleChange} />
           {registerAccountInputs}
           {invalidSignIn}
-          <div className="pl-4 pr-4">
+          <div>
             <button className="w-full bg-blue-500 transition ease-in-out duration-300 hover:bg-blue-600 text-white p-3 rounded-lg font-bold text-lg">{formButton}</button>
           </div>
         </form>

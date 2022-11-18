@@ -8,6 +8,10 @@ const staticMiddleware = require('./static-middleware');
 const authorizationMiddleware = require('./authorization-middleware');
 const errorMiddleware = require('./error-middleware');
 
+const getSquaresData = require('./get-squares-data');
+const getCurrentYear = require('./get-current-year');
+const getCurrentMonth = require('./get-current-month');
+
 const db = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
@@ -21,9 +25,7 @@ app.use(staticMiddleware);
 
 app.use(express.json());
 
-app.get('/api/hello', (req, res) => {
-  res.json({ hello: 'world' });
-});
+// Auth Routes //
 
 app.post('/api/auth/sign-up', (req, res, next) => {
   const { displayName, profilePhoto, email, dateOfBirth, password } = req.body;
@@ -82,6 +84,8 @@ app.post('/api/auth/sign-in', (req, res, next) => {
 });
 
 app.use(authorizationMiddleware);
+
+// CRUD Runs Routes //
 
 app.post('/api/runs', (req, res, next) => {
   const { userId } = req.user;
@@ -180,6 +184,60 @@ app.delete('/api/runs/:entryId', (req, res, next) => {
     .then(result => {
       const deletedRow = result.rows;
       res.json(deletedRow);
+    })
+    .catch(err => next(err));
+});
+
+// Specific Run Data Routes //
+
+app.get('/api/runningSquares', (req, res, next) => {
+  const { userId } = req.user;
+
+  // Squares Query //
+  const squaresSql = `
+  SELECT "date"
+    FROM "runs"
+   WHERE "userId" = $1
+  `;
+  const params = [userId];
+  db.query(squaresSql, params)
+    .then(result => {
+      const runDates = result.rows;
+      const mappedRuns = runDates.map(object => object.date.toJSON());
+      const squaresData = getSquaresData(mappedRuns, []); // second argument is placeholder for rest day array!
+
+      // Yearly Sum Data Query //
+      const yearlySumSql = `
+      SELECT count("date") as "yearRunCount"
+        FROM "runs"
+       WHERE "userId" = $1 AND "date" >= '${getCurrentYear()}-01-01'
+      `;
+      db.query(yearlySumSql, params)
+        .then(result => {
+          const [yearSumResult] = result.rows;
+          const { yearRunCount } = yearSumResult;
+
+          // Monthly Sum Data Query //
+          const monthlySumSql = `
+          SELECT count("date") as "monthRunCount"
+          FROM "runs"
+          WHERE "userId" = $1 AND "date" > '${getCurrentYear()}-${getCurrentMonth()}-01'
+          `;
+          db.query(monthlySumSql, params)
+            .then(result => {
+              const [monthRunResult] = result.rows;
+              const { monthRunCount } = monthRunResult;
+              res.json({
+                squaresData,
+                sumData: {
+                  yearRunCount,
+                  monthRunCount
+                }
+              });
+            })
+            .catch(err => next(err));
+        })
+        .catch(err => next(err));
     })
     .catch(err => next(err));
 });
