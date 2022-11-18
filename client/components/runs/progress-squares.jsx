@@ -44,7 +44,7 @@ export default class ProgressSquares extends React.Component {
     const { progressData } = this.props;
     const { setMouseDown, setMouseUp, drag, ref } = this;
     return (
-      <div className="bg-white p-6 rounded-xl border border-gray-300 shadow-sm">
+      <div className="bg-white pl-6 pr-6 pt-5 pb-5 rounded-xl border border-gray-300 shadow-sm">
         {
           progressData.sumData !== undefined
             ? <ProgressSquareHeader sumData={progressData.sumData}/>
@@ -58,7 +58,7 @@ export default class ProgressSquares extends React.Component {
               <h1>Wed</h1>
               <h1>Fri</h1>
             </div>
-            <div className="grid grid-52 gap-2.5 relative mt-10">
+            <div className="grid grid-52 gap-2.5 relative mt-11">
               { progressData.length !== 0
                 ? progressData.squaresData.map((square, index) => { return <ProgressSquare key={square.date} square={square} index={index}/>; })
                 : 'loading'
