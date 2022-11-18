@@ -7,7 +7,9 @@ const ClientError = require('./client-error');
 const staticMiddleware = require('./static-middleware');
 const authorizationMiddleware = require('./authorization-middleware');
 const errorMiddleware = require('./error-middleware');
+
 const getSquaresData = require('./get-squares-data');
+const getCurrentYear = require('./get-current-year');
 
 const db = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
@@ -189,17 +191,31 @@ app.delete('/api/runs/:entryId', (req, res, next) => {
 
 app.get('/api/runningSquares', (req, res, next) => {
   const { userId } = req.user;
-  const sql = `
+
+  // Yearly Data Query //
+  const sql1 = `
   SELECT "date"
     FROM "runs"
    WHERE "userId" = $1
   `;
   const params = [userId];
-  db.query(sql, params)
+  db.query(sql1, params)
     .then(result => {
       const runDates = result.rows;
       const mappedRuns = runDates.map(object => object.date.toJSON());
       const squaresData = getSquaresData(mappedRuns, []); // second argument is placeholder for rest day array!
+
+      // Monthly Data Query //
+      const sql2 = `
+      SELECT count("date") as "yearRunCount"
+        FROM "runs"
+       WHERE "userId" = $1 AND "date" > '${getCurrentYear()}-01-01'
+      `;
+      db.query(sql2, params)
+        .then(result => {
+          const yearSumData = result.rows;
+          console.log(yearSumData);
+        });
       res.json(squaresData);
     })
     .catch(err => next(err));
