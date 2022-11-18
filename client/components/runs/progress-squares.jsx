@@ -1,5 +1,6 @@
 import React from 'react';
 import ProgressSquare from './progress-square';
+import ProgressSquareHeader from './progress-square-header';
 
 export default class ProgressSquares extends React.Component {
   constructor(props) {
@@ -46,18 +47,10 @@ export default class ProgressSquares extends React.Component {
       <div className="bg-white p-6 rounded-xl border border-gray-300 shadow-sm">
         {
           progressData.yearSumData !== undefined && progressData.monthSumData !== undefined
-            ? <p className="font-lora text-lg font-medium mb-4">
-              {progressData.yearSumData.yearRunCount} {progressData.yearSumData.yearRunCount > 1 ? 'runs' : 'run'} this month |
-              {progressData.monthSumData.monthRunCount} {progressData.monthSumData.monthRunCount > 1 ? 'runs' : 'run'} this year</p>
+            ? <ProgressSquareHeader yearSumData={progressData.yearSumData} monthSumData={progressData.monthSumData}/>
             : 'loading'
         }
-        <div
-        ref={ref}
-        onMouseDown={event => setMouseDown(event)}
-        onMouseUp={setMouseUp} onMouseMove={event => drag(event)}
-        onMouseLeave={setMouseUp}
-        className="overflow-scroll overflow-y-hidden overflow-x-hidden active:cursor-grabbing active:scale-[1.01]"
-        >
+        <div ref={ref} onMouseDown={event => setMouseDown(event)} onMouseUp={setMouseUp} onMouseMove={event => drag(event)} onMouseLeave={setMouseUp} className="overflow-scroll overflow-y-hidden overflow-x-hidden active:cursor-grabbing active:scale-[1.01]">
           <div className="flex">
             <div className="flex flex-col justify-evenly gap-2 items-center mr-4 mt-10">
               <h1>Mon</h1>
@@ -65,10 +58,10 @@ export default class ProgressSquares extends React.Component {
               <h1>Fri</h1>
             </div>
             <div className="grid grid-52 gap-2.5 relative mt-10">
-              {progressData.length !== 0
+              { progressData.length !== 0
                 ? progressData.squaresData.map((square, index) => { return <ProgressSquare key={square.date} square={square} index={index}/>; })
                 : 'loading'
-            }
+              }
             </div>
           </div>
         </div>
