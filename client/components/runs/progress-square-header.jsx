@@ -1,12 +1,17 @@
 import React from 'react';
 
 export default function ProgressSquareHeader(props) {
-  const { yearSumData, monthSumData } = props;
+  const { sumData } = props;
+  const { yearRunCount, monthRunCount } = sumData;
   return (
-    <div>
-      <p className="font-lora text-lg font-medium mb-4">
-        {yearSumData.yearRunCount} {yearSumData.yearRunCount > 1 ? 'runs' : 'run'} this month |
-        {monthSumData.monthRunCount} {monthSumData.monthRunCount > 1 ? 'runs' : 'run'} this year</p>
+    <div className="font-lora text-lg font-medium mb-4 flex gap-2">
+      <p>
+        {monthRunCount} {monthRunCount > 1 ? 'runs' : 'run'} this month
+      </p>
+      <span> | </span>
+      <p>
+        {yearRunCount} {yearRunCount > 1 ? 'runs' : 'run'} this year
+      </p>
     </div>
   );
 }

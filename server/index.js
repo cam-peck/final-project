@@ -214,7 +214,8 @@ app.get('/api/runningSquares', (req, res, next) => {
       `;
       db.query(yearlySumSql, params)
         .then(result => {
-          const [yearSumData] = result.rows;
+          const [yearSumResult] = result.rows;
+          const { yearRunCount } = yearSumResult;
 
           // Monthly Sum Data Query //
           const monthlySumSql = `
@@ -224,11 +225,14 @@ app.get('/api/runningSquares', (req, res, next) => {
           `;
           db.query(monthlySumSql, params)
             .then(result => {
-              const [monthSumData] = result.rows;
+              const [monthRunResult] = result.rows;
+              const { monthRunCount } = monthRunResult;
               res.json({
                 squaresData,
-                yearSumData,
-                monthSumData
+                sumData: {
+                  yearRunCount,
+                  monthRunCount
+                }
               });
             })
             .catch(err => next(err));

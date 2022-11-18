@@ -46,8 +46,8 @@ export default class ProgressSquares extends React.Component {
     return (
       <div className="bg-white p-6 rounded-xl border border-gray-300 shadow-sm">
         {
-          progressData.yearSumData !== undefined && progressData.monthSumData !== undefined
-            ? <ProgressSquareHeader yearSumData={progressData.yearSumData} monthSumData={progressData.monthSumData}/>
+          progressData.sumData !== undefined
+            ? <ProgressSquareHeader sumData={progressData.sumData}/>
             : 'loading'
         }
         <div ref={ref} onMouseDown={event => setMouseDown(event)} onMouseUp={setMouseUp} onMouseMove={event => drag(event)} onMouseLeave={setMouseUp} className="overflow-scroll overflow-y-hidden overflow-x-hidden active:cursor-grabbing active:scale-[1.01]">
