@@ -60,7 +60,13 @@ export default class ProgressSquares extends React.Component {
     const { showLabel, hideLabel, setMouseDown, setMouseUp, drag, ref } = this;
     return (
       <div className="bg-white p-6 rounded-xl border border-gray-300 shadow-sm">
-        <p className="font-lora text-lg font-medium mb-4">1 run this month | 12 runs this year</p>
+        {
+          progressData.yearSumData !== undefined && progressData.monthSumData !== undefined
+            ? <p className="font-lora text-lg font-medium mb-4">
+              {progressData.yearSumData.yearRunCount} {progressData.yearSumData.yearRunCount > 1 ? 'runs' : 'run'} this month |
+              {progressData.monthSumData.monthRunCount} {progressData.monthSumData.monthRunCount > 1 ? 'runs' : 'run'} this year</p>
+            : 'loading'
+        }
         <div
         ref={ref}
         onMouseDown={event => setMouseDown(event)}
@@ -76,7 +82,7 @@ export default class ProgressSquares extends React.Component {
             </div>
             <div className="grid grid-52 gap-2.5 relative mt-10">
               {progressData.length !== 0
-                ? progressData.map((square, index) => {
+                ? progressData.squaresData.map((square, index) => {
                   return (
                     <div key={square.date} onMouseLeave={() => hideLabel()}>
                       { square.date.split('T')[0].split('-')[2] === '01' // add month labels on top of chart

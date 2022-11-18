@@ -10,6 +10,7 @@ const errorMiddleware = require('./error-middleware');
 
 const getSquaresData = require('./get-squares-data');
 const getCurrentYear = require('./get-current-year');
+const getCurrentMonth = require('./get-current-month');
 
 const db = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
@@ -192,31 +193,47 @@ app.delete('/api/runs/:entryId', (req, res, next) => {
 app.get('/api/runningSquares', (req, res, next) => {
   const { userId } = req.user;
 
-  // Yearly Data Query //
-  const sql1 = `
+  // Squares Query //
+  const squaresSql = `
   SELECT "date"
     FROM "runs"
    WHERE "userId" = $1
   `;
   const params = [userId];
-  db.query(sql1, params)
+  db.query(squaresSql, params)
     .then(result => {
       const runDates = result.rows;
       const mappedRuns = runDates.map(object => object.date.toJSON());
       const squaresData = getSquaresData(mappedRuns, []); // second argument is placeholder for rest day array!
 
-      // Monthly Data Query //
-      const sql2 = `
+      // Yearly Sum Data Query //
+      const yearlySumSql = `
       SELECT count("date") as "yearRunCount"
         FROM "runs"
-       WHERE "userId" = $1 AND "date" > '${getCurrentYear()}-01-01'
+       WHERE "userId" = $1 AND "date" >= '${getCurrentYear()}-01-01'
       `;
-      db.query(sql2, params)
+      db.query(yearlySumSql, params)
         .then(result => {
-          const yearSumData = result.rows;
-          console.log(yearSumData);
-        });
-      res.json(squaresData);
+          const [yearSumData] = result.rows;
+
+          // Monthly Sum Data Query //
+          const monthlySumSql = `
+          SELECT count("date") as "monthRunCount"
+          FROM "runs"
+          WHERE "userId" = $1 AND "date" > '${getCurrentYear()}-${getCurrentMonth()}-01'
+          `;
+          db.query(monthlySumSql, params)
+            .then(result => {
+              const [monthSumData] = result.rows;
+              res.json({
+                squaresData,
+                yearSumData,
+                monthSumData
+              });
+            })
+            .catch(err => next(err));
+        })
+        .catch(err => next(err));
     })
     .catch(err => next(err));
 });

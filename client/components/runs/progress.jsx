@@ -23,10 +23,6 @@ export default class Progress extends React.Component {
     fetch('/api/runningSquares', req)
       .then(response => response.json())
       .then(result => {
-        result.shift();
-        result.shift();
-        result.shift();
-        result.shift();
         this.setState({
           progressSquaresData: result
         });
