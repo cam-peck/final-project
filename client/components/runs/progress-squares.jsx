@@ -10,7 +10,7 @@ export default class ProgressSquares extends React.Component {
       startX: 0,
       scrollLeft: 0,
       hoveredIndex: null,
-      hasLoaded: false
+      dataHasLoaded: false
     };
     this.setMouseDown = this.setMouseDown.bind(this);
     this.setMouseUp = this.setMouseUp.bind(this);
@@ -19,14 +19,10 @@ export default class ProgressSquares extends React.Component {
     this.hideLabel = this.hideLabel.bind(this);
   }
 
-  // componentDidMount() {
-  //   this.ref.current.scrollTo(0, 0);
-  // }
-
-  componentDidUpdate() {
-    if (this.state.hasLoaded === false) {
-      this.ref.current.scrollTo(546, 0);
-      this.setState({ hasLoaded: true });
+  componentDidUpdate() { // scroll activity doesn't work before data has arrived to component (which happens AFTER component did mount)
+    if (this.state.dataHasLoaded === false) {
+      this.ref.current.scrollTo(1500, 0);
+      this.setState({ dataHasLoaded: true });
     }
   }
 
@@ -91,7 +87,7 @@ export default class ProgressSquares extends React.Component {
                         <svg id={square.date} height="20" width="20">
                           <rect onMouseOver={() => showLabel(index)} width="20" height="20" rx="5" fill={square.runStatus === 'run' ? 'green' : 'lightgray'} />
                         </svg>
-                        <div onMouseLeave={hideLabel} className={`${index === hoveredIndex ? 'flex' : 'hidden'} w-32 justify-center absolute -top-[36px] -right-14 z-10 bg-black text-white opacity-70 p-2 rounded-lg`}>
+                        <div onMouseLeave={hideLabel} className={`${index === hoveredIndex ? 'flex' : 'hidden'} w-32 justify-center absolute ${index > 349 ? 'right-4 -top-[8px]' : '-right-14 -top-[36px]'} z-10 bg-black text-white opacity-70 p-2 rounded-lg`}>
                           <h1>{square.date.split('T')[0]}</h1>
                         </div>
                       </div>
