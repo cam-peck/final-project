@@ -50,6 +50,7 @@ export default class ProgressSquares extends React.Component {
             ? <ProgressSquareHeader sumData={progressData.sumData}/>
             : 'loading'
         }
+        <hr className="border"/>
         <div ref={ref} onMouseDown={event => setMouseDown(event)} onMouseUp={setMouseUp} onMouseMove={event => drag(event)} onMouseLeave={setMouseUp} className="overflow-scroll overflow-y-hidden overflow-x-hidden active:cursor-grabbing active:scale-[1.01]">
           <div className="flex">
             <div className="flex flex-col justify-evenly gap-2 items-center mr-4 mt-10">
