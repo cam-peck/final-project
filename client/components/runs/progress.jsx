@@ -39,7 +39,7 @@ export default class Progress extends React.Component {
           <ProgressSquares progressData={progressSquaresData}/>
         </div>
         <div>
-          <WeeklyRunChart />
+          <WeeklyRunChart data={progressSquaresData.squaresData}/>
         </div>
       </section>
     );
