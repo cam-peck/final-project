@@ -7,10 +7,7 @@ const ClientError = require('./client-error');
 const staticMiddleware = require('./static-middleware');
 const authorizationMiddleware = require('./authorization-middleware');
 const errorMiddleware = require('./error-middleware');
-
-const getSquaresData = require('./get-squares-data');
-const getCurrentYear = require('./get-current-year');
-const getCurrentMonth = require('./get-current-month');
+const { getSquaresData, getCurrentYear, getCurrentMonth, trimToSunday } = require('./lib');
 
 const db = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
@@ -204,7 +201,8 @@ app.get('/api/runningSquares', (req, res, next) => {
     .then(result => {
       const runDates = result.rows;
       const mappedRuns = runDates.map(object => object.date.toJSON());
-      const squaresData = getSquaresData(mappedRuns, []); // second argument is placeholder for rest day array!
+      const rawSquaresData = getSquaresData(mappedRuns, []); // second argument is placeholder for rest day array!
+      const trimmedSquaresData = trimToSunday(rawSquaresData);
 
       // Yearly Sum Data Query //
       const yearlySumSql = `
@@ -228,7 +226,7 @@ app.get('/api/runningSquares', (req, res, next) => {
               const [monthRunResult] = result.rows;
               const { monthRunCount } = monthRunResult;
               res.json({
-                squaresData,
+                trimmedSquaresData,
                 sumData: {
                   yearRunCount,
                   monthRunCount

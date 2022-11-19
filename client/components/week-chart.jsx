@@ -3,6 +3,7 @@ import { scaleBand, scaleLinear, axisLeft, axisBottom, max, select } from 'd3';
 
 // GitHub Ref -- https://github.com/f-kb24/d3-in-depth/blob/master/src/stories/components/Scales.tsx
 // for updates -- > use https://www.youtube.com/watch?v=OM_6sbgqrHc&list=PLzCAqE_rafAc_2QWK8ii16m2ju4qhYAJT&index=5
+// write up a filter from the most recent Sunday
 
 const initialData = [
   {
@@ -84,6 +85,11 @@ export default function WeekChart(props) {
         .append('g')
         .attr('transform', `translate(${marginLeft}, 0)`)
         .call(yAxis);
+
+      yAxisGroup
+        .selectAll('text')
+        .attr('text-anchor', 'center')
+        .attr('font-size', '10px');
 
       // Bars //
       selection
