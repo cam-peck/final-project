@@ -27,7 +27,6 @@ function getSquaresData(runData, restData) {
 
     date.setDate(date.getDate() + 1); // increment date by 1
   }
-
   return dates;
 }
 

@@ -110,7 +110,8 @@ app.get('/api/runs', (req, res, next) => {
   const sql = `
   SELECT "title", "description", "date", "duration", "distance", "distanceUnits", "entryId"
     FROM "runs"
-   WHERE "userId" = $1;
+   WHERE "userId" = $1
+ORDER BY "date" DESC;
   `;
   const params = [userId];
   db.query(sql, params)
@@ -187,7 +188,7 @@ app.delete('/api/runs/:entryId', (req, res, next) => {
 
 // Specific Run Data Routes //
 
-app.get('/api/runningSquares', (req, res, next) => {
+app.get('/api/progress', (req, res, next) => {
   const { userId } = req.user;
 
   // Squares Query //
@@ -200,9 +201,11 @@ app.get('/api/runningSquares', (req, res, next) => {
   db.query(squaresSql, params)
     .then(result => {
       const runDates = result.rows;
+      console.log('Raw Data: ', runDates);
       const mappedRuns = runDates.map(object => object.date.toJSON());
       const rawSquaresData = getSquaresData(mappedRuns, []); // second argument is placeholder for rest day array!
       const trimmedSquaresData = trimToSunday(rawSquaresData);
+      console.log('Trimmed Data: ', trimmedSquaresData);
 
       // Yearly Sum Data Query //
       const yearlySumSql = `

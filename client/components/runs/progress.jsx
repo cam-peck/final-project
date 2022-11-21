@@ -7,8 +7,7 @@ export default class Progress extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      progressSquaresData: [],
-      weeklyRunData: []
+      yearlyRunData: []
     };
   }
 
@@ -21,26 +20,26 @@ export default class Progress extends React.Component {
       },
       user
     };
-    fetch('/api/runningSquares', req)
+    fetch('/api/progress', req)
       .then(response => response.json())
       .then(result => {
         this.setState({
-          progressSquaresData: result
+          yearlyRunData: result
         });
       });
   }
 
   render() {
-    const { progressSquaresData } = this.state;
+    const { yearlyRunData } = this.state;
     return (
       <section className="pl-6 pr-6 max-w-6xl m-auto mt-6">
         <h1 className="font-lora font-medium text-2xl mb-6">My Progress</h1>
         <div className='mb-4'>
-          <ProgressSquares progressData={progressSquaresData}/>
+          <ProgressSquares progressData={yearlyRunData}/>
         </div>
-        <div>
-          <WeeklyRunChart data={progressSquaresData.trimmedSquaresData}/>
-        </div>
+        {/* <div>
+          <WeeklyRunChart data={yearlyRunData.trimmedSquaresData}/>
+        </div> */}
       </section>
     );
   }

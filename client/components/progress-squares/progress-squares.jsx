@@ -44,24 +44,25 @@ export default class ProgressSquares extends React.Component {
     const { progressData } = this.props;
     const { setMouseDown, setMouseUp, drag, ref } = this;
     return (
-      <div className="bg-white pl-6 pr-6 pt-5 pb-5 rounded-xl border border-gray-300 shadow-sm">
+      <div className="bg-white pl-6 pr-6 pt-5 pb-3 rounded-xl border border-gray-300 shadow-sm">
         {
           progressData.sumData !== undefined
             ? <ProgressSquareHeader sumData={progressData.sumData}/>
             : 'loading'
         }
         <hr className="border"/>
-        <div ref={ref} onMouseDown={event => setMouseDown(event)} onMouseUp={setMouseUp} onMouseMove={event => drag(event)} onMouseLeave={setMouseUp} className="overflow-scroll overflow-y-hidden overflow-x-hidden active:cursor-grabbing active:scale-[1.01]">
+        <div ref={ref} onMouseDown={event => setMouseDown(event)} onMouseUp={setMouseUp} onMouseMove={event => drag(event)} onMouseLeave={setMouseUp} className="overflow-scroll overflow-y-hidden active:cursor-grabbing active:scale-[1.01]">
           <div className="flex">
             <div className="flex flex-col justify-evenly gap-2 items-center mr-4 mt-11">
               <h1>Mon</h1>
               <h1>Wed</h1>
               <h1>Fri</h1>
             </div>
-            <div className="grid grid-52 gap-2.5 relative mt-11">
-              { progressData.length !== 0
-                ? progressData.trimmedSquaresData.map((square, index) => { return <ProgressSquare key={square.date} square={square} index={index}/>; })
-                : 'loading'
+            <div className="grid grid-52 gap-2.5 relative mt-11 pb-2">
+              {
+                progressData.length !== 0
+                  ? progressData.trimmedSquaresData.map((square, index) => { return <ProgressSquare key={square.date} square={square} index={index}/>; })
+                  : 'loading'
               }
             </div>
           </div>
