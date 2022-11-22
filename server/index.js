@@ -201,11 +201,9 @@ app.get('/api/progress', (req, res, next) => {
   db.query(squaresSql, params)
     .then(result => {
       const runDates = result.rows;
-      console.log('Raw Data: ', runDates);
       const mappedRuns = runDates.map(object => object.date.toJSON());
       const rawSquaresData = getSquaresData(mappedRuns, []); // second argument is placeholder for rest day array!
       const trimmedSquaresData = trimToSunday(rawSquaresData);
-      console.log('Trimmed Data: ', trimmedSquaresData);
 
       // Yearly Sum Data Query //
       const yearlySumSql = `

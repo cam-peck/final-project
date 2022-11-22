@@ -37,11 +37,11 @@ const initialData = [
 ];
 
 const dimensions = {
-  width: 800,
-  height: 500,
-  chartWidth: 700,
+  width: 500,
+  height: 430,
+  chartWidth: 400,
   chartHeight: 400,
-  marginLeft: 100
+  marginLeft: 40
 };
 
 export default function WeekChart(props) {
@@ -113,7 +113,7 @@ export default function WeekChart(props) {
 
   return (
     <div>
-      <svg ref={ref} width={width} height={height}/>
+      <svg ref={ref} width='100%' height='100%' viewBox={`0, 0, ${Math.min(width, height)}, ${Math.min(width, height)} `}/>
     </div>
   );
 }

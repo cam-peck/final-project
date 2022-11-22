@@ -13,8 +13,12 @@ export default class WeeklyRunChart extends React.Component {
   render() {
     return (
       <div className="bg-white pl-6 pr-6 pt-5 pb-5 rounded-xl border border-gray-300 shadow-sm">
-        <WeeklyRunChartHeader />
-        <WeekChart />
+        <section className="mb-6">
+          <WeeklyRunChartHeader />
+        </section>
+        <section>
+          <WeekChart />
+        </section>
       </div>
     );
   }
