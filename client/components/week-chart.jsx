@@ -7,41 +7,41 @@ import { scaleBand, scaleLinear, axisLeft, axisBottom, max, select, line } from 
 
 const initialData = [
   {
-    name: 'Sun',
-    number: 4.22
+    name: 'Su',
+    number: 7.22
   },
   {
-    name: 'Mon',
+    name: 'Mo',
     number: 5.03
   },
   {
-    name: 'Tue',
+    name: 'Tu',
     number: 4.11
   },
   {
-    name: 'Wed',
+    name: 'We',
     number: 5.67
   },
   {
-    name: 'Thu',
+    name: 'Th',
     number: 2.20
   },
   {
-    name: 'Fri',
+    name: 'Fr',
     number: 4.12
   },
   {
-    name: 'Sat',
+    name: 'Sa',
     number: 5.87
   }
 ];
 
 const dimensions = {
-  width: 500,
-  height: 375,
-  chartWidth: 330,
-  chartHeight: 350,
-  marginLeft: 25,
+  width: 280,
+  height: 250,
+  chartWidth: 200,
+  chartHeight: 225,
+  marginLeft: 30,
   marginTop: 5
 };
 
@@ -66,9 +66,9 @@ export default function WeekChart(props) {
 
   const yAxis = axisLeft(y)
     .tickSizeOuter(0)
-    .ticks(30) // d3 tries its best but will not always give an exact number
+    .ticks(10) // d3 tries its best but will not always give an exact number
     .tickFormat((interval, i) => {
-      return i % 5 !== 0 ? '' : `${interval}mi`;
+      return i % 2 !== 0 ? '' : `${interval}mi`;
     });
 
   useEffect(() => {
@@ -85,7 +85,7 @@ export default function WeekChart(props) {
       xAxisGroup // formats the x-axis
         .selectAll('text')
         .attr('text-anchor', 'center')
-        .attr('font-size', '12px');
+        .attr('font-size', '14px');
 
       const yAxisGroup = selection // adds the y-axis to our chart
         .append('g')
@@ -128,7 +128,7 @@ export default function WeekChart(props) {
 
   return (
     <div>
-      <svg ref={ref} width='100%' height='100%' viewBox={`0, 0, ${Math.min(width, height)}, ${Math.min(width, height)}`}/>
+      <svg ref={ref} width={width} height={height} />
     </div>
   );
 }
