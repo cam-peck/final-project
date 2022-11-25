@@ -37,9 +37,7 @@ const initialData = [
 ];
 
 const dimensions = {
-  width: 280,
   height: 250,
-  chartWidth: 200,
   chartHeight: 225,
   marginLeft: 30,
   marginTop: 5
@@ -49,16 +47,33 @@ export default class WeekChart extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      width: 250,
+      chartWidth: 210,
       data: initialData
     };
     this.SVGref = createRef();
     this.DIVref = createRef();
+    this.drawChart = this.drawChart.bind(this);
+    this.resizeChart = this.resizeChart.bind(this);
   }
 
   componentDidMount() {
-    const chartSVG = select(this.SVGref.current);
-    const { chartWidth, chartHeight, marginLeft, marginTop } = dimensions;
-    const { data } = this.state;
+    // Window Event Listener
+    this.drawChart();
+  }
+
+  drawChart() {
+    const { chartHeight, height, marginLeft, marginTop } = dimensions;
+    const { data, width, chartWidth } = this.state;
+    const { DIVref, resizeChart } = this;
+
+    window.addEventListener('resize', resizeChart);
+
+    const chartSVG = select(DIVref.current)
+      .append('svg')
+      .attr('width', width)
+      .attr('height', height)
+      .classed('svg-chart', true);
 
     const x = scaleBand() // define range into uniform bands and will map it into the domain
       .domain(data.map(d => d.name)) // takes an array of identifiers for the data
@@ -127,12 +142,22 @@ export default class WeekChart extends React.Component {
       .attr('r', 3);
   }
 
+  resizeChart() {
+    const { DIVref } = this;
+    this.setState({
+      width: DIVref.current.offsetWidth,
+      chartWidth: DIVref.current.offsetWidth - 40
+    });
+    const currentChart = select('.svg-chart');
+    window.removeEventListener('resize', this.resizeChart);
+    currentChart.remove();
+    this.drawChart();
+  }
+
   render() {
-    const { width, height } = dimensions;
+    const { DIVref } = this;
     return (
-      <div ref={this.DIVref}>
-        <svg ref={this.SVGref} width={width} height={height} />
-      </div>
+      <div ref={DIVref} />
     );
   }
 }
