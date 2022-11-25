@@ -40,7 +40,7 @@ const dimensions = {
   height: 250,
   chartHeight: 225,
   marginLeft: 30,
-  marginTop: 5
+  marginTop: 4
 };
 
 export default class WeekChart extends React.Component {
@@ -58,8 +58,11 @@ export default class WeekChart extends React.Component {
   }
 
   componentDidMount() {
-    // Window Event Listener
-    this.drawChart();
+    const { DIVref, drawChart } = this;
+    this.setState({
+      width: DIVref.current.offsetWidth,
+      chartWidth: DIVref.current.offsetWidth - 25
+    }, () => drawChart());
   }
 
   drawChart() {
@@ -120,7 +123,7 @@ export default class WeekChart extends React.Component {
       .data([data])
       .attr('class', 'line')
       .attr('fill', 'none')
-      .attr('transform', `translate(${marginLeft + 23.5}, ${marginTop})`) // transforms entire graph
+      .attr('transform', `translate(${marginLeft + (width * 0.065)}, ${marginTop})`) // transforms entire graph
       .attr('stroke-width', 2.0)
       .attr('stroke', 'steelblue')
       .attr('d', line()
@@ -134,7 +137,7 @@ export default class WeekChart extends React.Component {
       .data(data)
       .enter()
       .append('circle')
-      .attr('transform', `translate(${marginLeft + 23.5}, ${marginTop})`) // transforms entire graph
+      .attr('transform', `translate(${marginLeft + (width * 0.065)}, ${marginTop})`) // transforms entire graph
       .attr('fill', 'red')
       .attr('stroke', 'none')
       .attr('cx', function (d) { return x(d.name); })
@@ -146,7 +149,7 @@ export default class WeekChart extends React.Component {
     const { DIVref } = this;
     this.setState({
       width: DIVref.current.offsetWidth,
-      chartWidth: DIVref.current.offsetWidth - 40
+      chartWidth: DIVref.current.offsetWidth - 25
     });
     const currentChart = select('.svg-chart');
     window.removeEventListener('resize', this.resizeChart);
