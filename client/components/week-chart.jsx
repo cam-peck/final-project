@@ -8,31 +8,31 @@ import { scaleBand, scaleLinear, axisLeft, axisBottom, max, select, line } from 
 const initialData = [
   {
     name: 'Su',
-    number: 7.22
+    number: 7.10
   },
   {
     name: 'Mo',
-    number: 5.03
+    number: 4.22
   },
   {
     name: 'Tu',
-    number: 4.11
+    number: 5.80
   },
   {
     name: 'We',
-    number: 5.67
+    number: 0.00
   },
   {
     name: 'Th',
-    number: 2.20
+    number: 0.00
   },
   {
     name: 'Fr',
-    number: 4.12
+    number: 3.89
   },
   {
     name: 'Sa',
-    number: 5.87
+    number: 5.45
   }
 ];
 
@@ -123,7 +123,7 @@ export default class WeekChart extends React.Component {
       .data([data])
       .attr('class', 'line')
       .attr('fill', 'none')
-      .attr('transform', `translate(${marginLeft + (width * 0.065)}, ${marginTop})`) // transforms entire graph
+      .attr('transform', `translate(${marginLeft + (chartWidth * 0.072)}, ${marginTop})`) // transforms entire graph
       .attr('stroke-width', 2.0)
       .attr('stroke', 'steelblue')
       .attr('d', line()
@@ -137,7 +137,7 @@ export default class WeekChart extends React.Component {
       .data(data)
       .enter()
       .append('circle')
-      .attr('transform', `translate(${marginLeft + (width * 0.065)}, ${marginTop})`) // transforms entire graph
+      .attr('transform', `translate(${marginLeft + (chartWidth * 0.072)}, ${marginTop})`) // transforms entire graph
       .attr('fill', 'red')
       .attr('stroke', 'none')
       .attr('cx', function (d) { return x(d.name); })
