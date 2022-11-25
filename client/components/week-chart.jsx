@@ -1,80 +1,44 @@
 import React, { createRef } from 'react';
 import { scaleBand, scaleLinear, axisLeft, axisBottom, max, select, line } from 'd3';
 
-// GitHub Ref -- https://github.com/f-kb24/d3-in-depth/blob/master/src/stories/components/Scales.tsx
-// for updates -- > use https://www.youtube.com/watch?v=OM_6sbgqrHc&list=PLzCAqE_rafAc_2QWK8ii16m2ju4qhYAJT&index=5
-// write up a filter from the most recent Sunday
-
-const initialData = [
-  {
-    name: 'Su',
-    number: 7.10
-  },
-  {
-    name: 'Mo',
-    number: 4.22
-  },
-  {
-    name: 'Tu',
-    number: 5.80
-  },
-  {
-    name: 'We',
-    number: 0.00
-  },
-  {
-    name: 'Th',
-    number: 0.00
-  },
-  {
-    name: 'Fr',
-    number: 3.89
-  },
-  {
-    name: 'Sa',
-    number: 5.45
-  }
-];
-
-const dimensions = {
-  height: 250,
-  chartHeight: 225,
-  marginLeft: 30,
-  marginTop: 4
-};
-
 export default class WeekChart extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      width: 250,
-      chartWidth: 210,
-      data: initialData
+      SVGwidth: 250,
+      chartWidth: 210
     };
     this.SVGref = createRef();
     this.DIVref = createRef();
     this.drawChart = this.drawChart.bind(this);
     this.resizeChart = this.resizeChart.bind(this);
+    this.dimensions = {
+      height: 250,
+      chartHeight: 225,
+      marginLeft: 30,
+      marginTop: 4
+    };
   }
 
   componentDidMount() {
     const { DIVref, drawChart } = this;
     this.setState({
-      width: DIVref.current.offsetWidth,
+      SVGwidth: DIVref.current.offsetWidth,
       chartWidth: DIVref.current.offsetWidth - 25
     }, () => drawChart());
   }
 
   drawChart() {
-    const { chartHeight, height, marginLeft, marginTop } = dimensions;
-    const { data, width, chartWidth } = this.state;
+    const { chartHeight, height, marginLeft, marginTop } = this.dimensions;
+    const { SVGwidth, chartWidth } = this.state;
     const { DIVref, resizeChart } = this;
+    const { data } = this.props;
 
     window.addEventListener('resize', resizeChart);
 
     const chartSVG = select(DIVref.current)
       .append('svg')
-      .attr('width', width)
+      .attr('width', SVGwidth)
       .attr('height', height)
       .classed('svg-chart', true);
 
@@ -115,7 +79,7 @@ export default class WeekChart extends React.Component {
     yAxisGroup // formats the y-axis
       .selectAll('text')
       .attr('text-anchor', 'center')
-      .attr('font-size', '10px');
+      .attr('font-size', '11px');
 
     // Line //
     chartSVG
@@ -124,7 +88,7 @@ export default class WeekChart extends React.Component {
       .attr('class', 'line')
       .attr('fill', 'none')
       .attr('transform', `translate(${marginLeft + (chartWidth * 0.072)}, ${marginTop})`) // transforms entire graph
-      .attr('stroke-width', 2.0)
+      .attr('stroke-width', 2.5)
       .attr('stroke', 'steelblue')
       .attr('d', line()
         .x(d => { return x(d.name); })
@@ -138,23 +102,24 @@ export default class WeekChart extends React.Component {
       .enter()
       .append('circle')
       .attr('transform', `translate(${marginLeft + (chartWidth * 0.072)}, ${marginTop})`) // transforms entire graph
-      .attr('fill', 'red')
-      .attr('stroke', 'none')
+      .attr('fill', 'lightblue')
+      .attr('stroke', 'darkblue')
+      .attr('stroke-width', 1.5)
       .attr('cx', function (d) { return x(d.name); })
       .attr('cy', function (d) { return y(d.number); })
-      .attr('r', 3);
+      .attr('r', 3.5);
   }
 
   resizeChart() {
-    const { DIVref } = this;
+    const { DIVref, drawChart } = this;
     this.setState({
-      width: DIVref.current.offsetWidth,
+      SVGwidth: DIVref.current.offsetWidth,
       chartWidth: DIVref.current.offsetWidth - 25
     });
     const currentChart = select('.svg-chart');
     window.removeEventListener('resize', this.resizeChart);
     currentChart.remove();
-    this.drawChart();
+    drawChart();
   }
 
   render() {
