@@ -5,8 +5,8 @@ export default class WeekChart extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      SVGwidth: 250,
-      chartWidth: 210
+      SVGwidth: 0,
+      chartWidth: 0
     };
     this.SVGref = createRef();
     this.DIVref = createRef();

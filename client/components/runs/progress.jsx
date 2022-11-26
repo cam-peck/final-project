@@ -39,7 +39,7 @@ export default class Progress extends React.Component {
         </div>
         <div className="flex flex-col md:flex-row">
           <div className='md:pr-4 md:w-6/12 lg:w-5/12'>
-            <WeeklyRunChart data={yearlyRunData.trimmedSquaresData}/>
+            <WeeklyRunChart data={yearlyRunData}/>
           </div>
           <div className='w-6/12' />
         </div>
