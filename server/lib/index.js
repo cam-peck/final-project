@@ -4,5 +4,6 @@ const getSquaresData = require('./get-squares-data');
 const trimToSunday = require('./trim-to-sunday');
 const convertDistancesToMiles = require('./convert-distances-to-miles');
 const getRecentSunday = require('./get-recent-sunday');
+const getThisWeekDuration = require('./get-this-week-duration');
 
-module.exports = { getCurrentMonth, getCurrentYear, getSquaresData, trimToSunday, convertDistancesToMiles, getRecentSunday };
+module.exports = { getCurrentMonth, getCurrentYear, getSquaresData, trimToSunday, convertDistancesToMiles, getRecentSunday, getThisWeekDuration };
