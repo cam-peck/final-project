@@ -11,14 +11,18 @@ export default class WeeklyRunChart extends React.Component {
   }
 
   render() {
-    const data = initialData; // replace with actual data
+    const { data } = this.props;
     return (
       <div className="bg-white pl-6 pr-6 pt-5 pb-5 rounded-xl border border-gray-300 shadow-sm">
         <section className="mb-6">
-          <WeeklyRunChartHeader data={data.weekSums}/>
+          {
+            data !== undefined
+              ? <WeeklyRunChartHeader data={data.thisWeekData} />
+              : 'loading'
+          }
         </section>
         <section>
-          <WeekChart data={data.weekDailyRuns}/>
+          <WeekChart data={initialData.weekDailyRuns}/>
         </section>
       </div>
     );
