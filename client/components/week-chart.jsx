@@ -21,20 +21,19 @@ export default class WeekChart extends React.Component {
   }
 
   componentDidMount() {
-    const { DIVref, drawChart } = this;
+    const { DIVref, drawChart, resizeChart } = this;
     this.setState({
       SVGwidth: DIVref.current.offsetWidth,
       chartWidth: DIVref.current.offsetWidth - 25
     }, () => drawChart());
+    window.addEventListener('resize', resizeChart);
   }
 
   drawChart() {
     const { chartHeight, height, marginLeft, marginTop } = this.dimensions;
     const { SVGwidth, chartWidth } = this.state;
-    const { DIVref, resizeChart } = this;
+    const { DIVref } = this;
     const { data } = this.props;
-
-    window.addEventListener('resize', resizeChart);
 
     const chartSVG = select(DIVref.current)
       .append('svg')
@@ -112,12 +111,14 @@ export default class WeekChart extends React.Component {
 
   resizeChart() {
     const { DIVref, drawChart } = this;
+    if (!DIVref || !DIVref.current) {
+      return;
+    }
     this.setState({
       SVGwidth: DIVref.current.offsetWidth,
       chartWidth: DIVref.current.offsetWidth - 25
     });
     const currentChart = select('.svg-chart');
-    window.removeEventListener('resize', this.resizeChart);
     currentChart.remove();
     drawChart();
   }
