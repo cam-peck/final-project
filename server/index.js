@@ -7,7 +7,7 @@ const ClientError = require('./client-error');
 const staticMiddleware = require('./static-middleware');
 const authorizationMiddleware = require('./authorization-middleware');
 const errorMiddleware = require('./error-middleware');
-const { getSquaresData, getCurrentYear, getCurrentMonth, trimToSunday, convertDistancesToMiles, getRecentSunday, getThisWeekDuration } = require('./lib');
+const { getSquaresData, getCurrentYear, getCurrentMonth, trimToSunday, convertDistancesToMiles, getRecentSunday, getThisWeekDuration, formatWeekChart } = require('./lib');
 
 const db = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
@@ -236,11 +236,12 @@ app.get('/api/progress', (req, res, next) => {
               db.query(thisWeekRunsSql, params)
                 .then(result => {
                   const thisWeekRunsResult = result.rows;
-                  const thisWeekRuns = convertDistancesToMiles(thisWeekRunsResult);
-                  const thisWeekDistance = thisWeekRuns.reduce((acc, currValue) => { // in miles (hard-coded)
+                  const runsInMiles = convertDistancesToMiles(thisWeekRunsResult);
+                  const thisWeekDistance = runsInMiles.reduce((acc, currValue) => { // in miles (hard-coded)
                     return acc + currValue.distance;
                   }, 0);
-                  const thisWeekDuration = getThisWeekDuration(thisWeekRuns);
+                  const thisWeekDuration = getThisWeekDuration(runsInMiles);
+                  const thisWeekRuns = formatWeekChart(runsInMiles);
                   res.json({
                     trimmedSquaresData,
                     thisWeekData: {
