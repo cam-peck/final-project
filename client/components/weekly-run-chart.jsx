@@ -25,6 +25,18 @@ export default class WeeklyRunChart extends React.Component {
   }
 }
 
+// Run Header //
+// convert all run distances to a common format
+// replace any run distances with incorrect units
+// add all run distances together for the week to get distance
+// add all run times together for the week to get run time
+// convert all elevation data to a common format
+// replace any elevation data with incorrect units
+// add correct elevation data together for the week to get total
+
+// Run Chart //
+// using the same units from above, grab runs from this week
+// if
 const initialData = { // replace with actual data passed down -- just an example format!
   weekDailyRuns: [
     {

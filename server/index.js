@@ -7,7 +7,7 @@ const ClientError = require('./client-error');
 const staticMiddleware = require('./static-middleware');
 const authorizationMiddleware = require('./authorization-middleware');
 const errorMiddleware = require('./error-middleware');
-const { getSquaresData, getCurrentYear, getCurrentMonth, trimToSunday } = require('./lib');
+const { getSquaresData, getCurrentYear, getCurrentMonth, trimToSunday, convertDistancesToMiles, getRecentSunday } = require('./lib');
 
 const db = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
@@ -226,13 +226,26 @@ app.get('/api/progress', (req, res, next) => {
             .then(result => {
               const [monthRunResult] = result.rows;
               const { monthRunCount } = monthRunResult;
-              res.json({
-                trimmedSquaresData,
-                sumData: {
-                  yearRunCount,
-                  monthRunCount
-                }
-              });
+
+              // Weekly Run Data Query //
+              const thisWeekRunsSql = `
+              SELECT "distance", "distanceUnits", "duration"
+                FROM "runs"
+               WHERE "userId" = $1 AND "date" >= '${getRecentSunday()}'
+              `;
+              db.query(thisWeekRunsSql, params)
+                .then(result => {
+                  const thisWeekRunsResult = result.rows;
+                  const thisWeekRuns = convertDistancesToMiles(thisWeekRunsResult);
+                  res.json({
+                    trimmedSquaresData,
+                    thisWeekRuns,
+                    sumData: {
+                      yearRunCount,
+                      monthRunCount
+                    }
+                  });
+                });
             })
             .catch(err => next(err));
         })
