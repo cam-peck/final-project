@@ -150,3 +150,28 @@ values (1, 'Follow Scott around house', 'Successfully follow hooman around the h
 
 insert into "runs" ("userId", "title", "description", "date", "duration", "distance", "distanceUnits", "hasGpx")
 values (1, 'Follow Scott around house', 'Successfully follow hooman around the house while he picks things up and puts them in a different place. Why does he do that?', '2022-09-06', '00:25:30', 140.12, 'yards', false);
+
+insert into "runs" ("userId", "title", "description", "date", "duration", "distance", "distanceUnits", "hasGpx")
+values (1, 'Jump onto favorite perch spot', 'Successfully follow hooman around the house while he picks things up and puts them in a different place. Why does he do that?', '2022-11-28', '00:25:30', 6.43, 'miles', false);
+
+insert into "runs" ("userId", "title", "description", "date", "duration", "distance", "distanceUnits", "hasGpx")
+values (1, 'Jump onto favorite perch spot', 'Successfully follow hooman around the house while he picks things up and puts them in a different place. Why does he do that?', '2022-11-26', '00:25:30', 4.22, 'miles', false);
+
+insert into "runs" ("userId", "title", "description", "date", "duration", "distance", "distanceUnits", "hasGpx")
+values (1, 'Jump onto favorite perch spot', 'Successfully follow hooman around the house while he picks things up and puts them in a different place. Why does he do that?', '2022-11-25', '00:25:30', 8.10, 'miles', false);
+
+insert into "runs" ("userId", "title", "description", "date", "duration", "distance", "distanceUnits", "hasGpx")
+values (1, 'Jump onto favorite perch spot', 'Successfully follow hooman around the house while he picks things up and puts them in a different place. Why does he do that?', '2022-11-27', '00:25:30', 2.10, 'miles', false);
+
+
+insert into "runs" ("userId", "title", "description", "date", "duration", "distance", "distanceUnits", "hasGpx")
+values (1, 'Jump onto favorite perch spot', 'Successfully follow hooman around the house while he picks things up and puts them in a different place. Why does he do that?', '2022-11-24', '00:25:30', 3.89, 'miles', false);
+
+insert into "runs" ("userId", "title", "description", "date", "duration", "distance", "distanceUnits", "hasGpx")
+values (1, 'Jump onto favorite perch spot', 'Successfully follow hooman around the house while he picks things up and puts them in a different place. Why does he do that?', '2022-11-23', '00:25:30', 2.11, 'miles', false);
+
+insert into "runs" ("userId", "title", "description", "date", "duration", "distance", "distanceUnits", "hasGpx")
+values (1, 'Jump onto favorite perch spot', 'Successfully follow hooman around the house while he picks things up and puts them in a different place. Why does he do that?', '2022-11-22', '00:25:30', 6.70, 'miles', false);
+
+insert into "runs" ("userId", "title", "description", "date", "duration", "distance", "distanceUnits", "hasGpx")
+values (1, 'Jump onto favorite perch spot', 'Successfully follow hooman around the house while he picks things up and puts them in a different place. Why does he do that?', '2022-11-21', '00:25:30', 4.80, 'miles', false);
