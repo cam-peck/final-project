@@ -1,7 +1,7 @@
 import React from 'react';
 import { AppContext } from '../../lib';
 import ProgressSquares from '../progress-squares/progress-squares';
-import WeeklyRunChart from '../weekly-run-chart';
+import WeeklyRunChart from '../week-progress-chart/weekly-run-chart';
 
 export default class Progress extends React.Component {
   constructor(props) {

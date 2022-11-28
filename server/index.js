@@ -255,7 +255,8 @@ app.get('/api/progress', (req, res, next) => {
                       monthRunCount
                     }
                   });
-                });
+                })
+                .catch(err => next(err));
             })
             .catch(err => next(err));
         })

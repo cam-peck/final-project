@@ -41,12 +41,12 @@ export default class WeekChart extends React.Component {
       .attr('height', height)
       .classed('svg-chart', true);
 
-    const x = scaleBand() // define range into uniform bands and will map it into the domain
-      .domain(data.map(d => d.date)) // takes an array of identifiers for the data
+    const x = scaleBand()
+      .domain(data.map(d => d.date))
       .range([0, chartWidth - 0.5 * marginLeft]);
 
-    const y = scaleLinear() // by default domain and range is between 0 and 1
-      .domain([0, Math.floor((max(data, d => d.distance) + 1))]) // takes an array [floor, ceiling]
+    const y = scaleLinear()
+      .domain([0, Math.floor((max(data, d => d.distance) + 1))])
       .range([chartHeight, 0]);
 
     const xAxis = axisBottom(x)
@@ -54,28 +54,28 @@ export default class WeekChart extends React.Component {
 
     const yAxis = axisLeft(y)
       .tickSizeOuter(0)
-      .ticks(10) // d3 tries its best but will not always give an exact number
+      .ticks(10)
       .tickFormat((interval, i) => {
         return i % 2 !== 0 ? '' : `${interval}mi`;
       });
 
     // Axis //
-    const xAxisGroup = chartSVG // adds the x-axis to our chart
+    const xAxisGroup = chartSVG
       .append('g')
       .attr('transform', `translate(${marginLeft}, ${chartHeight + marginTop})`)
       .call(xAxis);
 
-    xAxisGroup // formats the x-axis
+    xAxisGroup
       .selectAll('text')
       .attr('text-anchor', 'center')
       .classed('text-[10px] xxs:text-[12px]', true);
 
-    const yAxisGroup = chartSVG // adds the y-axis to our chart
+    const yAxisGroup = chartSVG
       .append('g')
       .attr('transform', `translate(${marginLeft}, ${marginTop})`)
       .call(yAxis);
 
-    yAxisGroup // formats the y-axis
+    yAxisGroup
       .selectAll('text')
       .attr('text-anchor', 'center')
       .attr('font-size', '11px');
@@ -86,7 +86,7 @@ export default class WeekChart extends React.Component {
       .data([data])
       .attr('class', 'line')
       .attr('fill', 'none')
-      .attr('transform', `translate(${marginLeft + (chartWidth * 0.070)}, ${marginTop})`) // transforms entire graph
+      .attr('transform', `translate(${marginLeft + (chartWidth * 0.070)}, ${marginTop})`)
       .attr('stroke-width', 2.5)
       .attr('stroke', 'steelblue')
       .attr('d', line()
@@ -123,6 +123,9 @@ export default class WeekChart extends React.Component {
   }
 
   render() {
+    if (!this.props) {
+      return;
+    }
     const { DIVref } = this;
     return (
       <div ref={DIVref} />
