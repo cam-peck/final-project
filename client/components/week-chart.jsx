@@ -43,7 +43,7 @@ export default class WeekChart extends React.Component {
 
     const x = scaleBand() // define range into uniform bands and will map it into the domain
       .domain(data.map(d => d.date)) // takes an array of identifiers for the data
-      .range([0, chartWidth]);
+      .range([0, chartWidth - 0.5 * marginLeft]);
 
     const y = scaleLinear() // by default domain and range is between 0 and 1
       .domain([0, Math.floor((max(data, d => d.distance) + 1))]) // takes an array [floor, ceiling]
@@ -68,7 +68,7 @@ export default class WeekChart extends React.Component {
     xAxisGroup // formats the x-axis
       .selectAll('text')
       .attr('text-anchor', 'center')
-      .attr('font-size', '14px');
+      .classed('text-[10px] xxs:text-[12px]', true);
 
     const yAxisGroup = chartSVG // adds the y-axis to our chart
       .append('g')
@@ -86,7 +86,7 @@ export default class WeekChart extends React.Component {
       .data([data])
       .attr('class', 'line')
       .attr('fill', 'none')
-      .attr('transform', `translate(${marginLeft + (chartWidth * 0.072)}, ${marginTop})`) // transforms entire graph
+      .attr('transform', `translate(${marginLeft + (chartWidth * 0.070)}, ${marginTop})`) // transforms entire graph
       .attr('stroke-width', 2.5)
       .attr('stroke', 'steelblue')
       .attr('d', line()
@@ -100,7 +100,7 @@ export default class WeekChart extends React.Component {
       .data(data)
       .enter()
       .append('circle')
-      .attr('transform', `translate(${marginLeft + (chartWidth * 0.072)}, ${marginTop})`) // transforms entire graph
+      .attr('transform', `translate(${marginLeft + (chartWidth * 0.070)}, ${marginTop})`) // transforms entire graph
       .attr('fill', 'lightblue')
       .attr('stroke', 'darkblue')
       .attr('stroke-width', 1.5)
@@ -114,13 +114,12 @@ export default class WeekChart extends React.Component {
     if (!DIVref || !DIVref.current) {
       return;
     }
+    const currentChart = select('.svg-chart');
+    currentChart.remove();
     this.setState({
       SVGwidth: DIVref.current.offsetWidth,
       chartWidth: DIVref.current.offsetWidth - 25
-    });
-    const currentChart = select('.svg-chart');
-    currentChart.remove();
-    drawChart();
+    }, () => drawChart());
   }
 
   render() {
