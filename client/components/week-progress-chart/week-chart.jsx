@@ -15,7 +15,7 @@ export default class WeekChart extends React.Component {
     this.dimensions = {
       height: 250,
       chartHeight: 225,
-      marginLeft: 30,
+      marginLeft: 32,
       marginTop: 4
     };
   }

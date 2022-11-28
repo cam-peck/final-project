@@ -10,7 +10,6 @@ function formatWeekChart(weekData) {
     date: previousDate,
     distance: weekData[0].distance
   };
-
   // Iterate through weekData --> push to run to result if only one run happened that day, else sum up the multiple runs
   for (let i = 1; i < weekData.length; i++) {
     const currentDate = weekData[i].date.toJSON().split('T')[0].split('-').slice(1, 3).join('/');
@@ -22,9 +21,9 @@ function formatWeekChart(weekData) {
       accDate.distance = weekData[i].distance;
     } else { // additional run on currentDate
       accDate.distance += weekData[i].distance;
-      if (i === weekData.length - 1) { // catch final date
-        result.push(accDate);
-      }
+    }
+    if (i === weekData.length - 1) { // catch final date
+      result.push(accDate);
     }
   }
 
