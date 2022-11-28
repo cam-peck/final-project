@@ -42,11 +42,11 @@ export default class WeekChart extends React.Component {
       .classed('svg-chart', true);
 
     const x = scaleBand() // define range into uniform bands and will map it into the domain
-      .domain(data.map(d => d.name)) // takes an array of identifiers for the data
+      .domain(data.map(d => d.date)) // takes an array of identifiers for the data
       .range([0, chartWidth]);
 
     const y = scaleLinear() // by default domain and range is between 0 and 1
-      .domain([0, Math.floor((max(data, d => d.number) + 1))]) // takes an array [floor, ceiling]
+      .domain([0, Math.floor((max(data, d => d.distance) + 1))]) // takes an array [floor, ceiling]
       .range([chartHeight, 0]);
 
     const xAxis = axisBottom(x)
@@ -90,8 +90,8 @@ export default class WeekChart extends React.Component {
       .attr('stroke-width', 2.5)
       .attr('stroke', 'steelblue')
       .attr('d', line()
-        .x(d => { return x(d.name); })
-        .y(d => { return y(d.number); })
+        .x(d => { return x(d.date); })
+        .y(d => { return y(d.distance); })
       );
 
     // Data Points //
@@ -104,8 +104,8 @@ export default class WeekChart extends React.Component {
       .attr('fill', 'lightblue')
       .attr('stroke', 'darkblue')
       .attr('stroke-width', 1.5)
-      .attr('cx', function (d) { return x(d.name); })
-      .attr('cy', function (d) { return y(d.number); })
+      .attr('cx', function (d) { return x(d.date); })
+      .attr('cy', function (d) { return y(d.distance); })
       .attr('r', 3.5);
   }
 
