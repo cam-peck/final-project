@@ -1,13 +1,7 @@
 import React from 'react';
 
+// refactor into function component
 export default class RunTabs extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      activeTab: 'activities'
-    };
-  }
-
   render() {
     const { children } = this.props;
 

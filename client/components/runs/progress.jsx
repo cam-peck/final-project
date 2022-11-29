@@ -1,13 +1,13 @@
 import React from 'react';
 import { AppContext } from '../../lib';
 import ProgressSquares from '../progress-squares/progress-squares';
+import WeeklyRunChart from '../week-progress-chart/weekly-run-chart';
 
 export default class Progress extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      progressSquaresData: [],
-      weeklyRunData: []
+      yearlyRunData: []
     };
   }
 
@@ -20,21 +20,29 @@ export default class Progress extends React.Component {
       },
       user
     };
-    fetch('/api/runningSquares', req)
+    fetch('/api/progress', req)
       .then(response => response.json())
       .then(result => {
         this.setState({
-          progressSquaresData: result
+          yearlyRunData: result
         });
       });
   }
 
   render() {
-    const { progressSquaresData } = this.state;
+    const { yearlyRunData } = this.state;
     return (
-      <section className="pl-6 pr-6 max-w-3xl md:max-w-5xl lg:max-w-6xl m-auto mt-6">
+      <section className="pl-6 pr-6 max-w-6xl m-auto mt-6">
         <h1 className="font-lora font-medium text-2xl mb-6">My Progress</h1>
-        <ProgressSquares progressData={progressSquaresData}/>
+        <div className='mb-4'>
+          <ProgressSquares progressData={yearlyRunData}/>
+        </div>
+        <div className="flex flex-col md:flex-row">
+          <div className='w-full md:pr-4 md:w-6/12 lg:w-5/12'>
+            <WeeklyRunChart data={yearlyRunData}/>
+          </div>
+          <div className='w-6/12' />
+        </div>
       </section>
     );
   }

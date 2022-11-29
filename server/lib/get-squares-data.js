@@ -27,15 +27,7 @@ function getSquaresData(runData, restData) {
 
     date.setDate(date.getDate() + 1); // increment date by 1
   }
-
   return dates;
 }
 
 module.exports = getSquaresData;
-
-// Tests //
-
-// const runData = ['2022-02-10T00:00:00.000Z', '2022-01-10T00:00:00.000Z', '2022-01-18T00:00:00.000Z'];
-// const restData = ['2022-02-03T00:00:00.000Z'];
-
-// console.log(getSquaresData(runData, restData));

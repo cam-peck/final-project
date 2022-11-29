@@ -37,7 +37,7 @@ export default class ProgressSquare extends React.Component {
         <div className="relative">
           {/* Square */}
           <svg id={square.date} height="20" width="20">
-            <rect onMouseOver={() => showLabel(index)} width="20" height="20" rx="5" fill={square.runStatus === 'run' ? 'green' : 'lightgray'} />
+            <rect onMouseOver={() => showLabel(index)} width="20" height="20" rx="5" fill={square.runStatus === 'run' ? '#279E09' : 'lightgray'} />
           </svg>
           {/* Label */}
           <div onMouseLeave={hideLabel} className={`${index === hoveredIndex ? 'flex' : 'hidden'} w-32 justify-center absolute ${index > 349 ? 'right-4 -top-[8px]' : '-right-14 -top-[36px]'} z-10 bg-black text-white opacity-70 p-2 rounded-lg`}>

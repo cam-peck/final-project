@@ -7,10 +7,7 @@ const ClientError = require('./client-error');
 const staticMiddleware = require('./static-middleware');
 const authorizationMiddleware = require('./authorization-middleware');
 const errorMiddleware = require('./error-middleware');
-
-const getSquaresData = require('./get-squares-data');
-const getCurrentYear = require('./get-current-year');
-const getCurrentMonth = require('./get-current-month');
+const { getSquaresData, getCurrentYear, getCurrentMonth, trimToSunday, convertDistancesToMiles, getXDaysBack, getThisWeekDuration, formatWeekChart } = require('./lib');
 
 const db = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
@@ -113,7 +110,8 @@ app.get('/api/runs', (req, res, next) => {
   const sql = `
   SELECT "title", "description", "date", "duration", "distance", "distanceUnits", "entryId"
     FROM "runs"
-   WHERE "userId" = $1;
+   WHERE "userId" = $1
+ORDER BY "date" DESC;
   `;
   const params = [userId];
   db.query(sql, params)
@@ -190,7 +188,7 @@ app.delete('/api/runs/:entryId', (req, res, next) => {
 
 // Specific Run Data Routes //
 
-app.get('/api/runningSquares', (req, res, next) => {
+app.get('/api/progress', (req, res, next) => {
   const { userId } = req.user;
 
   // Squares Query //
@@ -204,7 +202,8 @@ app.get('/api/runningSquares', (req, res, next) => {
     .then(result => {
       const runDates = result.rows;
       const mappedRuns = runDates.map(object => object.date.toJSON());
-      const squaresData = getSquaresData(mappedRuns, []); // second argument is placeholder for rest day array!
+      const rawSquaresData = getSquaresData(mappedRuns, []); // second argument is placeholder for rest day array!
+      const trimmedSquaresData = trimToSunday(rawSquaresData);
 
       // Yearly Sum Data Query //
       const yearlySumSql = `
@@ -227,13 +226,37 @@ app.get('/api/runningSquares', (req, res, next) => {
             .then(result => {
               const [monthRunResult] = result.rows;
               const { monthRunCount } = monthRunResult;
-              res.json({
-                squaresData,
-                sumData: {
-                  yearRunCount,
-                  monthRunCount
-                }
-              });
+
+              // Weekly Run Data Query //
+              const thisWeekRunsSql = `
+              SELECT "distance", "distanceUnits", "duration", "date"
+                FROM "runs"
+               WHERE "userId" = $1 AND "date" >= '${getXDaysBack(6)}'
+            ORDER BY "date" ASC;
+              `;
+              db.query(thisWeekRunsSql, params)
+                .then(result => {
+                  const thisWeekRunsResult = result.rows;
+                  const runsInMiles = convertDistancesToMiles(thisWeekRunsResult);
+                  const thisWeekDistance = runsInMiles.reduce((acc, currValue) => { // in miles (hard-coded)
+                    return acc + currValue.distance;
+                  }, 0).toFixed(2);
+                  const thisWeekDuration = getThisWeekDuration(runsInMiles);
+                  const thisWeekRuns = formatWeekChart(runsInMiles);
+                  res.json({
+                    trimmedSquaresData,
+                    thisWeekData: {
+                      thisWeekRuns,
+                      thisWeekDistance,
+                      thisWeekDuration
+                    },
+                    sumData: {
+                      yearRunCount,
+                      monthRunCount
+                    }
+                  });
+                })
+                .catch(err => next(err));
             })
             .catch(err => next(err));
         })
