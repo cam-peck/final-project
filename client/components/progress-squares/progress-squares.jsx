@@ -1,6 +1,7 @@
 import React from 'react';
 import ProgressSquare from './progress-square';
 import ProgressSquareHeader from './progress-square-header';
+import { formatRunningSquares } from '../../lib';
 
 export default class ProgressSquares extends React.Component {
   constructor(props) {
@@ -41,13 +42,17 @@ export default class ProgressSquares extends React.Component {
   }
 
   render() {
-    const { progressData } = this.props;
+    const { data } = this.props;
+    if (data.length === 0) {
+      return;
+    }
+    const runningSquareData = formatRunningSquares(data);
     const { setMouseDown, setMouseUp, drag, ref } = this;
     return (
       <div className="bg-white pl-6 pr-6 pt-5 pb-3 rounded-xl border border-gray-300 shadow-sm">
         {
-          progressData.sumData !== undefined
-            ? <ProgressSquareHeader sumData={progressData.sumData}/>
+          data.sumData !== undefined
+            ? <ProgressSquareHeader sumData={data.sumData}/>
             : 'loading'
         }
         <hr className="border"/>
@@ -60,8 +65,8 @@ export default class ProgressSquares extends React.Component {
             </div>
             <div className="grid grid-52 gap-2.5 relative mt-11 pb-2">
               {
-                progressData.length !== 0
-                  ? progressData.trimmedSquaresData.map((square, index) => { return <ProgressSquare key={square.date} square={square} index={index}/>; })
+                data.length !== 0
+                  ? runningSquareData.map((square, index) => { return <ProgressSquare key={square.date} square={square} index={index}/>; })
                   : 'loading'
               }
             </div>

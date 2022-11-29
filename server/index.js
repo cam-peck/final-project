@@ -7,7 +7,7 @@ const ClientError = require('./client-error');
 const staticMiddleware = require('./static-middleware');
 const authorizationMiddleware = require('./authorization-middleware');
 const errorMiddleware = require('./error-middleware');
-const { getSquaresData, getCurrentYear, getCurrentMonth, trimToSunday, convertDistancesToMiles, getXDaysBack, getThisWeekDuration, formatWeekChart } = require('./lib');
+const { getCurrentYear, getCurrentMonth, convertDistancesToMiles, getXDaysBack, getThisWeekDuration, formatWeekChart } = require('./lib');
 
 const db = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
@@ -201,9 +201,6 @@ app.get('/api/progress', (req, res, next) => {
   db.query(squaresSql, params)
     .then(result => {
       const runDates = result.rows;
-      const mappedRuns = runDates.map(object => object.date.toJSON());
-      const rawSquaresData = getSquaresData(mappedRuns, []); // second argument is placeholder for rest day array!
-      const trimmedSquaresData = trimToSunday(rawSquaresData);
 
       // Yearly Sum Data Query //
       const yearlySumSql = `
@@ -244,7 +241,7 @@ app.get('/api/progress', (req, res, next) => {
                   const thisWeekDuration = getThisWeekDuration(runsInMiles);
                   const thisWeekRuns = formatWeekChart(runsInMiles);
                   res.json({
-                    trimmedSquaresData,
+                    runDates,
                     thisWeekData: {
                       thisWeekRuns,
                       thisWeekDistance,
