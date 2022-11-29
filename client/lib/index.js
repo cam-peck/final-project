@@ -5,3 +5,4 @@ export { default as todaysDate } from './todays-date';
 export { default as formatDate } from './format-date';
 export { default as getMonthName } from './get-month-name';
 export { default as formatRunningSquares } from './format-running-squares';
+export { default as getSquaresSumData } from './get-squares-sum-data';

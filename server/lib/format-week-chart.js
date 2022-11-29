@@ -1,5 +1,4 @@
 const getXDaysBack = require('./get-x-days-back');
-const getCurrentYear = require('./get-current-year');
 
 function formatWeekChart(weekData) {
   const result = [];
@@ -44,8 +43,8 @@ function formatWeekChart(weekData) {
 
   // Sort the result by date
   return result.sort((a, b) => {
-    const d1 = new Date(a.date + '/' + getCurrentYear());
-    const d2 = new Date(b.date.split('/')[0] === 1 ? b.date + '/' + (getCurrentYear() + 1) : b.date + '/' + getCurrentYear()); // check for new year
+    const d1 = new Date(a.date + '/' + '2022');
+    const d2 = new Date(b.date.split('/')[0] === 1 ? b.date + '/' + ('2023') : b.date + '/' + ('2023')); // check for new year
     return d1 - d2;
   });
 }
