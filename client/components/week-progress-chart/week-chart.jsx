@@ -29,6 +29,11 @@ export default class WeekChart extends React.Component {
     window.addEventListener('resize', resizeChart);
   }
 
+  componentWillUnmount() {
+    const { resizeChart } = this;
+    window.removeEventListener('resize', resizeChart);
+  }
+
   drawChart() {
     const { chartHeight, height, marginLeft, marginTop } = this.dimensions;
     const { SVGwidth, chartWidth } = this.state;
@@ -123,9 +128,6 @@ export default class WeekChart extends React.Component {
   }
 
   render() {
-    if (!this.props) {
-      return;
-    }
     const { DIVref } = this;
     return (
       <div ref={DIVref} />

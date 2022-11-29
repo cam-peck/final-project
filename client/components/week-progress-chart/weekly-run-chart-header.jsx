@@ -12,8 +12,6 @@ export default function WeeklyRunChartHeader(props) {
         <p>{thisWeekDistance} {thisWeekDistance === 1 ? 'mile' : 'miles'}</p>
         <span> | </span>
         <p>{thisWeekDuration.hours} {thisWeekDuration.hours === 1 ? 'hr' : 'hrs'} {thisWeekDuration.minutes} min</p>
-        {/* <span> | </span>
-        <p>{elevation} {elevationUnits}</p> */}
       </div>
     </div>
   );
