@@ -5,7 +5,7 @@ export default function NotFound(props) {
     <div>
       <h1>Uh oh...We couldn`&apos;`t find the page you were looking for!</h1>
       <p>
-        <a href='#'>Return to home page</a>
+        <a href='#home?tab=progress'>Return to home page</a>
       </p>
     </div>
   );
