@@ -44,18 +44,14 @@ export default class ProgressSquares extends React.Component {
   render() {
     const { data } = this.props;
     if (data.length === 0) {
-      return;
+      return 'loading';
     }
     const runningSquareData = formatRunningSquares(data);
     const runningSquareSumData = getSquaresSumData(data);
     const { setMouseDown, setMouseUp, drag, ref } = this;
     return (
       <div className="bg-white pl-6 pr-6 pt-5 pb-3 rounded-xl border border-gray-300 shadow-sm">
-        {
-          data.length !== 0
-            ? <ProgressSquareHeader data={runningSquareSumData}/>
-            : 'loading'
-        }
+        <ProgressSquareHeader data={runningSquareSumData}/>
         <hr className="border"/>
         <div ref={ref} onMouseDown={event => setMouseDown(event)} onMouseUp={setMouseUp} onMouseMove={event => drag(event)} onMouseLeave={setMouseUp} className="overflow-scroll overflow-y-hidden active:cursor-grabbing active:scale-[1.01]">
           <div className="flex">
@@ -65,11 +61,7 @@ export default class ProgressSquares extends React.Component {
               <h1>Fri</h1>
             </div>
             <div className="grid grid-52 gap-2.5 relative mt-11 pb-2">
-              {
-                data.length !== 0
-                  ? runningSquareData.map((square, index) => { return <ProgressSquare key={square.date} square={square} index={index}/>; })
-                  : 'loading'
-              }
+              { runningSquareData.map((square, index) => { return <ProgressSquare key={square.date} square={square} index={index}/>; }) }
             </div>
           </div>
         </div>
