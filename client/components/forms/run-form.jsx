@@ -36,7 +36,7 @@ export default class RunForm extends React.Component {
         },
         user
       };
-      fetch(`api/runs/${entryId}`, req)
+      fetch(`/api/runs/${entryId}`, req)
         .then(response => response.json())
         .then(result => {
           const { title, description, date, duration, distance, distanceUnits, hasGpx } = result[0];
@@ -77,7 +77,7 @@ export default class RunForm extends React.Component {
       user,
       body: JSON.stringify(this.state)
     };
-    fetch(`${mode === 'add' ? '/api/runs' : 'api/runs/' + route.params.get('entryId')}`, req)
+    fetch(`${mode === 'add' ? '/api/runs' : '/api/runs/' + route.params.get('entryId')}`, req)
       .then(response => response.json())
       .then(result => {
         this.setState({
