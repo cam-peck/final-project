@@ -35,7 +35,7 @@ export default class Progress extends React.Component {
       <section className="pl-6 pr-6 max-w-6xl m-auto mt-6">
         <h1 className="font-lora font-medium text-2xl mb-6">My Progress</h1>
         <div className='mb-4'>
-          <ProgressSquares progressData={yearlyRunData}/>
+          <ProgressSquares data={yearlyRunData}/>
         </div>
         <div className="flex flex-col md:flex-row">
           <div className='w-full md:pr-4 md:w-6/12 lg:w-5/12'>

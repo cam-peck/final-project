@@ -7,7 +7,6 @@ const ClientError = require('./client-error');
 const staticMiddleware = require('./static-middleware');
 const authorizationMiddleware = require('./authorization-middleware');
 const errorMiddleware = require('./error-middleware');
-const { getSquaresData, getCurrentYear, getCurrentMonth, trimToSunday, convertDistancesToMiles, getXDaysBack, getThisWeekDuration, formatWeekChart } = require('./lib');
 
 const db = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
@@ -193,7 +192,7 @@ app.get('/api/progress', (req, res, next) => {
 
   // Squares Query //
   const squaresSql = `
-  SELECT "date"
+  SELECT "date", "distance", "distanceUnits", "duration"
     FROM "runs"
    WHERE "userId" = $1
   `;
@@ -201,66 +200,9 @@ app.get('/api/progress', (req, res, next) => {
   db.query(squaresSql, params)
     .then(result => {
       const runDates = result.rows;
-      const mappedRuns = runDates.map(object => object.date.toJSON());
-      const rawSquaresData = getSquaresData(mappedRuns, []); // second argument is placeholder for rest day array!
-      const trimmedSquaresData = trimToSunday(rawSquaresData);
-
-      // Yearly Sum Data Query //
-      const yearlySumSql = `
-      SELECT count("date") as "yearRunCount"
-        FROM "runs"
-       WHERE "userId" = $1 AND "date" >= '${getCurrentYear()}-01-01'
-      `;
-      db.query(yearlySumSql, params)
-        .then(result => {
-          const [yearSumResult] = result.rows;
-          const { yearRunCount } = yearSumResult;
-
-          // Monthly Sum Data Query //
-          const monthlySumSql = `
-          SELECT count("date") as "monthRunCount"
-          FROM "runs"
-          WHERE "userId" = $1 AND "date" > '${getCurrentYear()}-${getCurrentMonth()}-01'
-          `;
-          db.query(monthlySumSql, params)
-            .then(result => {
-              const [monthRunResult] = result.rows;
-              const { monthRunCount } = monthRunResult;
-
-              // Weekly Run Data Query //
-              const thisWeekRunsSql = `
-              SELECT "distance", "distanceUnits", "duration", "date"
-                FROM "runs"
-               WHERE "userId" = $1 AND "date" >= '${getXDaysBack(6)}'
-            ORDER BY "date" ASC;
-              `;
-              db.query(thisWeekRunsSql, params)
-                .then(result => {
-                  const thisWeekRunsResult = result.rows;
-                  const runsInMiles = convertDistancesToMiles(thisWeekRunsResult);
-                  const thisWeekDistance = runsInMiles.reduce((acc, currValue) => { // in miles (hard-coded)
-                    return acc + currValue.distance;
-                  }, 0).toFixed(2);
-                  const thisWeekDuration = getThisWeekDuration(runsInMiles);
-                  const thisWeekRuns = formatWeekChart(runsInMiles);
-                  res.json({
-                    trimmedSquaresData,
-                    thisWeekData: {
-                      thisWeekRuns,
-                      thisWeekDistance,
-                      thisWeekDuration
-                    },
-                    sumData: {
-                      yearRunCount,
-                      monthRunCount
-                    }
-                  });
-                })
-                .catch(err => next(err));
-            })
-            .catch(err => next(err));
-        })
-        .catch(err => next(err));
+      res.json({
+        runDates
+      });
     })
     .catch(err => next(err));
 });

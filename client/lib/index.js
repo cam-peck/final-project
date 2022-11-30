@@ -4,3 +4,8 @@ export { default as calculatePace } from './calculate-pace';
 export { default as todaysDate } from './todays-date';
 export { default as formatDate } from './format-date';
 export { default as getMonthName } from './get-month-name';
+export { default as formatRunningSquares } from './format-running-squares';
+export { default as getSquaresSumData } from './get-squares-sum-data';
+export { default as getWeeklyLineData } from './get-weekly-line-data';
+export { default as convertToMiles } from './convert-to-miles';
+export { default as getWeeklySumData } from './get-weekly-sum-data';
