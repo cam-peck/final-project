@@ -10,7 +10,6 @@ export default function DrawerMenu(props) {
     : '-left-60';
   return (
     <div className={`absolute top-0 ${isOpen} bottom-0 w-60 surface-bg-color opacity shadow-xl flex flex-col justify-between rounded-br-xl transition-left ease-in-out duration-200 md:hidden z-10`}>
-      {/* Title & Nav-items */}
       <section>
         <div className="flex justify-center items-center pt-8 pb-8 bg-blue-600">
           <h1 className="logo-text text-2xl text-white">RunningFuze</h1>
@@ -22,7 +21,6 @@ export default function DrawerMenu(props) {
             <p className="text-lg">Sign out</p>
           </button>
         </div>
-
       </section>
     </div>
   );
