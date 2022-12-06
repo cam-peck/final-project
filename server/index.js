@@ -185,12 +185,11 @@ app.delete('/api/runs/:entryId', (req, res, next) => {
     .catch(err => next(err));
 });
 
-// Specific Run Data Routes //
+// Running Tab Routes //
 
 app.get('/api/progress', (req, res, next) => {
   const { userId } = req.user;
 
-  // Squares Query //
   const squaresSql = `
   SELECT "date", "distance", "distanceUnits", "duration"
     FROM "runs"
@@ -203,6 +202,22 @@ app.get('/api/progress', (req, res, next) => {
       res.json({
         runDates
       });
+    })
+    .catch(err => next(err));
+});
+
+app.get('/api/profile', (req, res, next) => {
+  const { userId } = req.user;
+  const profileSql = `
+  SELECT "displayName", "email", "dateOfBirth"
+    FROM "users"
+   WHERE "userId" = $1;
+  `;
+  const params = [userId];
+  db.query(profileSql, params)
+    .then(result => {
+      const [profileData] = result.rows;
+      res.send(profileData);
     })
     .catch(err => next(err));
 });
