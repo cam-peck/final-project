@@ -25,7 +25,10 @@ export default function HomeNavbar(props) {
           <div className="text-white items-center hidden md:flex">
             <NavItems />
             {/* Sign-out Button */}
-            <button onClick={handleSignOut} className="text-white bg-red-500 p-3 rounded-xl">Sign out</button>
+            <button onClick={handleSignOut} className="text-white bg-red-500 p-3 rounded-xl flex items-center">
+              <i className="fa-solid fa-right-from-bracket text-xl pr-2.5" />
+              Sign out
+            </button>
           </div>
           {/* Hamburger Menu */}
           <div className="md:hidden pt-2 pb-2">
