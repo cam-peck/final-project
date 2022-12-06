@@ -12,7 +12,11 @@ export default class NavItems extends React.Component {
 
   handleClick(event) {
     if (event.target.tagName === 'BUTTON' && this.state.myRunsNav === false) {
-      this.setState({ myRunsNav: true });
+      if (this.props.drawerIsOpen) {
+        window.location.hash = '#home?tab=activities';
+      } else {
+        this.setState({ myRunsNav: true });
+      }
     } else {
       this.setState({ myRunsNav: false });
     }
@@ -20,13 +24,17 @@ export default class NavItems extends React.Component {
 
   render() {
     const { myRunsNav } = this.state;
+    const { drawerIsOpen } = this.props;
     const { handleClick } = this;
     const showMyRuns = myRunsNav === true
       ? 'md:flex'
       : '';
+    const myRunsButton = drawerIsOpen === true
+      ? 'w-full p-5'
+      : 'p-4 m-2 mr-6';
     return (
       <div className="flex transition-all ease-in-out duration-200 relative z-0">
-        <button onClick={handleClick} className="flex items-center text-lg p-4 m-2 mr-6 transition-all ease-in-out duration-200 hover:bg-gray-400 hover:bg-opacity-20">
+        <button onClick={handleClick} className={`flex items-center text-lg ${myRunsButton} transition-all ease-in-out duration-200 hover:bg-gray-400 hover:bg-opacity-20`}>
           <i className="fa-solid fa-person-running text-2xl pr-3" />
           My Runs
         </button>
