@@ -33,23 +33,33 @@ export default class Profile extends React.Component {
   }
 
   render() {
+    if (!this.state.email) {
+      return 'loading';
+    }
+    const { email, displayName, dateOfBirth } = this.state;
     return (
       <section className="pl-6 pr-6 max-w-6xl m-auto mt-6">
         <h1 className="font-lora font-medium text-2xl mb-6">My Profile</h1>
-        <div className="bg-white border border-gray-400 rounded-lg p-4 max-w-xl">
-          <div className="mb-8 font-lora">
-            <p className="font-medium text-lg">Hi, Cameron!</p>
-            <p>Account Information</p>
+        <div className="shadow-sm rounded-xl max-w-xl">
+          <div className="font-lora bg-blue-200 p-6 rounded-xl rounded-b-none border border-b-0 border-gray-300">
+            <p className="font-medium text-xl">Hi, {displayName}!</p>
+            <p className="text-md">Account Information</p>
           </div>
-          <div className="font-roboto flex flex-col gap-4">
-            <p className="font-medium">Email: </p>
-            <p>runningiscool@gmail.com</p>
-            <hr />
-            <p className="font-medium">Name: </p>
-            <p>Cameron Peck</p>
-            <hr />
-            <p className="font-medium">Birthday: </p>
-            <p>09/18/2002</p>
+          <div className="bg-white border border-gray-300 border-t-0 font-roboto flex flex-col gap-3 p-6">
+            <div className="flex flex-col gap-1.5">
+              <p className="font-medium">Email:</p>
+              <p>{email}</p>
+            </div>
+            <hr className="border"/>
+            <div className="flex flex-col gap-1.5">
+              <p className="font-medium">Display Name:</p>
+              <p>{displayName}</p>
+            </div>
+            <hr className="border"/>
+            <div className="flex flex-col gap-1.5">
+              <p className="font-medium">Birthday:</p>
+              <p>{dateOfBirth.split('T')[0]}</p>
+            </div>
           </div>
         </div>
       </section>
