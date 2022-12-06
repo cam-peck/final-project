@@ -1,5 +1,6 @@
 import React from 'react';
 import { AppContext } from '../../lib';
+import { format } from 'date-fns';
 
 export default class Profile extends React.Component {
   constructor(props) {
@@ -37,6 +38,8 @@ export default class Profile extends React.Component {
       return 'loading';
     }
     const { email, displayName, dateOfBirth } = this.state;
+    const dt = new Date(dateOfBirth);
+    const dtDateOnly = new Date(dt.valueOf() + dt.getTimezoneOffset() * 60 * 1000);
     return (
       <section className="pl-6 pr-6 max-w-6xl m-auto mt-6">
         <h1 className="font-lora font-medium text-2xl mb-6">My Profile</h1>
@@ -45,7 +48,7 @@ export default class Profile extends React.Component {
             <p className="font-medium text-xl">Hi, {displayName}!</p>
             <p className="text-md">Account Information</p>
           </div>
-          <div className="bg-white border border-gray-300 border-t-0 font-roboto flex flex-col gap-3 p-6">
+          <div className="bg-white border border-gray-300 border-t-0 rounded-xl rounded-t-none font-roboto flex flex-col gap-3 p-6">
             <div className="flex flex-col gap-1.5">
               <p className="font-medium">Email:</p>
               <p>{email}</p>
@@ -58,7 +61,7 @@ export default class Profile extends React.Component {
             <hr className="border"/>
             <div className="flex flex-col gap-1.5">
               <p className="font-medium">Birthday:</p>
-              <p>{dateOfBirth.split('T')[0]}</p>
+              <p>{format(dtDateOnly, 'MMMM do, yyyy')}</p>
             </div>
           </div>
         </div>
