@@ -208,7 +208,6 @@ app.get('/api/progress', (req, res, next) => {
 
 app.get('/api/profile', (req, res, next) => {
   const { userId } = req.user;
-
   const profileSql = `
   SELECT "displayName", "email", "dateOfBirth"
     FROM "users"
