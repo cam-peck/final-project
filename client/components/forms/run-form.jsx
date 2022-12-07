@@ -1,7 +1,9 @@
 import React from 'react';
-import { calculatePace, todaysDate, AppContext } from '../../lib';
+import { calculatePace, AppContext } from '../../lib';
 import TextInput from '../inputs/text-input';
-import DateInput from '../inputs/date-input';
+import DatePicker from 'react-datepicker';
+import { subYears } from 'date-fns';
+import 'react-datepicker/dist/react-datepicker.css';
 import DistanceInput from '../inputs/distance-input';
 import DurationInput from '../inputs/duration-input';
 import UploadRunCard from '../cards/upload-run-card';
@@ -12,7 +14,7 @@ export default class RunForm extends React.Component {
     this.state = {
       title: '',
       description: '',
-      date: todaysDate(),
+      date: new Date(),
       durationHours: '',
       durationMinutes: '',
       durationSeconds: '',
@@ -22,6 +24,7 @@ export default class RunForm extends React.Component {
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleDateChange = this.handleDateChange.bind(this);
   }
 
   componentDidMount() {
@@ -41,11 +44,12 @@ export default class RunForm extends React.Component {
         .then(result => {
           const { title, description, date, duration, distance, distanceUnits, hasGpx } = result[0];
           const splitDuration = duration.split(':');
-          const formattedDate = date.split('T')[0];
+          const dt = new Date(date);
+          const dtDateOnly = new Date(dt.valueOf() + dt.getTimezoneOffset() * 60 * 1000);
           this.setState({
             title,
             description,
-            date: formattedDate,
+            date: dtDateOnly,
             durationHours: splitDuration[0],
             durationMinutes: splitDuration[1],
             durationSeconds: splitDuration[2],
@@ -61,6 +65,12 @@ export default class RunForm extends React.Component {
     const { name, value } = event.target;
     this.setState({
       [name]: value
+    });
+  }
+
+  handleDateChange(date) {
+    this.setState({
+      date
     });
   }
 
@@ -97,10 +107,9 @@ export default class RunForm extends React.Component {
 
   render() {
     const { title, description, date, distance, distanceUnits, durationHours, durationMinutes, durationSeconds } = this.state;
-    const { handleChange, handleSubmit } = this;
+    const { handleChange, handleSubmit, handleDateChange } = this;
     const durationObj = { durationHours, durationMinutes, durationSeconds };
     const pace = calculatePace(distance, distanceUnits, durationHours, durationMinutes, durationSeconds);
-    const today = todaysDate();
     const buttonText = this.context.route.params.get('mode') === 'add'
       ? 'Add Run'
       : 'Save Changes';
@@ -111,7 +120,8 @@ export default class RunForm extends React.Component {
             <UploadRunCard />
           </div>
           <div className="md:w-2/4 w-full">
-            <DateInput type="date" name="date" placeholder={today} value={date} dateMin="1942-01-01" dateMax={today} showLabel={true} label="Date" onChange={handleChange} />
+            <p className="font-lora font-md text-md font-medium pb-2" >Date</p>
+            <DatePicker className="w-full rounded-lg px-3 py-3.5 border border-gray-300 focus:outline-blue-500 mb-4" selected={date} onChange={handleDateChange} dateFormat='MM/dd/yyy' maxDate={new Date()} minDate={subYears(new Date(), 80)} required/>
             <DistanceInput distanceValue={distance} distanceTypeValue={distanceUnits} onChange={handleChange}/>
             <DurationInput value={durationObj} onChange={handleChange}/>
             <TextInput type="pace" name="pace" placeholder="0:00 / mi" value={pace} showLabel={true} label="Pace" onChange={handleChange} />
