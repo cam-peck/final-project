@@ -105,7 +105,7 @@ export default class RunForm extends React.Component {
       ? 'Add Run'
       : 'Save Changes';
     return (
-      <form onSubmit={handleSubmit}>
+      <form className="w-full" onSubmit={handleSubmit}>
         <div className="md:flex md:gap-6">
           <div className="md:w-2/4 w-full">
             <UploadRunCard />
