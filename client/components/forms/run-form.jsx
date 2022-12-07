@@ -12,7 +12,7 @@ export default class RunForm extends React.Component {
     this.state = {
       title: '',
       description: '',
-      date: '',
+      date: todaysDate(),
       durationHours: '',
       durationMinutes: '',
       durationSeconds: '',
@@ -111,7 +111,7 @@ export default class RunForm extends React.Component {
             <UploadRunCard />
           </div>
           <div className="md:w-2/4 w-full">
-            <DateInput type="date" name="date" placeholder="" value={date} dateMin="1942-01-01" dateMax={today} showLabel={true} label="Date" onChange={handleChange} />
+            <DateInput type="date" name="date" placeholder={today} value={date} dateMin="1942-01-01" dateMax={today} showLabel={true} label="Date" onChange={handleChange} />
             <DistanceInput distanceValue={distance} distanceTypeValue={distanceUnits} onChange={handleChange}/>
             <DurationInput value={durationObj} onChange={handleChange}/>
             <TextInput type="pace" name="pace" placeholder="0:00 / mi" value={pace} showLabel={true} label="Pace" onChange={handleChange} />
