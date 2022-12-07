@@ -33,7 +33,7 @@ export default class NavItems extends React.Component {
       ? 'w-full p-5'
       : 'p-4 m-2 mr-6';
     return (
-      <div className="flex transition-all ease-in-out duration-200 relative z-0">
+      <div className="flex transition-all ease-in-out duration-200 relative z-10">
         <button onClick={handleClick} className={`flex items-center text-lg ${myRunsButton} transition-all ease-in-out duration-200 hover:bg-gray-400 hover:bg-opacity-20`}>
           <i className="fa-solid fa-person-running text-2xl pr-3" />
           My Runs

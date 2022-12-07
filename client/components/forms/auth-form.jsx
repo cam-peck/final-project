@@ -1,6 +1,7 @@
 import React from 'react';
 import TextInput from '../inputs/text-input';
-import DateInput from '../inputs/date-input';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 export default class AuthForm extends React.Component {
   constructor(props) {
@@ -15,6 +16,7 @@ export default class AuthForm extends React.Component {
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleDateChange = this.handleDateChange.bind(this);
   }
 
   resetState() {
@@ -32,6 +34,12 @@ export default class AuthForm extends React.Component {
     const { name, value } = event.target;
     this.setState({
       [name]: value
+    });
+  }
+
+  handleDateChange(date) {
+    this.setState({
+      dateOfBirth: date
     });
   }
 
@@ -65,7 +73,7 @@ export default class AuthForm extends React.Component {
 
   render() {
     const { action } = this.props; // either sign-in or sign-out
-    const { handleChange, handleSubmit } = this;
+    const { handleChange, handleSubmit, handleDateChange } = this;
     const { email, password, displayName, dateOfBirth, signInWasInvalid } = this.state;
     const formButton = action === 'sign-in'
       ? 'Log in'
@@ -74,7 +82,7 @@ export default class AuthForm extends React.Component {
       ? ''
       : <>
         <TextInput type="text" name="displayName" placeholder="Display Name" value={displayName} showLabel={false} onChange={handleChange} />
-        <DateInput type="date" name="dateOfBirth" placeholder="Date of Birth" value={dateOfBirth} dateMin="1922-01-01" dateMax="2018-01-01" showLabel={false} onChange={handleChange} />
+        <DatePicker className="w-full rounded-lg px-3 py-3.5 border border-gray-300 focus:outline-blue-500 mb-4" selected={dateOfBirth} onChange={handleDateChange} dateFormat='MM/dd/yyy' placeholderText='Date of Birth' />
       </>;
     const invalidSignIn = signInWasInvalid
       ? <p className="text-red-500 text-xs italic -mt-2.5 mb-4 ml-6">Invalid username or password</p>
