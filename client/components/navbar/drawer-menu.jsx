@@ -9,7 +9,7 @@ export default function DrawerMenu(props) {
     ? 'left-0'
     : '-left-60';
   return (
-    <div className={`absolute top-0 ${isOpen} bottom-0 w-60 surface-bg-color opacity shadow-xl flex flex-col justify-between rounded-br-xl transition-left ease-in-out duration-200 md:hidden z-10`}>
+    <div className={`absolute top-0 ${isOpen} bottom-0 w-60 surface-bg-color opacity shadow-xl flex flex-col justify-between rounded-br-xl transition-left ease-in-out duration-200 md:hidden z-20`}>
       <section>
         <div className="flex justify-center items-center pt-8 pb-8 bg-blue-600">
           <h1 className="logo-text text-2xl text-white">RunningFuze</h1>
