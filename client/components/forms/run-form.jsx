@@ -2,6 +2,7 @@ import React from 'react';
 import { calculatePace, AppContext } from '../../lib';
 import TextInput from '../inputs/text-input';
 import DatePicker from 'react-datepicker';
+import { subYears } from 'date-fns';
 import 'react-datepicker/dist/react-datepicker.css';
 import DistanceInput from '../inputs/distance-input';
 import DurationInput from '../inputs/duration-input';
@@ -120,7 +121,7 @@ export default class RunForm extends React.Component {
           </div>
           <div className="md:w-2/4 w-full">
             <p className="font-lora font-md text-md font-medium pb-2" >Date</p>
-            <DatePicker className="w-full rounded-lg px-3 py-3.5 border border-gray-300 focus:outline-blue-500 mb-4" selected={date} onChange={handleDateChange} dateFormat='MM/dd/yyy' />
+            <DatePicker className="w-full rounded-lg px-3 py-3.5 border border-gray-300 focus:outline-blue-500 mb-4" selected={date} onChange={handleDateChange} dateFormat='MM/dd/yyy' maxDate={new Date()} minDate={subYears(new Date(), 80)} required/>
             <DistanceInput distanceValue={distance} distanceTypeValue={distanceUnits} onChange={handleChange}/>
             <DurationInput value={durationObj} onChange={handleChange}/>
             <TextInput type="pace" name="pace" placeholder="0:00 / mi" value={pace} showLabel={true} label="Pace" onChange={handleChange} />

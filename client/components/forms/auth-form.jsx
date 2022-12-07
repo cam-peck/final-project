@@ -1,6 +1,7 @@
 import React from 'react';
 import TextInput from '../inputs/text-input';
 import DatePicker from 'react-datepicker';
+import { subYears } from 'date-fns';
 import 'react-datepicker/dist/react-datepicker.css';
 
 export default class AuthForm extends React.Component {
@@ -82,7 +83,7 @@ export default class AuthForm extends React.Component {
       ? ''
       : <>
         <TextInput type="text" name="displayName" placeholder="Display Name" value={displayName} showLabel={false} onChange={handleChange} />
-        <DatePicker className="w-full rounded-lg px-3 py-3.5 border border-gray-300 focus:outline-blue-500 mb-4" selected={dateOfBirth} onChange={handleDateChange} dateFormat='MM/dd/yyy' placeholderText='Date of Birth' />
+        <DatePicker className="w-full rounded-lg px-3 py-3.5 border border-gray-300 focus:outline-blue-500 mb-4" selected={dateOfBirth} onChange={handleDateChange} dateFormat='MM/dd/yyy' maxDate={subYears(new Date(), 10)} minDate={subYears(new Date(), 100)} placeholderText='Date of Birth' required/>
       </>;
     const invalidSignIn = signInWasInvalid
       ? <p className="text-red-500 text-xs italic -mt-2.5 mb-4 ml-6">Invalid username or password</p>
