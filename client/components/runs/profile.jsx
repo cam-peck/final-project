@@ -41,7 +41,7 @@ export default class Profile extends React.Component {
     const dt = new Date(dateOfBirth);
     const dtDateOnly = new Date(dt.valueOf() + dt.getTimezoneOffset() * 60 * 1000);
     return (
-      <section className="pl-6 pr-6 max-w-6xl m-auto mt-6">
+      <section className="pl-6 pr-6 max-w-6xl m-auto mt-6 mb-6">
         <h1 className="font-lora font-medium text-2xl mb-6">My Profile</h1>
         <div className="shadow-sm rounded-xl max-w-xl">
           <div className="font-lora bg-blue-200 p-6 rounded-xl rounded-b-none border border-b-0 border-gray-300">
