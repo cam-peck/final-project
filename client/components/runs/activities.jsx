@@ -100,7 +100,7 @@ export default class Activities extends React.Component {
           </div>
           <div className="flex justify-end">
             <div className="flex justify-center items-center bg-blue-100 rounded-2xl shadow-2xl border-2 border-blue-200 fixed bottom-8">
-              <a className="text-4xl xs:text-5xl font-bold text-blue-800 block pl-5 pr-5 pt-3 pb-2.5 xs:pl-6 xs:pr-6 xs:pt-3.5 xs:pb-3.5" href="#run-form?mode=add">+</a>
+              <a className="text-4xl xs:text-5xl flex justify-center items-center font-bold text-blue-800 w-[55px] h-[55px] xs:w-[70px] xs:h-[70px]" href="#run-form?mode=add">+</a>
             </div>
           </div>
         </section>
