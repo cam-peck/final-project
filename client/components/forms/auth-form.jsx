@@ -94,7 +94,7 @@ export default class AuthForm extends React.Component {
       ? <p className="text-red-500 text-xs italic -mt-2.5 mb-4 ml-6">Invalid username or password</p>
       : '';
     const dataLoadingSpinner = fetchingData === true
-      ? <LoadingSpinner />
+      ? <LoadingSpinner darkbg={true} />
       : '';
     return (
       <div className="max-w-md mx-auto">
