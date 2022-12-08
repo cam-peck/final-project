@@ -1,6 +1,7 @@
 import React from 'react';
 import { AppContext } from '../../lib';
 import { format } from 'date-fns';
+import LoadingSpinner from '../loading-spinner';
 
 export default class Profile extends React.Component {
   constructor(props) {
@@ -35,7 +36,7 @@ export default class Profile extends React.Component {
 
   render() {
     if (!this.state.email) {
-      return 'loading';
+      return <LoadingSpinner />;
     }
     const { email, displayName, dateOfBirth } = this.state;
     const dt = new Date(dateOfBirth);

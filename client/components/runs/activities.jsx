@@ -3,6 +3,7 @@ import TextInput from '../inputs/text-input';
 import RunMiniCard from '../cards/run-mini-card';
 import RunMainCard from '../cards/run-main-card';
 import { AppContext } from '../../lib';
+import LoadingSpinner from '../loading-spinner';
 
 export default class Activities extends React.Component {
   constructor(props) {
@@ -65,6 +66,9 @@ export default class Activities extends React.Component {
 
   render() {
     const { runData } = this.state;
+    if (runData.length === 0) {
+      return <LoadingSpinner />;
+    }
     const modal = this.state.modalIsOpen === true
       ? <RunMainCard
           entryId={this.state.openRun.entryId}
