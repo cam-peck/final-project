@@ -4,6 +4,7 @@ import RunMiniCard from '../cards/run-mini-card';
 import RunMainCard from '../cards/run-main-card';
 import { AppContext } from '../../lib';
 import LoadingSpinner from '../loading-spinner';
+import NetworkError from '../network-error';
 
 export default class Activities extends React.Component {
   constructor(props) {
@@ -11,7 +12,9 @@ export default class Activities extends React.Component {
     this.state = {
       runData: [],
       modalIsOpen: false,
-      openRun: {}
+      openRun: {},
+      fetchingData: false,
+      networkError: false
     };
     this.openModal = this.openModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
@@ -19,16 +22,28 @@ export default class Activities extends React.Component {
   }
 
   componentDidMount() {
-    const req = {
-      method: 'GET',
-      headers: {
-        'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
-      },
-      user: this.context.user
-    };
-    fetch('/api/runs', req)
-      .then(response => response.json())
-      .then(result => this.setState({ runData: result }));
+    this.setState({
+      fetchingData: true
+    }, () => {
+      const req = {
+        method: 'GET',
+        headers: {
+          'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
+        },
+        user: this.context.user
+      };
+      fetch('/api/runs', req)
+        .then(response => response.json())
+        .then(result => this.setState({ runData: result, fetchingData: false })
+        )
+        .catch(error => {
+          console.error('There was an error!', error);
+          this.setState({
+            networkError: true
+          });
+        });
+    });
+
   }
 
   openModal(entryId) {
@@ -44,31 +59,43 @@ export default class Activities extends React.Component {
   }
 
   deleteRun(entryId) {
-    const { user } = this.context;
-    const { runData } = this.state;
-    const req = {
-      method: 'DELETE',
-      headers: {
-        'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
-      },
-      user
-    };
-    fetch(`/api/runs/${entryId}`, req)
-      .then(response => response.json())
-      .then(result => {
-        const indexToRemove = runData.findIndex(run => run.entryId === entryId);
-        const newRunData = Array.from(runData);
-        newRunData.splice(indexToRemove, 1);
-        this.setState({ openRun: {}, runData: newRunData });
-        this.closeModal();
+    this.setState({ fetchingData: true },
+      () => {
+        const { user } = this.context;
+        const { runData } = this.state;
+        const req = {
+          method: 'DELETE',
+          headers: {
+            'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
+          },
+          user
+        };
+        fetch(`/api/runs/${entryId}`, req)
+          .then(response => response.json())
+          .then(result => {
+            const indexToRemove = runData.findIndex(run => run.entryId === entryId);
+            const newRunData = Array.from(runData);
+            newRunData.splice(indexToRemove, 1);
+            this.setState({ openRun: {}, runData: newRunData, fetchingData: false });
+            this.closeModal();
+          })
+          .catch(error => {
+            console.error('There was an error!', error);
+            this.setState({
+              networkError: true
+            });
+          });
       });
   }
 
   render() {
-    const { runData } = this.state;
-    if (runData.length === 0) {
-      return <LoadingSpinner />;
+    const { runData, networkError, fetchingData } = this.state;
+    if (networkError) {
+      return <NetworkError />;
     }
+    const dataLoadingSpinner = fetchingData === true
+      ? <LoadingSpinner darkbg={false} />
+      : '';
     const modal = this.state.modalIsOpen === true
       ? <RunMainCard
           entryId={this.state.openRun.entryId}
@@ -109,6 +136,7 @@ export default class Activities extends React.Component {
           </div>
         </section>
         {modal}
+        {dataLoadingSpinner}
       </>
     );
   }

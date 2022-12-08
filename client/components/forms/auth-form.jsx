@@ -15,7 +15,8 @@ export default class AuthForm extends React.Component {
       dateOfBirth: '',
       profilePhoto: 'example.png',
       signInWasInvalid: false,
-      fetchingData: false
+      fetchingData: false,
+      networkError: false
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -30,7 +31,8 @@ export default class AuthForm extends React.Component {
       dateOfBirth: '',
       profilePhoto: 'example.png',
       signInWasInvalid: false,
-      fetchingData: false
+      fetchingData: false,
+      networkError: false
     });
   }
 
@@ -72,6 +74,13 @@ export default class AuthForm extends React.Component {
           } else {
             this.setState({ signInWasInvalid: true, fetchingData: false });
           }
+        })
+        .catch(error => {
+          console.error('There was an error!', error);
+          this.setState({
+            networkError: true,
+            fetchingData: false
+          });
         });
     });
 
@@ -80,7 +89,7 @@ export default class AuthForm extends React.Component {
   render() {
     const { action } = this.props; // either sign-in or sign-out
     const { handleChange, handleSubmit, handleDateChange } = this;
-    const { email, password, displayName, dateOfBirth, signInWasInvalid, fetchingData } = this.state;
+    const { email, password, displayName, dateOfBirth, signInWasInvalid, fetchingData, networkError } = this.state;
     const formButton = action === 'sign-in'
       ? 'Log in'
       : 'Create Account';
@@ -91,7 +100,10 @@ export default class AuthForm extends React.Component {
         <DatePicker className="w-full rounded-lg px-3 py-3.5 border border-gray-300 focus:outline-blue-500 mb-4" selected={dateOfBirth} onChange={handleDateChange} dateFormat='MM/dd/yyy' maxDate={subYears(new Date(), 10)} minDate={subYears(new Date(), 100)} placeholderText='Date of Birth' required/>
       </>;
     const invalidSignIn = signInWasInvalid
-      ? <p className="text-red-500 text-xs italic -mt-2.5 mb-4 ml-6">Invalid username or password</p>
+      ? <p className="text-red-500 text-xs italic -mt-1.5 mb-3 ml-2">Invalid username or password</p>
+      : '';
+    const networkErrorMsg = networkError
+      ? <p className="text-red-500 text-xs italic -mt-1.5 mb-3 ml-2">There was an error connecting to the network. Please check your internet connection and try again.</p>
       : '';
     const dataLoadingSpinner = fetchingData === true
       ? <LoadingSpinner darkbg={true} />
@@ -103,6 +115,7 @@ export default class AuthForm extends React.Component {
           <TextInput type="password" name="password" placeholder="Password" value={password} showLabel={false} onChange={handleChange} />
           {registerAccountInputs}
           {invalidSignIn}
+          {networkErrorMsg}
           <div>
             <button className="w-full bg-blue-500 transition ease-in-out duration-300 hover:bg-blue-600 text-white p-3 rounded-lg font-bold text-lg">{formButton}</button>
           </div>
