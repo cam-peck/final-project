@@ -3,12 +3,15 @@ import { AppContext } from '../../lib';
 import ProgressSquares from '../progress-squares/progress-squares';
 import WeeklyRunChart from '../week-progress-chart/weekly-run-chart';
 import LoadingSpinner from '../loading-spinner';
+import NetworkError from '../network-error';
 
 export default class Progress extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      yearlyRunData: []
+      yearlyRunData: [],
+      fetchingData: true,
+      networkError: false
     };
   }
 
@@ -25,16 +28,24 @@ export default class Progress extends React.Component {
       .then(response => response.json())
       .then(result => {
         this.setState({
-          yearlyRunData: result
+          yearlyRunData: result,
+          fetchingData: false
         });
+      })
+      .catch(error => {
+        console.error('An error occured!', error);
+        this.setState({ networkError: true });
       });
   }
 
   render() {
-    const { yearlyRunData } = this.state;
-    if (yearlyRunData.length === 0) {
+    if (this.state.networkError) {
+      return <NetworkError />;
+    }
+    if (this.state.fetchingData) {
       return <LoadingSpinner />;
     }
+    const { yearlyRunData } = this.state;
     return (
       <section className="pl-6 pr-6 max-w-6xl m-auto mt-6">
         <h1 className="font-lora font-medium text-2xl mb-6">My Progress</h1>

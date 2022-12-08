@@ -13,7 +13,7 @@ export default class Activities extends React.Component {
       runData: [],
       modalIsOpen: false,
       openRun: {},
-      fetchingData: false,
+      fetchingData: true,
       networkError: false
     };
     this.openModal = this.openModal.bind(this);
@@ -22,28 +22,23 @@ export default class Activities extends React.Component {
   }
 
   componentDidMount() {
-    this.setState({
-      fetchingData: true
-    }, () => {
-      const req = {
-        method: 'GET',
-        headers: {
-          'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
-        },
-        user: this.context.user
-      };
-      fetch('/api/runs', req)
-        .then(response => response.json())
-        .then(result => this.setState({ runData: result, fetchingData: false })
-        )
-        .catch(error => {
-          console.error('There was an error!', error);
-          this.setState({
-            networkError: true
-          });
+    const req = {
+      method: 'GET',
+      headers: {
+        'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
+      },
+      user: this.context.user
+    };
+    fetch('/api/runs', req)
+      .then(response => response.json())
+      .then(result => this.setState({ runData: result, fetchingData: false })
+      )
+      .catch(error => {
+        console.error('There was an error!', error);
+        this.setState({
+          networkError: true
         });
-    });
-
+      });
   }
 
   openModal(entryId) {
@@ -89,13 +84,13 @@ export default class Activities extends React.Component {
   }
 
   render() {
-    const { runData, networkError, fetchingData } = this.state;
-    if (networkError) {
+    if (this.state.networkError) {
       return <NetworkError />;
     }
-    const dataLoadingSpinner = fetchingData === true
-      ? <LoadingSpinner darkbg={false} />
-      : '';
+    if (this.state.fetchingData) {
+      return <LoadingSpinner />;
+    }
+    const { runData } = this.state;
     const modal = this.state.modalIsOpen === true
       ? <RunMainCard
           entryId={this.state.openRun.entryId}
@@ -136,7 +131,6 @@ export default class Activities extends React.Component {
           </div>
         </section>
         {modal}
-        {dataLoadingSpinner}
       </>
     );
   }

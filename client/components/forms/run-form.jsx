@@ -8,6 +8,7 @@ import DistanceInput from '../inputs/distance-input';
 import DurationInput from '../inputs/duration-input';
 import UploadRunCard from '../cards/upload-run-card';
 import LoadingSpinner from '../loading-spinner';
+import NetworkError from '../network-error';
 
 export default class RunForm extends React.Component {
   constructor(props) {
@@ -22,7 +23,8 @@ export default class RunForm extends React.Component {
       distance: '',
       distanceUnits: 'miles',
       hasGpx: false,
-      fetchingData: false
+      fetchingData: false,
+      networkError: false
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -30,9 +32,11 @@ export default class RunForm extends React.Component {
   }
 
   componentDidMount() {
-    this.setState({ fetchingData: true }, () => {
-      const { route, user } = this.context;
-      if (route.params.get('mode') === 'edit') {
+    const { route, user } = this.context;
+    if (route.params.get('mode') === 'edit') {
+      this.setState({
+        fetchingData: true
+      }, () => {
         const entryId = Number(route.params.get('entryId'));
         const req = {
           method: 'GET',
@@ -61,9 +65,14 @@ export default class RunForm extends React.Component {
               hasGpx,
               fetchingData: false
             });
+          })
+          .catch(error => {
+            console.error('An error occured!', error);
+            this.setState({ networkError: true });
           });
-      }
-    });
+      });
+
+    }
   }
 
   handleChange(event) {
@@ -111,21 +120,28 @@ export default class RunForm extends React.Component {
             fetchingData: false
           });
           window.location.hash = '#home?tab=activities';
+        })
+        .catch(error => {
+          console.error('An error occured!', error);
+          this.setState({ networkError: true });
         });
     });
   }
 
   render() {
-    const { title, description, date, distance, distanceUnits, durationHours, durationMinutes, durationSeconds, fetchingData } = this.state;
+    if (this.state.networkError) {
+      return <NetworkError />;
+    }
+    if (this.state.fetchingData) {
+      return <LoadingSpinner />;
+    }
+    const { title, description, date, distance, distanceUnits, durationHours, durationMinutes, durationSeconds } = this.state;
     const { handleChange, handleSubmit, handleDateChange } = this;
     const durationObj = { durationHours, durationMinutes, durationSeconds };
     const pace = calculatePace(distance, distanceUnits, durationHours, durationMinutes, durationSeconds);
     const buttonText = this.context.route.params.get('mode') === 'add'
       ? 'Add Run'
       : 'Save Changes';
-    const loadingSpinner = fetchingData === true
-      ? <LoadingSpinner />
-      : '';
     return (
       <form className="w-full" onSubmit={handleSubmit}>
         <div className="md:flex md:gap-6">
@@ -145,7 +161,6 @@ export default class RunForm extends React.Component {
         <div className="flex justify-end mt-2 mb-8">
           <button className="md:w-1/4 w-full bg-blue-500 transition ease-in-out duration-300 hover:bg-blue-600 text-white p-3 rounded-lg font-bold text-lg">{buttonText}</button>
         </div>
-        {loadingSpinner}
       </form>
     );
   }

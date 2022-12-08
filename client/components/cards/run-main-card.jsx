@@ -79,20 +79,6 @@ export default class RunMainCard extends React.Component {
               <p>{description}</p>
             </div>
           </div>
-          {/* tab-menu
-          <div className="modal-footer">
-            <RunTabs>
-              <div label="Notes">
-                <p>Notes</p>
-              </div>
-              <div label="Pace">
-                <p>Pace</p>
-              </div>
-              <div label="Elevation">
-                <p>Elevation</p>
-              </div>
-            </RunTabs>
-          </div> */}
         </div>
         {snackbarIsOpen === true
           ? <DeleteSnackbar isOpen={snackbarIsOpen} toggle={toggleSnack} entryId={entryId} handleDelete={handleDelete}/>
