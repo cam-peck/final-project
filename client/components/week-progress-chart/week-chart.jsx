@@ -15,7 +15,7 @@ export default class WeekChart extends React.Component {
     this.dimensions = {
       height: 250,
       chartHeight: 225,
-      marginLeft: 32,
+      marginLeft: 36,
       marginTop: 4
     };
   }
@@ -39,6 +39,9 @@ export default class WeekChart extends React.Component {
     const { SVGwidth, chartWidth } = this.state;
     const { DIVref } = this;
     const { data } = this.props;
+    if (data.weeklySumData.distance === 0) {
+      return;
+    }
 
     const chartSVG = select(DIVref.current)
       .append('svg')
@@ -47,11 +50,11 @@ export default class WeekChart extends React.Component {
       .classed('svg-chart', true);
 
     const x = scaleBand()
-      .domain(data.map(d => d.date))
+      .domain(data.mappedWeek.map(d => d.date))
       .range([0, chartWidth - 0.5 * marginLeft]);
 
     const y = scaleLinear()
-      .domain([0, Math.floor((max(data, d => d.distance) + 1))])
+      .domain([0, Math.floor((max(data.mappedWeek, d => d.distance) + 1))])
       .range([chartHeight, 0]);
 
     const xAxis = axisBottom(x)
@@ -88,7 +91,7 @@ export default class WeekChart extends React.Component {
     // Line //
     chartSVG
       .append('path')
-      .data([data])
+      .data([data.mappedWeek])
       .attr('class', 'line')
       .attr('fill', 'none')
       .attr('transform', `translate(${marginLeft + (chartWidth * 0.070)}, ${marginTop})`)
@@ -102,7 +105,7 @@ export default class WeekChart extends React.Component {
     // Data Points //
     chartSVG
       .selectAll('circle')
-      .data(data)
+      .data(data.mappedWeek)
       .enter()
       .append('circle')
       .attr('transform', `translate(${marginLeft + (chartWidth * 0.070)}, ${marginTop})`) // transforms entire graph
@@ -129,8 +132,16 @@ export default class WeekChart extends React.Component {
 
   render() {
     const { DIVref } = this;
+    const { data } = this.props;
     return (
-      <div ref={DIVref} />
+      <section>
+        <div ref={DIVref} />
+        {
+          data.weeklySumData.distance === 0
+            ? <p className="italic text-center">No runs found in the last 7 days...</p>
+            : ''
+        }
+      </section>
     );
   }
 }

@@ -20,7 +20,7 @@ export default class WeeklyRunChart extends React.Component {
           <WeeklyRunChartHeader data={weeklyLineData.weeklySumData} />
         </section>
         <section>
-          <WeekChart data={weeklyLineData.mappedWeek} />
+          <WeekChart data={weeklyLineData} />
         </section>
       </div>
     );

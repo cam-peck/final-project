@@ -16,7 +16,11 @@ export default function getWeeklyLineData(runData) {
 
   // If there are no runs within the last week, return the array with 0.00 distances
   if (runData.runDates.length === 0) {
-    return mappedWeek;
+    const weeklySumData = {
+      distance: 0,
+      duration: { hours: 0, minutes: 0, seconds: 0 }
+    };
+    return { mappedWeek, weeklySumData };
   }
 
   // If there are runs, grab the last week of runs from the larger array and ensure they're all in miles and formatted correctly

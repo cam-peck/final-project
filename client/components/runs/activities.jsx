@@ -109,21 +109,27 @@ export default class Activities extends React.Component {
         <section className="pl-6 pr-6 max-w-lg md:max-w-2xl lg:max-w-6xl m-auto mt-6">
           <h1 className="font-lora font-medium text-2xl mb-4">My Activities</h1>
           <TextInput placeholder="Searchbar"/>
-          <div className="lg:grid lg:grid-cols-2 lg:gap-8">
-            {runData.map(run => {
-              return (
-                <RunMiniCard
-            key={run.entryId}
-            entryId={run.entryId}
-            date={run.date}
-            distance={run.distance}
-            distanceUnits={run.distanceUnits}
-            duration={run.duration}
-            openModal={this.openModal}
-            />
-              );
-            })}
-          </div>
+          {
+            runData.length === 0
+              ? <p className="text-center italic">No runs found... Add a run using the &quot;+&quot; button in the bottom right.</p>
+              : <div className="lg:grid lg:grid-cols-2 lg:gap-8">
+                {
+                  runData.map(run => {
+                    return (
+                      <RunMiniCard
+                      key={run.entryId}
+                      entryId={run.entryId}
+                      date={run.date}
+                      distance={run.distance}
+                      distanceUnits={run.distanceUnits}
+                      duration={run.duration}
+                      openModal={this.openModal}
+                    />
+                    );
+                  })
+                }
+              </div>
+            }
           <div className="flex justify-end">
             <div className="flex justify-center items-center bg-blue-100 rounded-2xl shadow-2xl border-2 border-blue-200 fixed bottom-8">
               <a className="text-4xl xs:text-5xl flex justify-center items-center font-bold text-blue-800 w-[55px] h-[55px] xs:w-[70px] xs:h-[70px]" href="#run-form?mode=add">+</a>
