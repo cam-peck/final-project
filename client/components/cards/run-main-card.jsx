@@ -47,8 +47,8 @@ export default class RunMainCard extends React.Component {
     const { toggleMenuIsOpen, snackbarIsOpen } = this.state;
     const { handleClick, handleDelete, toggleMenu, toggleSnack } = this;
     return (
-      <div onClick={event => { if (event.target.id === 'background') { closeModal(); } }} id="background" className="w-full h-screen fixed flex justify-center items-center top-0 left-0 bg-gray-800 bg-opacity-30 z-10">
-        <div className="relative bg-white rounded-xl p-6 max-w-2xl ml-6 mr-6">
+      <div onClick={event => { if (event.target.id === 'background') { closeModal(); } }} id="background" className="w-full overflow-y-scroll h-screen fixed flex justify-center items-center top-0 left-0 bg-gray-800 bg-opacity-30 z-10">
+        <div className="absolute top-20 x2s:relative x2s:-top-12 bg-white rounded-xl p-6 max-w-2xl ml-6 mr-6">
           <button onClick={closeModal} className="absolute -top-4 -right-5 w-10 h-10 rounded-full bg-red-600 text-white"><i className="fa-regular fa-xl fa-circle-xmark" /></button>
           {/* hero-img */}
           <div className="mb-6">
@@ -58,8 +58,8 @@ export default class RunMainCard extends React.Component {
           <div className="pl-1">
             {/* content-header */}
             <div className="mb-4">
-              <div className="flex justify-between items-center relative">
-                <h1 className="font-lora text-xl font-bold">{title}</h1>
+              <div className="flex justify-between items-center relative mb-1">
+                <h1 className="font-lora text-lg md:text-xl font-bold">{title}</h1>
                 <i onClick={toggleMenu} className="fa-solid fa-lg fa-ellipsis-vertical hover:cursor-pointer block pl-2 pt-3 pb-3" />
                 {toggleMenuIsOpen === true
                   ? <div onClick={(event, entryID) => handleClick(event, entryId)} className="flex flex-col absolute right-4 top-1 text-sm bg-gray-100 text-black rounded-sm shadow-md">
@@ -68,14 +68,20 @@ export default class RunMainCard extends React.Component {
                   </div>
                   : '' }
               </div>
-              <p className="flex-col x2s:flex-row flex gap-2 font-lora text-lg">
-                <span>{formattedDate}</span>  <span className="hidden x2s:block">|</span>
-                <span>{distance} {distanceUnits}</span>   <span className="hidden x2s:block">|</span>
-                <span>{pace}</span>
-              </p>
+              <div className="flex flex-col x2s:flex-row font-lora text-md md:text-lg">
+                <div className="mb-1 flex">
+                  <p>{formattedDate}</p>
+                  <span className="hidden x2s:block pr-2 pl-2">|</span>
+                </div>
+                <div className="flex gap-2">
+                  <p className=''>{distance} {distanceUnits}</p>
+                  <span className="block">|</span>
+                  <p>{pace}</p>
+                </div>
+              </div>
             </div>
             {/* content-main */}
-            <div className="font-roboto max-w-lg mb-4">
+            <div className="font-roboto text-md max-w-lg mb-4">
               <p>{description}</p>
             </div>
           </div>
