@@ -10,19 +10,15 @@ export default class ProgressSquares extends React.Component {
     this.state = {
       isDown: false,
       startX: 0,
-      scrollLeft: 0,
-      dataHasLoaded: false
+      scrollLeft: 0
     };
     this.setMouseDown = this.setMouseDown.bind(this);
     this.setMouseUp = this.setMouseUp.bind(this);
     this.drag = this.drag.bind(this);
   }
 
-  componentDidUpdate() { // scroll activity doesn't work before data has arrived to component (which happens AFTER component did mount)
-    if (this.state.dataHasLoaded === false) {
-      this.ref.current.scrollTo(1500, 0);
-      this.setState({ dataHasLoaded: true });
-    }
+  componentDidMount() {
+    this.ref.current.scrollLeft = this.ref.current.scrollWidth;
   }
 
   setMouseDown(event) {
@@ -50,7 +46,7 @@ export default class ProgressSquares extends React.Component {
       <div className="bg-white pl-6 pr-6 pt-5 pb-3 rounded-xl border border-gray-300 shadow-sm">
         <ProgressSquareHeader data={runningSquareSumData}/>
         <hr className="border"/>
-        <div ref={ref} onMouseDown={event => setMouseDown(event)} onMouseUp={setMouseUp} onMouseMove={event => drag(event)} onMouseLeave={setMouseUp} className="overflow-scroll overflow-y-hidden active:cursor-grabbing active:scale-[1.01]">
+        <div ref={ref} onMouseDown={event => setMouseDown(event)} onMouseUp={setMouseUp} onMouseMove={event => drag(event)} onMouseLeave={setMouseUp} className="overflow-scroll active:cursor-grabbing active:scale-[1.01]">
           <div className="flex">
             <div className="flex flex-col justify-evenly gap-2 items-center mr-4 mt-11">
               <h1>Mon</h1>
