@@ -21,6 +21,7 @@ export default class AuthForm extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleDateChange = this.handleDateChange.bind(this);
+    this.oneClickSignIn = this.oneClickSignIn.bind(this);
   }
 
   resetState() {
@@ -86,9 +87,42 @@ export default class AuthForm extends React.Component {
 
   }
 
+  oneClickSignIn() {
+    this.setState({ fetchingData: true }, () => {
+      const req = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: 'catman@catzrule.net',
+          password: 'password1'
+        })
+      };
+      fetch('/api/auth/sign-in', req)
+        .then(response => response.json())
+        .then(result => {
+          if (result.user && result.token) {
+            this.resetState();
+            this.props.onSignIn(result);
+            window.location.hash = '#home?tab=activities';
+          } else {
+            this.setState({ signInWasInvalid: true, fetchingData: false });
+          }
+        })
+        .catch(error => {
+          console.error('There was an error!', error);
+          this.setState({
+            networkError: true,
+            fetchingData: false
+          });
+        });
+    });
+  }
+
   render() {
     const { action } = this.props; // either sign-in or sign-out
-    const { handleChange, handleSubmit, handleDateChange } = this;
+    const { handleChange, handleSubmit, handleDateChange, oneClickSignIn } = this;
     const { email, password, displayName, dateOfBirth, signInWasInvalid, fetchingData, networkError } = this.state;
     const formButton = action === 'sign-in'
       ? 'Log in'
@@ -117,8 +151,16 @@ export default class AuthForm extends React.Component {
           {invalidSignIn}
           {networkErrorMsg}
           <div>
-            <button className="w-full bg-blue-500 transition ease-in-out duration-300 hover:bg-blue-600 text-white p-3 rounded-lg font-bold text-lg">{formButton}</button>
+            <button className="w-full bg-blue-500 transition-colors ease-in-out duration-300 hover:bg-blue-600 text-white p-3 rounded-lg font-bold text-lg mb-2">{formButton}</button>
           </div>
+          {
+            action === 'sign-in'
+              ? <div className="flex gap-2">
+                <button type="button" onClick={oneClickSignIn} className="w-1/2 bg-orange-400 transition-colors ease-in-out duration-300 text-white p-3 rounded-lg font-bold text-lg">Try me out!</button>
+                <a className="w-1/2 bg-green-500 transition-colors ease-in-out duration-300 text-white p-3 rounded-lg font-bold text-lg text-center" href="#sign-up" >Register</a>
+              </div>
+              : <p className="font-roboto text-center">Already have an account? <a href="#sign-in" className="font-roboto text-blue-500 underline">Sign in</a> </p>
+          }
           {dataLoadingSpinner}
         </form>
       </div>
