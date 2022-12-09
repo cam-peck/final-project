@@ -6,7 +6,6 @@ import { subYears } from 'date-fns';
 import 'react-datepicker/dist/react-datepicker.css';
 import DistanceInput from '../inputs/distance-input';
 import DurationInput from '../inputs/duration-input';
-import UploadRunCard from '../cards/upload-run-card';
 import LoadingSpinner from '../loading-spinner';
 import NetworkError from '../network-error';
 
@@ -145,10 +144,7 @@ export default class RunForm extends React.Component {
     return (
       <form className="w-full" onSubmit={handleSubmit}>
         <div className="md:flex md:gap-6">
-          <div className="md:w-2/4 w-full">
-            <UploadRunCard />
-          </div>
-          <div className="md:w-2/4 w-full">
+          <div className="w-full">
             <p className="font-lora font-md text-md font-medium pb-2" >Date</p>
             <DatePicker className="w-full rounded-lg px-3 py-3.5 border border-gray-300 focus:outline-blue-500 mb-4" selected={date} onChange={handleDateChange} dateFormat='MM/dd/yyy' maxDate={new Date()} minDate={subYears(new Date(), 80)} required/>
             <DistanceInput distanceValue={distance} distanceTypeValue={distanceUnits} onChange={handleChange}/>
@@ -159,7 +155,7 @@ export default class RunForm extends React.Component {
         <TextInput type="text" name="title" showLabel={true} label="Title" placeholder="Morning Sun Run" value={title} onChange={handleChange} />
         <TextInput type="text" name="description" showLabel={true} label="Description" placeholder="Easy run with great weather -- nice recovery day" value={description} onChange={handleChange} />
         <div className="flex justify-end mt-2 mb-8">
-          <button className="md:w-1/4 w-full bg-blue-500 transition ease-in-out duration-300 hover:bg-blue-600 text-white p-3 rounded-lg font-bold text-lg">{buttonText}</button>
+          <button className="md:w-1/3 w-full bg-blue-500 transition ease-in-out duration-300 hover:bg-blue-600 text-white p-3 rounded-lg font-bold text-lg">{buttonText}</button>
         </div>
       </form>
     );
