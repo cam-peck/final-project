@@ -47,7 +47,7 @@ export default class RunMainCard extends React.Component {
     const { toggleMenuIsOpen, snackbarIsOpen } = this.state;
     const { handleClick, handleDelete, toggleMenu, toggleSnack } = this;
     return (
-      <div onClick={event => { if (event.target.id === 'background') { closeModal(); } }} id="background" className="w-full h-screen fixed flex justify-center items-center top-0 left-0 bg-gray-800 bg-opacity-30">
+      <div onClick={event => { if (event.target.id === 'background') { closeModal(); } }} id="background" className="w-full h-screen fixed flex justify-center items-center top-0 left-0 bg-gray-800 bg-opacity-30 z-10">
         <div className="relative bg-white rounded-xl p-6 max-w-2xl ml-6 mr-6">
           <button onClick={closeModal} className="absolute -top-4 -right-5 w-10 h-10 rounded-full bg-red-600 text-white"><i className="fa-regular fa-xl fa-circle-xmark" /></button>
           {/* hero-img */}
@@ -79,20 +79,6 @@ export default class RunMainCard extends React.Component {
               <p>{description}</p>
             </div>
           </div>
-          {/* tab-menu
-          <div className="modal-footer">
-            <RunTabs>
-              <div label="Notes">
-                <p>Notes</p>
-              </div>
-              <div label="Pace">
-                <p>Pace</p>
-              </div>
-              <div label="Elevation">
-                <p>Elevation</p>
-              </div>
-            </RunTabs>
-          </div> */}
         </div>
         {snackbarIsOpen === true
           ? <DeleteSnackbar isOpen={snackbarIsOpen} toggle={toggleSnack} entryId={entryId} handleDelete={handleDelete}/>

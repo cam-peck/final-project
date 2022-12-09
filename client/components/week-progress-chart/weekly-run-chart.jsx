@@ -13,9 +13,6 @@ export default class WeeklyRunChart extends React.Component {
 
   render() {
     const { data } = this.props;
-    if (data.length === 0) {
-      return 'loading';
-    }
     const weeklyLineData = getWeeklyLineData(data);
     return (
       <div className="bg-white pl-6 pr-6 pt-5 pb-5 rounded-xl border border-gray-300 shadow-sm">
@@ -23,7 +20,7 @@ export default class WeeklyRunChart extends React.Component {
           <WeeklyRunChartHeader data={weeklyLineData.weeklySumData} />
         </section>
         <section>
-          <WeekChart data={weeklyLineData.mappedWeek} />
+          <WeekChart data={weeklyLineData} />
         </section>
       </div>
     );

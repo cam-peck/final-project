@@ -43,9 +43,6 @@ export default class ProgressSquares extends React.Component {
 
   render() {
     const { data } = this.props;
-    if (data.length === 0) {
-      return 'loading';
-    }
     const runningSquareData = formatRunningSquares(data);
     const runningSquareSumData = getSquaresSumData(data);
     const { setMouseDown, setMouseUp, drag, ref } = this;

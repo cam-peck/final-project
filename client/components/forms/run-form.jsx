@@ -7,6 +7,8 @@ import 'react-datepicker/dist/react-datepicker.css';
 import DistanceInput from '../inputs/distance-input';
 import DurationInput from '../inputs/duration-input';
 import UploadRunCard from '../cards/upload-run-card';
+import LoadingSpinner from '../loading-spinner';
+import NetworkError from '../network-error';
 
 export default class RunForm extends React.Component {
   constructor(props) {
@@ -20,7 +22,9 @@ export default class RunForm extends React.Component {
       durationSeconds: '',
       distance: '',
       distanceUnits: 'miles',
-      hasGpx: false
+      hasGpx: false,
+      fetchingData: false,
+      networkError: false
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -30,34 +34,44 @@ export default class RunForm extends React.Component {
   componentDidMount() {
     const { route, user } = this.context;
     if (route.params.get('mode') === 'edit') {
-      const entryId = Number(route.params.get('entryId'));
-      const req = {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
-        },
-        user
-      };
-      fetch(`/api/runs/${entryId}`, req)
-        .then(response => response.json())
-        .then(result => {
-          const { title, description, date, duration, distance, distanceUnits, hasGpx } = result[0];
-          const splitDuration = duration.split(':');
-          const dt = new Date(date);
-          const dtDateOnly = new Date(dt.valueOf() + dt.getTimezoneOffset() * 60 * 1000);
-          this.setState({
-            title,
-            description,
-            date: dtDateOnly,
-            durationHours: splitDuration[0],
-            durationMinutes: splitDuration[1],
-            durationSeconds: splitDuration[2],
-            distance,
-            distanceUnits,
-            hasGpx
+      this.setState({
+        fetchingData: true
+      }, () => {
+        const entryId = Number(route.params.get('entryId'));
+        const req = {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
+          },
+          user
+        };
+        fetch(`/api/runs/${entryId}`, req)
+          .then(response => response.json())
+          .then(result => {
+            const { title, description, date, duration, distance, distanceUnits, hasGpx } = result[0];
+            const splitDuration = duration.split(':');
+            const dt = new Date(date);
+            const dtDateOnly = new Date(dt.valueOf() + dt.getTimezoneOffset() * 60 * 1000);
+            this.setState({
+              title,
+              description,
+              date: dtDateOnly,
+              durationHours: splitDuration[0],
+              durationMinutes: splitDuration[1],
+              durationSeconds: splitDuration[2],
+              distance,
+              distanceUnits,
+              hasGpx,
+              fetchingData: false
+            });
+          })
+          .catch(error => {
+            console.error('An error occured!', error);
+            this.setState({ networkError: true });
           });
-        });
+      });
+
     }
   }
 
@@ -76,36 +90,51 @@ export default class RunForm extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    const { route, user } = this.context;
-    const mode = route.params.get('mode');
-    const req = {
-      method: `${mode === 'add' ? 'POST' : 'PUT'}`,
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
-      },
-      user,
-      body: JSON.stringify(this.state)
-    };
-    fetch(`${mode === 'add' ? '/api/runs' : '/api/runs/' + route.params.get('entryId')}`, req)
-      .then(response => response.json())
-      .then(result => {
-        this.setState({
-          title: '',
-          description: '',
-          date: '',
-          durationHours: '',
-          durationMinutes: '',
-          durationSeconds: '',
-          distance: '',
-          distanceUnits: 'miles',
-          hasGpx: false
+    this.setState({
+      fetchingData: true
+    }, () => {
+      const { route, user } = this.context;
+      const mode = route.params.get('mode');
+      const req = {
+        method: `${mode === 'add' ? 'POST' : 'PUT'}`,
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
+        },
+        user,
+        body: JSON.stringify(this.state)
+      };
+      fetch(`${mode === 'add' ? '/api/runs' : '/api/runs/' + route.params.get('entryId')}`, req)
+        .then(response => response.json())
+        .then(result => {
+          this.setState({
+            title: '',
+            description: '',
+            date: '',
+            durationHours: '',
+            durationMinutes: '',
+            durationSeconds: '',
+            distance: '',
+            distanceUnits: 'miles',
+            hasGpx: false,
+            fetchingData: false
+          });
+          window.location.hash = '#home?tab=activities';
+        })
+        .catch(error => {
+          console.error('An error occured!', error);
+          this.setState({ networkError: true });
         });
-        window.location.hash = '#home?tab=activities';
-      });
+    });
   }
 
   render() {
+    if (this.state.networkError) {
+      return <NetworkError />;
+    }
+    if (this.state.fetchingData) {
+      return <LoadingSpinner />;
+    }
     const { title, description, date, distance, distanceUnits, durationHours, durationMinutes, durationSeconds } = this.state;
     const { handleChange, handleSubmit, handleDateChange } = this;
     const durationObj = { durationHours, durationMinutes, durationSeconds };

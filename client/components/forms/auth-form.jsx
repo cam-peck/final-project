@@ -3,6 +3,7 @@ import TextInput from '../inputs/text-input';
 import DatePicker from 'react-datepicker';
 import { subYears } from 'date-fns';
 import 'react-datepicker/dist/react-datepicker.css';
+import LoadingSpinner from '../loading-spinner';
 
 export default class AuthForm extends React.Component {
   constructor(props) {
@@ -13,7 +14,9 @@ export default class AuthForm extends React.Component {
       displayName: '',
       dateOfBirth: '',
       profilePhoto: 'example.png',
-      signInWasInvalid: false
+      signInWasInvalid: false,
+      fetchingData: false,
+      networkError: false
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -27,7 +30,9 @@ export default class AuthForm extends React.Component {
       displayName: '',
       dateOfBirth: '',
       profilePhoto: 'example.png',
-      signInWasInvalid: false
+      signInWasInvalid: false,
+      fetchingData: false,
+      networkError: false
     });
   }
 
@@ -46,36 +51,45 @@ export default class AuthForm extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    const { action } = this.props;
-    const req = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(this.state)
-    };
-    fetch(`/api/auth/${action}`, req)
-      .then(response => response.json())
-      .then(result => {
-        if (action === 'sign-up') {
-          this.resetState();
-          window.location.hash = 'sign-in';
+    this.setState({ fetchingData: true }, () => {
+      const { action } = this.props;
+      const req = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(this.state)
+      };
+      fetch(`/api/auth/${action}`, req)
+        .then(response => response.json())
+        .then(result => {
+          if (action === 'sign-up') {
+            this.resetState();
+            window.location.hash = 'sign-in';
 
-        } else if (result.user && result.token) {
-          this.resetState();
-          this.props.onSignIn(result);
-          window.location.hash = '#home?tab=activities';
-        } else {
-          this.setState({ signInWasInvalid: true });
-        }
-      });
+          } else if (result.user && result.token) {
+            this.resetState();
+            this.props.onSignIn(result);
+            window.location.hash = '#home?tab=activities';
+          } else {
+            this.setState({ signInWasInvalid: true, fetchingData: false });
+          }
+        })
+        .catch(error => {
+          console.error('There was an error!', error);
+          this.setState({
+            networkError: true,
+            fetchingData: false
+          });
+        });
+    });
 
   }
 
   render() {
     const { action } = this.props; // either sign-in or sign-out
     const { handleChange, handleSubmit, handleDateChange } = this;
-    const { email, password, displayName, dateOfBirth, signInWasInvalid } = this.state;
+    const { email, password, displayName, dateOfBirth, signInWasInvalid, fetchingData, networkError } = this.state;
     const formButton = action === 'sign-in'
       ? 'Log in'
       : 'Create Account';
@@ -86,7 +100,13 @@ export default class AuthForm extends React.Component {
         <DatePicker className="w-full rounded-lg px-3 py-3.5 border border-gray-300 focus:outline-blue-500 mb-4" selected={dateOfBirth} onChange={handleDateChange} dateFormat='MM/dd/yyy' maxDate={subYears(new Date(), 10)} minDate={subYears(new Date(), 100)} placeholderText='Date of Birth' required/>
       </>;
     const invalidSignIn = signInWasInvalid
-      ? <p className="text-red-500 text-xs italic -mt-2.5 mb-4 ml-6">Invalid username or password</p>
+      ? <p className="text-red-500 text-xs italic -mt-1.5 mb-3 ml-2">Invalid username or password</p>
+      : '';
+    const networkErrorMsg = networkError
+      ? <p className="text-red-500 text-xs italic -mt-1.5 mb-3 ml-2">There was an error connecting to the network. Please check your internet connection and try again.</p>
+      : '';
+    const dataLoadingSpinner = fetchingData === true
+      ? <LoadingSpinner darkbg={true} />
       : '';
     return (
       <div className="max-w-md mx-auto">
@@ -95,9 +115,11 @@ export default class AuthForm extends React.Component {
           <TextInput type="password" name="password" placeholder="Password" value={password} showLabel={false} onChange={handleChange} />
           {registerAccountInputs}
           {invalidSignIn}
+          {networkErrorMsg}
           <div>
             <button className="w-full bg-blue-500 transition ease-in-out duration-300 hover:bg-blue-600 text-white p-3 rounded-lg font-bold text-lg">{formButton}</button>
           </div>
+          {dataLoadingSpinner}
         </form>
       </div>
     );

@@ -1,6 +1,8 @@
 import React from 'react';
 import { AppContext } from '../../lib';
 import { format } from 'date-fns';
+import LoadingSpinner from '../loading-spinner';
+import NetworkError from '../network-error';
 
 export default class Profile extends React.Component {
   constructor(props) {
@@ -8,7 +10,9 @@ export default class Profile extends React.Component {
     this.state = {
       email: '',
       displayName: '',
-      dateOfBirth: ''
+      dateOfBirth: '',
+      fetchingData: true,
+      networkError: false
     };
   }
 
@@ -28,14 +32,22 @@ export default class Profile extends React.Component {
         this.setState({
           email,
           displayName,
-          dateOfBirth
+          dateOfBirth,
+          fetchingData: false
         });
+      })
+      .catch(error => {
+        console.error('An error occured!', error);
+        this.setState({ networkError: true });
       });
   }
 
   render() {
-    if (!this.state.email) {
-      return 'loading';
+    if (this.state.networkError) {
+      return <NetworkError />;
+    }
+    if (this.state.fetchingData) {
+      return <LoadingSpinner />;
     }
     const { email, displayName, dateOfBirth } = this.state;
     const dt = new Date(dateOfBirth);
