@@ -95,7 +95,7 @@ export default class AuthForm extends React.Component {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          email: 'catman@catzrule.net',
+          email: 'cameronpeckruns@gmail.com',
           password: 'password1'
         })
       };
