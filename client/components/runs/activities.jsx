@@ -20,6 +20,7 @@ export default class Activities extends React.Component {
     this.openModal = this.openModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
     this.deleteRun = this.deleteRun.bind(this);
+    this.handleSearchChange = this.handleSearchChange.bind(this);
   }
 
   componentDidMount() {
@@ -84,6 +85,12 @@ export default class Activities extends React.Component {
       });
   }
 
+  handleSearchChange(event) {
+    this.setState({
+      searchText: event.target.value
+    });
+  }
+
   render() {
     if (this.state.networkError) {
       return <NetworkError />;
@@ -92,7 +99,7 @@ export default class Activities extends React.Component {
       return <LoadingSpinner />;
     }
     const { runData, searchText } = this.state;
-    const { openModal } = this.openModal;
+    const { openModal, handleSearchChange } = this;
     const modal = this.state.modalIsOpen === true
       ? <RunMainCard
           entryId={this.state.openRun.entryId}
@@ -110,11 +117,11 @@ export default class Activities extends React.Component {
       <>
         <section className="pl-6 pr-6 max-w-lg md:max-w-2xl lg:max-w-6xl m-auto mt-6">
           <h1 className="font-lora font-medium text-2xl mb-4">My Activities</h1>
-          <TextInput placeholder="Searchbar" value={searchText}/>
+          <TextInput placeholder="Searchbar" name="searchbar" id="searchbar" value={searchText} onChange={handleSearchChange}/>
           {
             runData.length === 0
               ? <p className="text-center italic">No runs found... Add a run using the &quot;+&quot; button in the bottom right.</p>
-              : <FilteredRuns data={runData} openModal={openModal}/>
+              : <FilteredRuns runData={runData} openModal={openModal}/>
             }
           <div className="flex justify-end">
             <div className="flex justify-center items-center bg-blue-100 rounded-2xl shadow-2xl border-2 border-blue-200 fixed bottom-8">

@@ -2,7 +2,7 @@ import React from 'react';
 import RunMiniCard from '../cards/run-mini-card';
 
 export default function FilteredRuns(props) {
-  const { runData } = props.data;
+  const { runData } = props;
   return (
     <div className="lg:grid lg:grid-cols-2 lg:gap-8">
       {
