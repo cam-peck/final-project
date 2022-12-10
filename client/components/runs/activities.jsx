@@ -2,7 +2,7 @@ import React from 'react';
 import TextInput from '../inputs/text-input';
 import RunMainCard from '../cards/run-main-card';
 import FilteredRuns from './filtered-runs';
-import { AppContext } from '../../lib';
+import { AppContext, filterRuns } from '../../lib';
 import LoadingSpinner from '../loading-spinner';
 import NetworkError from '../network-error';
 
@@ -100,6 +100,7 @@ export default class Activities extends React.Component {
     }
     const { runData, searchText } = this.state;
     const { openModal, handleSearchChange } = this;
+    const filteredRuns = filterRuns(searchText, runData);
     const modal = this.state.modalIsOpen === true
       ? <RunMainCard
           entryId={this.state.openRun.entryId}
@@ -117,11 +118,11 @@ export default class Activities extends React.Component {
       <>
         <section className="pl-6 pr-6 max-w-lg md:max-w-2xl lg:max-w-6xl m-auto mt-6">
           <h1 className="font-lora font-medium text-2xl mb-4">My Activities</h1>
-          <TextInput placeholder="Searchbar" name="searchbar" id="searchbar" value={searchText} onChange={handleSearchChange}/>
+          <TextInput placeholder="Search by title, description, distance-type, or date..." type="text" name="searchbar" id="searchbar" value={searchText} onChange={handleSearchChange} disabled={runData.length === 0}/>
           {
             runData.length === 0
               ? <p className="text-center italic">No runs found... Add a run using the &quot;+&quot; button in the bottom right.</p>
-              : <FilteredRuns runData={runData} openModal={openModal}/>
+              : <FilteredRuns runData={filteredRuns} openModal={openModal}/>
             }
           <div className="flex justify-end">
             <div className="flex justify-center items-center bg-blue-100 rounded-2xl shadow-2xl border-2 border-blue-200 fixed bottom-8">

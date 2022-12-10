@@ -9,3 +9,4 @@ export { default as getSquaresSumData } from './get-squares-sum-data';
 export { default as getWeeklyLineData } from './get-weekly-line-data';
 export { default as convertToMiles } from './convert-to-miles';
 export { default as getWeeklySumData } from './get-weekly-sum-data';
+export { default as filterRuns } from './filter-runs';
