@@ -19,7 +19,7 @@ I love to run, but I struggle to get up early enough to get my run in before wor
 
 ## Live Deployment
 
-- https://runningfuze.cjpeck.dev/
+Check out the site --> https://runningfuze.cjpeck.dev/
 
 ## MVP Features
 
@@ -45,11 +45,17 @@ I love to run, but I struggle to get up early enough to get my run in before wor
 
 ## Preview
 
+### Site Overview
+![DEMO](server/public/images/demo1.gif)
+
+### Adding a Run
+![DEMO](server/public/images/demo2.gif)
+
 ## Development
 
 ### System Requirements
-- Node.js v18 or higher
-- NPM v8 or higher
+- Node.js
+- npm
 - PostgreSQL
 
 ### Getting Started
