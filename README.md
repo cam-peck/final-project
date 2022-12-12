@@ -9,13 +9,16 @@ I love to run, but I struggle to get up early enough to get my run in before wor
 ## Techonologies Used
 
 - React
+- Webpack
+- TailwindCSS (via PostCSS plugin)
 - Node
 - Express
 - PostgreSQL
 - D3
-- TailwindCSS (via PostCSS plugin)
-- AWS E2
-- Webpack
+- HTML5
+- CSS3
+- AWS E2 (w/dokku)
+
 
 ## Live Deployment
 
