@@ -1,5 +1,5 @@
 import React from 'react';
-import { calculatePace } from '../../lib';
+import { calculatePace, removeTz } from '../../lib';
 import { format } from 'date-fns';
 
 export default function RunMiniCard(props) {
@@ -7,8 +7,7 @@ export default function RunMiniCard(props) {
   const { date, distance, distanceUnits, duration, entryId, openModal } = props;
   const splitDuration = duration.split(':');
   const pace = calculatePace(distance, distanceUnits, splitDuration[0], splitDuration[1], splitDuration[2]);
-  const dt = new Date(date);
-  const dtDateOnly = new Date(dt.valueOf() + dt.getTimezoneOffset() * 60 * 1000);
+  const dtDateOnly = removeTz(date);
   const formattedDate = format(new Date(dtDateOnly), 'MMMM dd, yyyy');
   return (
     <div className="w-full bg-blue-800 text-white flex justify-between items-center rounded-xl mb-6 shadow-lg hover:cursor-pointer p-2 x2s:p-0" onClick={() => { openModal(entryId); }}>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppContext } from '../../lib';
+import { AppContext, removeTz } from '../../lib';
 import { format } from 'date-fns';
 import LoadingSpinner from '../loading-spinner';
 import NetworkError from '../network-error';
@@ -50,8 +50,7 @@ export default class Profile extends React.Component {
       return <LoadingSpinner />;
     }
     const { email, displayName, dateOfBirth } = this.state;
-    const dt = new Date(dateOfBirth);
-    const dtDateOnly = new Date(dt.valueOf() + dt.getTimezoneOffset() * 60 * 1000);
+    const dtDateOnly = removeTz(dateOfBirth);
     return (
       <section className="pl-6 pr-6 max-w-6xl m-auto mt-6 mb-6">
         <h1 className="font-lora font-medium text-2xl mb-6">My Profile</h1>

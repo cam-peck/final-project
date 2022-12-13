@@ -1,5 +1,5 @@
 import React from 'react';
-import { calculatePace, AppContext } from '../../lib';
+import { calculatePace, AppContext, removeTz } from '../../lib';
 import TextInput from '../inputs/text-input';
 import DatePicker from 'react-datepicker';
 import { subYears } from 'date-fns';
@@ -50,8 +50,7 @@ export default class RunForm extends React.Component {
           .then(result => {
             const { title, description, date, duration, distance, distanceUnits, hasGpx } = result[0];
             const splitDuration = duration.split(':');
-            const dt = new Date(date);
-            const dtDateOnly = new Date(dt.valueOf() + dt.getTimezoneOffset() * 60 * 1000);
+            const dtDateOnly = removeTz(date);
             this.setState({
               title,
               description,
