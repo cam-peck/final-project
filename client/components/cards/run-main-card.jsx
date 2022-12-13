@@ -1,6 +1,7 @@
 import React from 'react';
-import { calculatePace, formatDate } from '../../lib';
+import { calculatePace } from '../../lib';
 import DeleteSnackbar from '../delete-snackbar';
+import { format } from 'date-fns';
 
 export default class RunMainCard extends React.Component {
   constructor(props) {
@@ -42,7 +43,9 @@ export default class RunMainCard extends React.Component {
     const { title, date, description, distance, distanceUnits, duration, closeModal, entryId } = this.props;
     const splitDuration = duration.split(':');
     const pace = calculatePace(distance, distanceUnits, splitDuration[0], splitDuration[1], splitDuration[2]);
-    const formattedDate = formatDate(date);
+    const dt = new Date(date);
+    const dtDateOnly = new Date(dt.valueOf() + dt.getTimezoneOffset() * 60 * 1000);
+    const formattedDate = format(new Date(dtDateOnly), 'MMMM d, yyyy');
 
     const { toggleMenuIsOpen, snackbarIsOpen } = this.state;
     const { handleClick, handleDelete, toggleMenu, toggleSnack } = this;
