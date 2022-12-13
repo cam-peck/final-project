@@ -18,7 +18,7 @@ export default function HomeNavbar(props) {
         <nav className="max-w-6xl px-6 mx-auto flex items-center justify-between">
           {/* Logo */}
           <div className='flex gap-3 pt-2 pb-2 items-center'>
-            <img className="w-[35px] h-[35px]" src="/images/rfz-icon.png" />
+            <img className="w-[30px] h-[30px] x2s:w-[35px] x2s:h-[35px]" src="/images/rfz-icon.png" />
             <h1 className="logo-text text-white text-xl x2s:text-2xl">RunningFuze</h1>
           </div>
           {/* Menu Items */}

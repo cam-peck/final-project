@@ -5,7 +5,7 @@ export default function LoadingSpinner(props) {
     ? 'bg-black bg-opacity-40'
     : '';
   return (
-    <section className={`absolute top-0 left-0 right-0 bottom-0 flex justify-center ${background} items-center`}>
+    <section className={`absolute top-0 left-0 right-0 bottom-0 flex justify-center ${background} items-center z-20`}>
       <div className="lds-ellipsis" ><div /><div /><div /><div /></div>
     </section>
   );
