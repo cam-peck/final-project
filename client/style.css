@@ -24,10 +24,6 @@ body {
   background-color: #fdfcff;
 }
 
-.on-container-color {
-  color: #43474e;
-}
-
 /* Form Autofill */
 
 input:-webkit-autofill {
@@ -60,29 +56,6 @@ input::-webkit-inner-spin-button {
 /* Firefox */
 input[type="number"] {
   appearance: textfield;
-}
-
-/* Hamburger Menu */
-
-.bar {
-  display: block;
-  width: 25px;
-  height: 3px;
-  margin: 5px auto;
-  transition: all 0.3s ease-in-out;
-  background-color: white;
-}
-
-.hamburger.active .bar:nth-child(2) {
-  opacity: 0;
-}
-
-.hamburger.active .bar:nth-child(1) {
-  transform: translateY(8px) rotate(45deg);
-}
-
-.hamburger.active .bar:nth-child(3) {
-  transform: translateY(-8px) rotate(-45deg);
 }
 
 /* Button Goodies */

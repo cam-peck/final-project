@@ -124,6 +124,9 @@ ORDER BY "date" DESC;
 app.get('/api/runs/:entryId', (req, res, next) => {
   const { userId } = req.user;
   const { entryId } = req.params;
+  if (!entryId) {
+    throw new ClientError(400, 'entryId is a required paramter as /api/runs/<parameter-id-here>');
+  }
   const sql = `
   SELECT "title", "description", "date", "duration", "distance", "distanceUnits", "hasGpx"
     FROM "runs"
@@ -144,6 +147,9 @@ app.put('/api/runs/:entryId', (req, res, next) => {
   const { title, description, date, durationHours, durationMinutes, durationSeconds, distance, distanceUnits, hasGpx } = req.body;
   if (!title || !description || !date || !durationHours || !durationMinutes || !durationSeconds || !distance || !distanceUnits) {
     throw new ClientError(400, 'title, description, date, durationHours, durationMinutes, durationSeconds, distance, and distanceUnits are required fields.');
+  }
+  if (!entryId) {
+    throw new ClientError(400, 'entryId is a required paramter as /api/runs/<parameter-id-here>');
   }
   const duration = `${durationHours}:${durationMinutes}:${durationSeconds}`;
   const sql = `
@@ -170,6 +176,9 @@ app.put('/api/runs/:entryId', (req, res, next) => {
 app.delete('/api/runs/:entryId', (req, res, next) => {
   const { userId } = req.user;
   const { entryId } = req.params;
+  if (!entryId) {
+    throw new ClientError(400, 'entryId is a required paramter as /api/runs/<parameter-id-here>');
+  }
   const sql = `
   DELETE
     FROM "runs"
