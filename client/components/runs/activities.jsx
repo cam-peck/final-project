@@ -1,8 +1,8 @@
 import React from 'react';
 import TextInput from '../inputs/text-input';
-import RunMiniCard from '../cards/run-mini-card';
 import RunMainCard from '../cards/run-main-card';
-import { AppContext } from '../../lib';
+import FilteredRuns from './filtered-runs';
+import { AppContext, filterRuns } from '../../lib';
 import LoadingSpinner from '../loading-spinner';
 import NetworkError from '../network-error';
 
@@ -13,12 +13,14 @@ export default class Activities extends React.Component {
       runData: [],
       modalIsOpen: false,
       openRun: {},
+      searchText: '',
       fetchingData: true,
       networkError: false
     };
     this.openModal = this.openModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
     this.deleteRun = this.deleteRun.bind(this);
+    this.handleSearchChange = this.handleSearchChange.bind(this);
   }
 
   componentDidMount() {
@@ -83,6 +85,12 @@ export default class Activities extends React.Component {
       });
   }
 
+  handleSearchChange(event) {
+    this.setState({
+      searchText: event.target.value
+    });
+  }
+
   render() {
     if (this.state.networkError) {
       return <NetworkError />;
@@ -90,7 +98,9 @@ export default class Activities extends React.Component {
     if (this.state.fetchingData) {
       return <LoadingSpinner />;
     }
-    const { runData } = this.state;
+    const { runData, searchText } = this.state;
+    const { openModal, handleSearchChange } = this;
+    const filteredRuns = filterRuns(searchText, runData);
     const modal = this.state.modalIsOpen === true
       ? <RunMainCard
           entryId={this.state.openRun.entryId}
@@ -108,27 +118,11 @@ export default class Activities extends React.Component {
       <>
         <section className="pl-6 pr-6 max-w-lg md:max-w-2xl lg:max-w-6xl m-auto mt-6">
           <h1 className="font-lora font-medium text-2xl mb-4">My Activities</h1>
-          <TextInput placeholder="Searchbar"/>
+          <TextInput placeholder="Search by title, description, distance-type, or date..." type="text" name="searchbar" id="searchbar" value={searchText} onChange={handleSearchChange} disabled={runData.length === 0}/>
           {
             runData.length === 0
               ? <p className="text-center italic">No runs found... Add a run using the &quot;+&quot; button in the bottom right.</p>
-              : <div className="lg:grid lg:grid-cols-2 lg:gap-8">
-                {
-                  runData.map(run => {
-                    return (
-                      <RunMiniCard
-                      key={run.entryId}
-                      entryId={run.entryId}
-                      date={run.date}
-                      distance={run.distance}
-                      distanceUnits={run.distanceUnits}
-                      duration={run.duration}
-                      openModal={this.openModal}
-                    />
-                    );
-                  })
-                }
-              </div>
+              : <FilteredRuns runData={filteredRuns} openModal={openModal}/>
             }
           <div className="flex justify-end">
             <div className="flex justify-center items-center bg-blue-100 rounded-2xl shadow-2xl border-2 border-blue-200 fixed bottom-8">
