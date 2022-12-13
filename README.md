@@ -38,7 +38,7 @@ Check out the site --> https://runningfuze.cjpeck.dev/
 - User Can Add Custom Workout (pending)
 - User Can View Custom Workouts (pending)
 - User Can Edit Custom Workouts (pending)
-- User Can delete Custom Workouts (pending)
+- User Can Delete Custom Workouts (pending)
 
 ## Stretch Features
 
