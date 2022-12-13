@@ -17,9 +17,9 @@ export default function HomeNavbar(props) {
       <header className="w-full bg-blue-600">
         <nav className="max-w-6xl px-6 mx-auto flex items-center justify-between">
           {/* Logo */}
-          <div className='flex gap-3 pt-2 pb-2'>
-            <i className="fa-solid fa-person-running text-white text-3xl" />
-            <h1 className="logo-text text-white text-2xl">RunningFuze</h1>
+          <div className='flex gap-3 pt-2 pb-2 items-center'>
+            <img className="w-[35px] h-[35px]" src="/images/rfz-icon.png" />
+            <h1 className="logo-text text-white text-xl x2s:text-2xl">RunningFuze</h1>
           </div>
           {/* Menu Items */}
           <div className="text-white items-center hidden md:flex">
@@ -32,7 +32,7 @@ export default function HomeNavbar(props) {
           </div>
           {/* Hamburger Menu */}
           <div className="md:hidden pt-2 pb-2">
-            <Hamburger toggled={isOpen} toggle={setOpen} color="white" />
+            <Hamburger size={28} toggled={isOpen} toggle={setOpen} color="white" />
           </div>
           <DrawerMenu setOpen={setOpen} isOpen={isOpen}/>
           {darkBackground}
