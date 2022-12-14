@@ -23,54 +23,70 @@ export default class RunForm extends React.Component {
       distanceUnits: 'miles',
       hasGpx: false,
       fetchingData: false,
-      networkError: false
+      networkError: false,
+      runIdError: false
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleDateChange = this.handleDateChange.bind(this);
+    this.prefillForm = this.prefillForm.bind(this);
   }
 
   componentDidMount() {
-    const { route, user } = this.context;
-    if (route.params.get('mode') === 'edit') {
-      this.setState({
-        fetchingData: true
-      }, () => {
-        const entryId = Number(route.params.get('entryId'));
-        const req = {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
-          },
-          user
-        };
-        fetch(`/api/runs/${entryId}`, req)
-          .then(response => response.json())
-          .then(result => {
-            const { title, description, date, duration, distance, distanceUnits, hasGpx } = result[0];
-            const splitDuration = duration.split(':');
-            const dtDateOnly = removeTz(date);
-            this.setState({
-              title,
-              description,
-              date: dtDateOnly,
-              durationHours: splitDuration[0],
-              durationMinutes: splitDuration[1],
-              durationSeconds: splitDuration[2],
-              distance,
-              distanceUnits,
-              hasGpx,
-              fetchingData: false
-            });
-          })
-          .catch(error => {
-            console.error('An error occured!', error);
-            this.setState({ networkError: true });
-          });
-      });
-
+    if (this.props.mode === 'edit') {
+      this.prefillForm();
     }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.entryId !== prevProps.entryId) {
+      this.prefillForm();
+    }
+  }
+
+  prefillForm() {
+    const { user } = this.context;
+    this.setState({
+      fetchingData: true
+    }, () => {
+      const entryId = Number(this.props.entryId);
+      const req = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
+        },
+        user
+      };
+      fetch(`/api/runs/${entryId}`, req)
+        .then(response => response.json())
+        .then(result => {
+          if (result.length === 0) {
+            this.setState({ networkError: true, runIdError: true });
+            return;
+          }
+          const { title, description, date, duration, distance, distanceUnits, hasGpx } = result[0];
+          const splitDuration = duration.split(':');
+          const dtDateOnly = removeTz(date);
+          this.setState({
+            title,
+            description,
+            date: dtDateOnly,
+            durationHours: splitDuration[0],
+            durationMinutes: splitDuration[1],
+            durationSeconds: splitDuration[2],
+            distance,
+            distanceUnits,
+            hasGpx,
+            fetchingData: false,
+            networkError: false
+          });
+        })
+        .catch(error => {
+          console.error('An error occured!', error);
+          this.setState({ networkError: true });
+        });
+    });
   }
 
   handleChange(event) {
@@ -91,8 +107,8 @@ export default class RunForm extends React.Component {
     this.setState({
       fetchingData: true
     }, () => {
-      const { route, user } = this.context;
-      const mode = route.params.get('mode');
+      const { user } = this.context;
+      const { mode, entryId } = this.props;
       const req = {
         method: `${mode === 'add' ? 'POST' : 'PUT'}`,
         headers: {
@@ -102,7 +118,7 @@ export default class RunForm extends React.Component {
         user,
         body: JSON.stringify(this.state)
       };
-      fetch(`${mode === 'add' ? '/api/runs' : '/api/runs/' + route.params.get('entryId')}`, req)
+      fetch(`${mode === 'add' ? '/api/runs' : '/api/runs/' + entryId}`, req)
         .then(response => response.json())
         .then(result => {
           this.setState({
@@ -128,6 +144,9 @@ export default class RunForm extends React.Component {
 
   render() {
     if (this.state.networkError) {
+      if (this.state.runIdError) {
+        return <NetworkError entryId={this.props.entryId}/>;
+      }
       return <NetworkError />;
     }
     if (this.state.fetchingData) {
@@ -135,13 +154,21 @@ export default class RunForm extends React.Component {
     }
     const { title, description, date, distance, distanceUnits, durationHours, durationMinutes, durationSeconds } = this.state;
     const { handleChange, handleSubmit, handleDateChange } = this;
+    const { mode } = this.props;
     const durationObj = { durationHours, durationMinutes, durationSeconds };
     const pace = calculatePace(distance, distanceUnits, durationHours, durationMinutes, durationSeconds);
-    const buttonText = this.context.route.params.get('mode') === 'add'
+
+    const titleMessage = mode === 'add'
+      ? 'Add Run'
+      : 'Edit Run';
+
+    const buttonText = mode === 'add'
       ? 'Add Run'
       : 'Save Changes';
+
     return (
       <form className="w-full" onSubmit={handleSubmit}>
+        <h1 className="text-3xl font-lora font-bold mb-4">{titleMessage}</h1>
         <div className="md:flex md:gap-6">
           <div className="w-full">
             <p className="font-lora font-md text-md font-medium pb-2" >Date</p>

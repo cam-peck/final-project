@@ -1,5 +1,4 @@
 import React from 'react';
-
 export default class NavItems extends React.Component {
   constructor(props) {
     super(props);
