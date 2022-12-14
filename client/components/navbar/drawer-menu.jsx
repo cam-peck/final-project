@@ -9,7 +9,7 @@ export default function DrawerMenu(props) {
     ? 'left-0'
     : '-left-52 x2s:-left-60';
   return (
-    <div className={`fixed top-0 ${isOpen} bottom-0 w-52 x2s:w-60 surface-bg-color opacity shadow-xl flex flex-col justify-between rounded-br-xl transition-left ease-in-out duration-200 md:hidden z-20`}>
+    <div className={`fixed top-0 ${isOpen} bottom-0 w-52 x2s:w-60 surface-bg-color opacity shadow-xl flex flex-col justify-between transition-left ease-in-out duration-200 md:hidden z-20`}>
       <section>
         <div className="flex items-center h-[64px] pl-5 bg-blue-600">
           <img className="w-[30px] h-[30px] mr-4" src="/images/rfz-icon.png" />
