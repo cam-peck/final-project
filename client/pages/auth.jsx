@@ -1,11 +1,14 @@
 import React from 'react';
 import AuthForm from '../components/forms/auth-form';
+import Redirect from '../components/redirect';
 import AppContext from '../lib/app-context';
 
 export default class AuthPage extends React.Component {
   render() {
 
-    const { route, handleSignIn } = this.context;
+    const { route, handleSignIn, user } = this.context;
+
+    if (user) return <Redirect to='home?tab=activities' />;
 
     const welcomeMessage = route.path === 'sign-up'
       ? 'Register'

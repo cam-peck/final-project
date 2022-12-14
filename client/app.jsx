@@ -5,6 +5,7 @@ import Auth from './pages/auth';
 import Runs from './pages/runs';
 import NotFound from './pages/not-found';
 import Navbar from './components/navbar/navbar';
+import Redirect from './components/redirect';
 import { AppContext, parseRoute } from './lib';
 
 export default class App extends React.Component {
@@ -38,14 +39,18 @@ export default class App extends React.Component {
   handleSignOut() {
     window.localStorage.removeItem('runningfuze-project-jwt');
     this.setState({ user: null });
-    window.location.hash = 'sign-in';
   }
 
   renderPage() {
     const { path } = this.state.route;
     const { route } = this.state;
-    if (path === 'home' || path === '') {
+    if (path === '') {
+      return <Redirect to='home?tab=activities' />;
+    }
+    if (path === 'home') {
       const homeId = route.params.get('tab'); // possible values: progress, activites, profile
+      const validIds = ['progress', 'activities', 'profile'];
+      if (!validIds.includes(homeId)) return <NotFound />;
       return <Home tab={homeId}/>;
     }
     if (path === 'sign-in' || path === 'sign-up') {

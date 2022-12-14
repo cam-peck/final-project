@@ -48,6 +48,10 @@ export default class RunForm extends React.Component {
         fetch(`/api/runs/${entryId}`, req)
           .then(response => response.json())
           .then(result => {
+            if (result.length === 0) {
+              window.location.hash = 'page-not-found';
+              return;
+            }
             const { title, description, date, duration, distance, distanceUnits, hasGpx } = result[0];
             const splitDuration = duration.split(':');
             const dtDateOnly = removeTz(date);

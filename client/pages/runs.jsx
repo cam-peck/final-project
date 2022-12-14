@@ -1,10 +1,13 @@
 import React from 'react';
 import RunForm from '../components/forms/run-form';
 import AppContext from '../lib/app-context';
+import Redirect from '../components/redirect';
 
 export default class Runs extends React.Component {
   render() {
-    const { route } = this.context;
+    const { route, user } = this.context;
+
+    if (!user) return <Redirect to='sign-in' />;
 
     const titleMessage = route.params.get('mode') === 'add'
       ? 'Add Run'
