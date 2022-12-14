@@ -48,7 +48,7 @@ export default class App extends React.Component {
       return <Redirect to='home?tab=activities' />;
     }
     if (path === 'home') {
-      const homeId = route.params.get('tab'); // possible values: progress, activites, profile
+      const homeId = route.params.get('tab');
       const validIds = ['progress', 'activities', 'profile'];
       if (!validIds.includes(homeId)) return <NotFound />;
       return <Home tab={homeId}/>;
@@ -57,7 +57,12 @@ export default class App extends React.Component {
       return <Auth />;
     }
     if (path === 'run-form') {
-      return <Runs />;
+      const mode = route.params.get('mode');
+      if (mode === 'edit') {
+        const editId = route.params.get('entryId');
+        return <Runs mode='edit' entryId={editId} />;
+      }
+      return <Runs mode='add'/>;
     }
     return <NotFound />;
   }
