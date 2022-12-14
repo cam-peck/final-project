@@ -124,15 +124,15 @@ export default class AuthForm extends React.Component {
     const { action } = this.props; // either sign-in or sign-out
     const { handleChange, handleSubmit, handleDateChange, oneClickSignIn } = this;
     const { email, password, displayName, dateOfBirth, signInWasInvalid, fetchingData, networkError } = this.state;
-    const formButton = action === 'sign-in'
-      ? 'Log in'
-      : 'Create Account';
-    const registerAccountInputs = action === 'sign-in'
-      ? ''
-      : <>
+    const formButton = action === 'sign-up'
+      ? 'Create Account'
+      : 'Log in';
+    const registerAccountInputs = action === 'sign-up'
+      ? <>
         <TextInput type="text" name="displayName" placeholder="Display Name" value={displayName} showLabel={false} onChange={handleChange} />
-        <DatePicker className="w-full rounded-lg px-3 py-3.5 border border-gray-300 focus:outline-blue-500 mb-4" selected={dateOfBirth} onChange={handleDateChange} dateFormat='MM/dd/yyy' maxDate={subYears(new Date(), 10)} minDate={subYears(new Date(), 100)} placeholderText='Date of Birth' required/>
-      </>;
+        <DatePicker className="w-full rounded-lg px-3 py-3.5 border border-gray-300 focus:outline-blue-500 mb-4" selected={dateOfBirth} onChange={handleDateChange} dateFormat='MM/dd/yyy' maxDate={subYears(new Date(), 10)} minDate={subYears(new Date(), 100)} placeholderText='Date of Birth' required />
+      </>
+      : '';
     const invalidSignIn = signInWasInvalid
       ? <p className="text-red-500 text-xs italic -mt-1.5 mb-3 ml-2">Invalid username or password</p>
       : '';
@@ -154,12 +154,12 @@ export default class AuthForm extends React.Component {
             <button className="w-full bg-blue-500 transition-colors ease-in-out duration-300 hover:bg-blue-600 text-white p-3 rounded-lg font-bold text-lg mb-2">{formButton}</button>
           </div>
           {
-            action === 'sign-in'
-              ? <div className="flex gap-2">
+            action === 'sign-up'
+              ? <p className="font-roboto text-center">Already have an account? <a href="#sign-in" className="font-roboto text-blue-500 underline">Sign in</a> </p>
+              : <div className="flex gap-2">
                 <button type="button" onClick={oneClickSignIn} className="w-1/2 bg-orange-400 transition-colors ease-in-out duration-300 text-white p-3 rounded-lg font-bold text-lg">Try me out!</button>
                 <a className="w-1/2 bg-green-500 transition-colors ease-in-out duration-300 text-white p-3 rounded-lg font-bold text-lg text-center" href="#sign-up" >Register</a>
               </div>
-              : <p className="font-roboto text-center">Already have an account? <a href="#sign-in" className="font-roboto text-blue-500 underline">Sign in</a> </p>
           }
           {dataLoadingSpinner}
         </form>
