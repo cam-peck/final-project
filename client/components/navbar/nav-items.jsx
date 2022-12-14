@@ -30,7 +30,7 @@ export default class NavItems extends React.Component {
       ? 'md:flex'
       : '';
     const myRunsButton = drawerIsOpen === true
-      ? 'w-full p-5'
+      ? 'w-full p-4 pl-3.5'
       : 'p-4 m-2 mr-6';
     return (
       <div className="flex transition-all ease-in-out duration-200 relative z-10">
