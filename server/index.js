@@ -236,15 +236,26 @@ app.get('/api/profile', (req, res, next) => {
 app.post('/api/workouts', (req, res, next) => {
   const { userId } = req.user;
   const { date, description } = req.body;
+  let { warmupDistance, warmupPace, workoutDistance, workoutPace, cooldownDistance, cooldownPace } = req.body;
+  if (warmupDistance === '') {
+    warmupDistance = 0;
+    warmupPace = null;
+  } else if (workoutPace === '') {
+    workoutDistance = 0;
+    workoutPace = null;
+  } else if (cooldownPace === '') {
+    cooldownDistance = 0;
+    cooldownPace = null;
+  }
   if (!date | !description) {
     throw new ClientError(400, 'date and description are required fields.');
   }
   const workoutSql = `
-  INSERT INTO "workouts" ("userId", "date", "description")
-       VALUES ($1, $2, $3)
+  INSERT INTO "workouts" ("userId", "date", "description", "warmupDistance", "warmupPace", "workoutDistance", "workoutPace", "cooldownDistance", "cooldownPace")
+       VALUES ($1, $2, $3, $4, $5, $6 ,$7, $8, $9)
     RETURNING *
   `;
-  const params = [userId, date, description];
+  const params = [userId, date, description, warmupDistance, warmupPace, workoutDistance, workoutPace, cooldownDistance, cooldownPace];
   db.query(workoutSql, params)
     .then(result => {
       const [newWorkout] = result.rows;

@@ -52,6 +52,12 @@ CREATE TABLE "public"."workouts" (
 	"workoutId" serial NOT NULL,
 	"date" DATE NOT NULL,
 	"description" TEXT NOT NULL,
+  "warmupDistance" REAL NOT NULL,
+  "warmupPace" TEXT,
+  "workoutDistance" REAL NOT NULL,
+  "workoutPace" TEXT,
+  "cooldownDistance" REAL NOT NULL,
+  "cooldownPace" TEXT,
 	"createdAt" TIMESTAMPTZ NOT NULL default now(),
 	"userId" integer NOT NULL,
 	CONSTRAINT "workouts_pk" PRIMARY KEY ("workoutId")

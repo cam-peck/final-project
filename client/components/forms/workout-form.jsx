@@ -73,6 +73,15 @@ export default class WorkoutForm extends React.Component {
           this.setState({
             date: new Date(),
             description: '',
+            warmupCheck: false,
+            workoutCheck: false,
+            cooldownCheck: false,
+            warmupDistance: '',
+            warmupPace: '',
+            workoutDistance: '',
+            workoutPace: '',
+            cooldownDistance: '',
+            cooldownPace: '',
             fetchingData: false
           });
         })
@@ -116,7 +125,7 @@ export default class WorkoutForm extends React.Component {
         </div>
         {/* Description */}
         <div className="w-full mb-6">
-          <TextInput type='text' name='description' value={description} placeholder='Weekly long run @ Eagle Creek Park' showLabel={true} label='Description'/>
+          <TextInput type='text' name='description' value={description} placeholder='Weekly long run @ Eagle Creek Park' onChange={handleChange} showLabel={true} label='Description'/>
         </div>
         {/* Workout Checkboxes */}
         <div className="w-full mb-4">
