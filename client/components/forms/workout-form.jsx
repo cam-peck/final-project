@@ -1,5 +1,6 @@
 import React from 'react';
 import TextInput from '../inputs/text-input';
+import CheckboxInput from '../inputs/checkbox-input';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import LoadingSpinner from '../loading-spinner';
@@ -12,6 +13,9 @@ export default class WorkoutForm extends React.Component {
     super(props);
     this.state = {
       date: new Date(),
+      warmupCheck: false,
+      workoutCheck: false,
+      cooldownCheck: false,
       description: '',
       fetchingData: false,
       networkError: false
@@ -23,9 +27,16 @@ export default class WorkoutForm extends React.Component {
 
   handleChange(event) {
     const { name, value } = event.target;
-    this.setState({
-      [name]: value
-    });
+    if (name === 'warmupCheck' || name === 'workoutCheck' || name === 'cooldownCheck') {
+      this.setState({
+        [name]: !this.state[name]
+      });
+    } else {
+      this.setState({
+        [name]: value
+      });
+    }
+
   }
 
   handleDateChange(date) {
@@ -78,7 +89,7 @@ export default class WorkoutForm extends React.Component {
 
     const { handleChange, handleDateChange, handleSubmit } = this;
     const { mode } = this.props;
-    const { date, description } = this.state;
+    const { date, description, warmupCheckbox, workoutCheckbox, cooldownCheckbox } = this.state;
 
     const titleMessage = mode === 'add'
       ? 'Add Workout'
@@ -90,13 +101,18 @@ export default class WorkoutForm extends React.Component {
 
     return (
       <form className="w-full" onSubmit={handleSubmit}>
-        <h1 className="text-3xl font-lora font-bold mb-4">{titleMessage}</h1>
-        <div className="md:flex md:gap-6">
-          <div className="w-full">
-            <p className="font-lora font-md text-md font-medium pb-2" >Date</p>
-            <DatePicker className="w-full rounded-lg px-3 py-3.5 border border-gray-300 focus:outline-blue-500 mb-4" selected={date} onChange={handleDateChange} dateFormat='MM/dd/yyy' maxDate={new Date()} minDate={subYears(new Date(), 80)} required />
-            <TextInput type="text" name="description" showLabel={true} label="Description" placeholder="5 miles ez | 8:30 / mile" value={description} onChange={handleChange} />
-          </div>
+        <h1 className="text-3xl font-lora font-bold mb-6">{titleMessage}</h1>
+        <div className="w-full mb-4">
+          <fieldset className="border border-2 border-blue-300 rounded-lg p-5">
+            <legend className="font-lora font-md text-lg x2s:text-xl font-medium p-2 bg-blue-200 rounded-md">What sections do you need?</legend>
+            <CheckboxInput id='warmupCheck' name='warmupCheck' value={warmupCheckbox} onChange={handleChange} label='Warmup' showLabel={true}/>
+            <CheckboxInput id='workoutCheck' name='workoutCheck' value={workoutCheckbox} onChange={handleChange} label='Workout' showLabel={true}/>
+            <CheckboxInput id='cooldownCheck' name='cooldownCheck' value={cooldownCheckbox} onChange={handleChange} label='Cooldown' showLabel={true}/>
+          </fieldset>
+        </div>
+        <div className="w-full">
+          <p className="font-lora font-md text-md font-medium pb-2" >Date</p>
+          <DatePicker className="w-full rounded-lg px-3 py-3.5 border border-gray-300 focus:outline-blue-500 mb-4" selected={date} onChange={handleDateChange} dateFormat='MM/dd/yyy' maxDate={new Date()} minDate={subYears(new Date(), 80)} required />
         </div>
         <div className="flex justify-end mt-2 mb-8">
           <button className="md:w-1/3 w-full bg-blue-500 transition ease-in-out duration-300 hover:bg-blue-600 text-white p-3 rounded-lg font-bold text-lg">{buttonText}</button>
