@@ -231,6 +231,28 @@ app.get('/api/profile', (req, res, next) => {
     .catch(err => next(err));
 });
 
+// CRUD Workout Routes //
+
+app.post('/api/workouts', (req, res, next) => {
+  const { userId } = req.user;
+  const { date, description } = req.body;
+  if (!date | !description) {
+    throw new ClientError(400, 'date and description are required fields.');
+  }
+  const workoutSql = `
+  INSERT INTO "workouts" ("userId", "date", "description")
+       VALUES ($1, $2, $3)
+    RETURNING *
+  `;
+  const params = [userId, date, description];
+  db.query(workoutSql, params)
+    .then(result => {
+      const [newWorkout] = result.rows;
+      res.status(201).send(newWorkout);
+    })
+    .catch(err => next(err));
+});
+
 app.use(errorMiddleware);
 
 app.listen(process.env.PORT, () => {
