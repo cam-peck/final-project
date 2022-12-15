@@ -124,7 +124,7 @@ export default class RunForm extends React.Component {
           this.setState({
             title: '',
             description: '',
-            date: '',
+            date: new Date(),
             durationHours: '',
             durationMinutes: '',
             durationSeconds: '',

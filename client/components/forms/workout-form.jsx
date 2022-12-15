@@ -5,6 +5,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import LoadingSpinner from '../loading-spinner';
 import NetworkError from '../network-error';
 import { subYears } from 'date-fns';
+import { AppContext } from '../../lib';
 
 export default class WorkoutForm extends React.Component {
   constructor(props) {
@@ -35,10 +36,46 @@ export default class WorkoutForm extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    console.log('form submitted');
+    this.setState({
+      fetchingData: true
+    }, () => {
+      const { user } = this.context;
+      const req = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
+        },
+        user,
+        body: JSON.stringify(this.state)
+      };
+      fetch('/api/workouts', req)
+        .then(response => response.json())
+        .then(result => {
+          this.setState({
+            date: new Date(),
+            description: '',
+            fetchingData: false
+          });
+        })
+        .catch(error => {
+          console.error('An error occured!', error);
+          this.setState({ networkError: true });
+        });
+    });
   }
 
   render() {
+    if (this.state.networkError) {
+      if (this.state.runIdError) {
+        return <NetworkError entryId={this.props.entryId} />;
+      }
+      return <NetworkError />;
+    }
+    if (this.state.fetchingData) {
+      return <LoadingSpinner />;
+    }
+
     const { handleChange, handleDateChange, handleSubmit } = this;
     const { mode } = this.props;
     const { date, description } = this.state;
@@ -68,3 +105,4 @@ export default class WorkoutForm extends React.Component {
     );
   }
 }
+WorkoutForm.contextType = AppContext;
