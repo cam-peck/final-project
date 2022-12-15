@@ -3,6 +3,7 @@ import jwtDecode from 'jwt-decode';
 import Home from './pages/home';
 import Auth from './pages/auth';
 import Runs from './pages/runs';
+import Workouts from './pages/workouts';
 import NotFound from './pages/not-found';
 import Navbar from './components/navbar/navbar';
 import Redirect from './components/redirect';
@@ -61,8 +62,13 @@ export default class App extends React.Component {
       if (mode === 'edit') {
         const editId = route.params.get('entryId');
         return <Runs mode='edit' entryId={editId} />;
-      }
-      return <Runs mode='add'/>;
+      } else return <Runs mode='add' />;
+    }
+    if (path === 'workout-form') {
+      const mode = route.params.get('mode');
+      if (mode === 'edit') {
+        return;
+      } else return <Workouts mode='add' />;
     }
     return <NotFound />;
   }
