@@ -1,4 +1,5 @@
 import React from 'react';
+import WorkoutFieldset from '../inputs/workout-fieldset';
 import TextInput from '../inputs/text-input';
 import CheckboxInput from '../inputs/checkbox-input';
 import DatePicker from 'react-datepicker';
@@ -13,10 +14,16 @@ export default class WorkoutForm extends React.Component {
     super(props);
     this.state = {
       date: new Date(),
+      description: '',
       warmupCheck: false,
       workoutCheck: false,
       cooldownCheck: false,
-      description: '',
+      warmupDistance: '',
+      warmupPace: '',
+      workoutDistance: '',
+      workoutPace: '',
+      cooldownDistance: '',
+      cooldownPace: '',
       fetchingData: false,
       networkError: false
     };
@@ -89,7 +96,7 @@ export default class WorkoutForm extends React.Component {
 
     const { handleChange, handleDateChange, handleSubmit } = this;
     const { mode } = this.props;
-    const { date, description, warmupCheckbox, workoutCheckbox, cooldownCheckbox } = this.state;
+    const { date, description, warmupCheck, workoutCheck, cooldownCheck, warmupDistance, warmupPace, workoutDistance, workoutPace, cooldownDistance, cooldownPace } = this.state;
 
     const titleMessage = mode === 'add'
       ? 'Add Workout'
@@ -101,19 +108,48 @@ export default class WorkoutForm extends React.Component {
 
     return (
       <form className="w-full" onSubmit={handleSubmit}>
-        <h1 className="text-3xl font-lora font-bold mb-6">{titleMessage}</h1>
-        <div className="w-full mb-4">
-          <fieldset className="border border-2 border-blue-300 rounded-lg p-5">
-            <legend className="font-lora font-md text-lg x2s:text-xl font-medium p-2 bg-blue-200 rounded-md">What sections do you need?</legend>
-            <CheckboxInput id='warmupCheck' name='warmupCheck' value={warmupCheckbox} onChange={handleChange} label='Warmup' showLabel={true}/>
-            <CheckboxInput id='workoutCheck' name='workoutCheck' value={workoutCheckbox} onChange={handleChange} label='Workout' showLabel={true}/>
-            <CheckboxInput id='cooldownCheck' name='cooldownCheck' value={cooldownCheckbox} onChange={handleChange} label='Cooldown' showLabel={true}/>
-          </fieldset>
-        </div>
+        <h1 className="text-3xl font-lora font-bold mb-4">{titleMessage}</h1>
+        {/* Date */}
         <div className="w-full">
           <p className="font-lora font-md text-md font-medium pb-2" >Date</p>
           <DatePicker className="w-full rounded-lg px-3 py-3.5 border border-gray-300 focus:outline-blue-500 mb-4" selected={date} onChange={handleDateChange} dateFormat='MM/dd/yyy' maxDate={new Date()} minDate={subYears(new Date(), 80)} required />
         </div>
+        {/* Description */}
+        <div className="w-full mb-6">
+          <TextInput type='text' name='description' value={description} placeholder='Weekly long run @ Eagle Creek Park' showLabel={true} label='Description'/>
+        </div>
+        {/* Workout Checkboxes */}
+        <div className="w-full mb-4">
+          <fieldset className="border border-2 border-blue-300 rounded-lg p-5">
+            <legend className="font-lora font-md text-lg x2s:text-xl font-medium p-2 bg-blue-200 rounded-md">What sections do you need?</legend>
+            <CheckboxInput id='warmupCheck' name='warmupCheck' value={warmupCheck} onChange={handleChange} label='Warmup'/>
+            <CheckboxInput id='workoutCheck' name='workoutCheck' value={workoutCheck} onChange={handleChange} label='Workout'/>
+            <CheckboxInput id='cooldownCheck' name='cooldownCheck' value={cooldownCheck} onChange={handleChange} label='Cooldown'/>
+          </fieldset>
+        </div>
+        {/* Checkbox Fieldsets */}
+        {
+          warmupCheck === true
+            ? <div className="w-full mb-4">
+              <WorkoutFieldset legendLabel='Warmup' distanceName='warmupDistance' distanceValue={warmupDistance} paceName='warmupPace' paceValue={warmupPace} onChange={handleChange} />
+            </div>
+            : ''
+        }
+        {
+          workoutCheck === true
+            ? <div className="w-full mb-4">
+              <WorkoutFieldset legendLabel='Workout' distanceName='workoutDistance' distanceValue={workoutDistance} paceName='workoutPace' paceValue={workoutPace} onChange={handleChange} />
+            </div>
+            : ''
+        }
+        {
+          cooldownCheck === true
+            ? <div className="w-full mb-4">
+              <WorkoutFieldset legendLabel='Cooldown' distanceName='cooldownDistance' distanceValue={cooldownDistance} paceName='cooldownPace' paceValue={cooldownPace} onChange={handleChange} />
+            </div>
+            : ''
+        }
+        {/* Submit */}
         <div className="flex justify-end mt-2 mb-8">
           <button className="md:w-1/3 w-full bg-blue-500 transition ease-in-out duration-300 hover:bg-blue-600 text-white p-3 rounded-lg font-bold text-lg">{buttonText}</button>
         </div>
