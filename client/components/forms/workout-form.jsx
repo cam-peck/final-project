@@ -100,9 +100,6 @@ export default class WorkoutForm extends React.Component {
 
   render() {
     if (this.state.networkError) {
-      if (this.state.runIdError) {
-        return <NetworkError entryId={this.props.entryId} />;
-      }
       return <NetworkError />;
     }
     if (this.state.fetchingData) {
