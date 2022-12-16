@@ -3,7 +3,7 @@ import DistanceInput from './distance-input';
 import TextInput from './text-input';
 
 export default function WorkoutFieldset(props) {
-  const { legendLabel, integerName, integerValue, distanceTypeName, distanceTypeValue, paceName, paceValue, onChange } = props;
+  const { legendLabel, integerName, integerValue, distanceTypeName, distanceTypeValue, notesName, notesValue, onChange, notesPlaceholder } = props;
 
   return (
     <fieldset className="border border-2 border-blue-300 rounded-lg p-5">
@@ -13,7 +13,7 @@ export default function WorkoutFieldset(props) {
           <DistanceInput integerName={integerName} integerValue={integerValue} distanceTypeName={distanceTypeName} distanceTypeValue={distanceTypeValue} onChange={onChange}/>
         </div>
         <div className="w-full md:w-1/2">
-          <TextInput type="text" name={paceName} value={paceValue} placeholder='8:30 / mile' showLabel={true} label='Goal Pace' onChange={onChange} />
+          <TextInput type="text" name={notesName} value={notesValue} placeholder={notesPlaceholder} showLabel={true} label='Notes' onChange={onChange} />
         </div>
       </section>
     </fieldset>
