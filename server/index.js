@@ -236,14 +236,16 @@ app.get('/api/profile', (req, res, next) => {
 app.post('/api/workouts', (req, res, next) => {
   const { userId } = req.user;
   const { date, description } = req.body;
-  let { warmupDistance, warmupPace, workoutDistance, workoutPace, cooldownDistance, cooldownPace } = req.body;
+  let { warmupDistance, warmupDistanceUnits, warmupPace, workoutDistance, workoutDistanceUnits, workoutPace, cooldownDistance, cooldownDistanceUnits, cooldownPace } = req.body;
   if (warmupDistance === '') {
     warmupDistance = 0;
     warmupPace = null;
-  } else if (workoutPace === '') {
+  }
+  if (workoutPace === '') {
     workoutDistance = 0;
     workoutPace = null;
-  } else if (cooldownPace === '') {
+  }
+  if (cooldownPace === '') {
     cooldownDistance = 0;
     cooldownPace = null;
   }
@@ -251,11 +253,11 @@ app.post('/api/workouts', (req, res, next) => {
     throw new ClientError(400, 'date and description are required fields.');
   }
   const workoutSql = `
-  INSERT INTO "workouts" ("userId", "date", "description", "warmupDistance", "warmupPace", "workoutDistance", "workoutPace", "cooldownDistance", "cooldownPace")
-       VALUES ($1, $2, $3, $4, $5, $6 ,$7, $8, $9)
+  INSERT INTO "workouts" ("userId", "date", "description", "warmupDistance", "warmupDistanceUnits", "warmupPace", "workoutDistance", "workoutDistanceUnits", "workoutPace", "cooldownDistance", "cooldownDistanceUnits", "cooldownPace")
+       VALUES ($1, $2, $3, $4, $5, $6 ,$7, $8, $9, $10, $11, $12)
     RETURNING *
   `;
-  const params = [userId, date, description, warmupDistance, warmupPace, workoutDistance, workoutPace, cooldownDistance, cooldownPace];
+  const params = [userId, date, description, warmupDistance, warmupDistanceUnits, warmupPace, workoutDistance, workoutDistanceUnits, workoutPace, cooldownDistance, cooldownDistanceUnits, cooldownPace];
   db.query(workoutSql, params)
     .then(result => {
       const [newWorkout] = result.rows;
