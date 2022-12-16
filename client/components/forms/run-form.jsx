@@ -173,7 +173,7 @@ export default class RunForm extends React.Component {
           <div className="w-full">
             <p className="font-lora font-md text-md font-medium pb-2" >Date</p>
             <DatePicker className="w-full rounded-lg px-3 py-3.5 border border-gray-300 focus:outline-blue-500 mb-4" selected={date} onChange={handleDateChange} dateFormat='MM/dd/yyy' maxDate={new Date()} minDate={subYears(new Date(), 80)} required/>
-            <DistanceInput name='distance' value={distance} distanceType={distanceUnits} onChange={handleChange}/>
+            <DistanceInput integerName='distance' integerValue={distance} distanceTypeName='distanceUnits' distanceTypeValue={distanceUnits} onChange={handleChange}/>
             <DurationInput value={durationObj} onChange={handleChange}/>
             <TextInput type="pace" name="pace" placeholder="0:00 / mi" value={pace} showLabel={true} label="Pace" onChange={handleChange} />
           </div>

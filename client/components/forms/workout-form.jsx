@@ -19,10 +19,13 @@ export default class WorkoutForm extends React.Component {
       workoutCheck: false,
       cooldownCheck: false,
       warmupDistance: '',
+      warmupDistanceUnits: 'miles',
       warmupPace: '',
       workoutDistance: '',
+      workoutDistanceUnits: 'miles',
       workoutPace: '',
       cooldownDistance: '',
+      cooldownDistanceUnits: 'miles',
       cooldownPace: '',
       fetchingData: false,
       networkError: false
@@ -77,10 +80,13 @@ export default class WorkoutForm extends React.Component {
             workoutCheck: false,
             cooldownCheck: false,
             warmupDistance: '',
+            warmupDistanceUnits: 'miles',
             warmupPace: '',
             workoutDistance: '',
+            workoutDistanceUnits: 'miles',
             workoutPace: '',
             cooldownDistance: '',
+            cooldownDistanceUnits: 'miles',
             cooldownPace: '',
             fetchingData: false
           });
@@ -105,7 +111,7 @@ export default class WorkoutForm extends React.Component {
 
     const { handleChange, handleDateChange, handleSubmit } = this;
     const { mode } = this.props;
-    const { date, description, warmupCheck, workoutCheck, cooldownCheck, warmupDistance, warmupPace, workoutDistance, workoutPace, cooldownDistance, cooldownPace } = this.state;
+    const { date, description, warmupCheck, workoutCheck, cooldownCheck, warmupDistance, warmupPace, workoutDistance, warmupDistanceUnits, workoutDistanceUnits, cooldownDistanceUnits, workoutPace, cooldownDistance, cooldownPace } = this.state;
 
     const titleMessage = mode === 'add'
       ? 'Add Workout'
@@ -140,21 +146,21 @@ export default class WorkoutForm extends React.Component {
         {
           warmupCheck === true
             ? <div className="w-full mb-4">
-              <WorkoutFieldset legendLabel='Warmup' distanceName='warmupDistance' distanceValue={warmupDistance} paceName='warmupPace' paceValue={warmupPace} onChange={handleChange} />
+              <WorkoutFieldset legendLabel='Warmup' integerName='warmupDistance' integerValue={warmupDistance} distanceTypeName='warmupDistanceUnits' distanceTypeValue={warmupDistanceUnits} paceName='warmupPace' paceValue={warmupPace} onChange={handleChange} />
             </div>
             : ''
         }
         {
           workoutCheck === true
             ? <div className="w-full mb-4">
-              <WorkoutFieldset legendLabel='Workout' distanceName='workoutDistance' distanceValue={workoutDistance} paceName='workoutPace' paceValue={workoutPace} onChange={handleChange} />
+              <WorkoutFieldset legendLabel='Workout' integerName='workoutDistance' integerValue={workoutDistance} distanceTypeName='workoutDistanceUnits' distanceTypeValue={workoutDistanceUnits} paceName='workoutPace' paceValue={workoutPace} onChange={handleChange} />
             </div>
             : ''
         }
         {
           cooldownCheck === true
             ? <div className="w-full mb-4">
-              <WorkoutFieldset legendLabel='Cooldown' distanceName='cooldownDistance' distanceValue={cooldownDistance} paceName='cooldownPace' paceValue={cooldownPace} onChange={handleChange} />
+              <WorkoutFieldset legendLabel='Cooldown' integerName='cooldownDistance' integerValue={cooldownDistance} distanceTypeName='cooldownDistanceUnits' distanceTypeValue={cooldownDistanceUnits} paceName='cooldownPace' paceValue={cooldownPace} onChange={handleChange} />
             </div>
             : ''
         }
