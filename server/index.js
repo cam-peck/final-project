@@ -241,11 +241,11 @@ app.post('/api/workouts', (req, res, next) => {
     warmupDistance = 0;
     warmupNotes = null;
   }
-  if (workoutNotes === '') {
+  if (workoutDistance === '') {
     workoutDistance = 0;
     workoutNotes = null;
   }
-  if (cooldownNotes === '') {
+  if (cooldownDistance === '') {
     cooldownDistance = 0;
     cooldownNotes = null;
   }
