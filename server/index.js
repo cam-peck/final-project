@@ -231,6 +231,41 @@ app.get('/api/profile', (req, res, next) => {
     .catch(err => next(err));
 });
 
+// CRUD Workout Routes //
+
+app.post('/api/workouts', (req, res, next) => {
+  const { userId } = req.user;
+  const { date, description, warmupDistanceUnits, workoutDistanceUnits, cooldownDistanceUnits } = req.body;
+  let { warmupDistance, warmupNotes, workoutDistance, workoutNotes, cooldownDistance, cooldownNotes } = req.body;
+  if (warmupDistance === '') {
+    warmupDistance = 0;
+    warmupNotes = null;
+  }
+  if (workoutDistance === '') {
+    workoutDistance = 0;
+    workoutNotes = null;
+  }
+  if (cooldownDistance === '') {
+    cooldownDistance = 0;
+    cooldownNotes = null;
+  }
+  if (!date | !description) {
+    throw new ClientError(400, 'date and description are required fields.');
+  }
+  const workoutSql = `
+  INSERT INTO "workouts" ("userId", "date", "description", "warmupDistance", "warmupDistanceUnits", "warmupNotes", "workoutDistance", "workoutDistanceUnits", "workoutNotes", "cooldownDistance", "cooldownDistanceUnits", "cooldownNotes")
+       VALUES ($1, $2, $3, $4, $5, $6 ,$7, $8, $9, $10, $11, $12)
+    RETURNING *
+  `;
+  const params = [userId, date, description, warmupDistance, warmupDistanceUnits, warmupNotes, workoutDistance, workoutDistanceUnits, workoutNotes, cooldownDistance, cooldownDistanceUnits, cooldownNotes];
+  db.query(workoutSql, params)
+    .then(result => {
+      const [newWorkout] = result.rows;
+      res.status(201).send(newWorkout);
+    })
+    .catch(err => next(err));
+});
+
 app.use(errorMiddleware);
 
 app.listen(process.env.PORT, () => {
