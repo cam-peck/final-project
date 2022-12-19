@@ -2,6 +2,7 @@ import React from 'react';
 import Redirect from '../components/redirect';
 import { AppContext } from '../lib';
 import WorkoutForm from '../components/forms/workout-form';
+import AddButton from '../components/add-button';
 import MyWorkouts from '../components/my-workouts';
 
 export default class Workouts extends React.Component {
@@ -13,10 +14,14 @@ export default class Workouts extends React.Component {
     const renderMe = route.path === 'workout-form'
       ? <WorkoutForm mode={mode} />
       : <MyWorkouts />;
+    const addWorkoutButton = route.path === 'workouts'
+      ? <AddButton href='#workout-form?mode=add'/>
+      : '';
     return (
       <main>
         <section className="max-w-6xl mx-auto mt-6 px-6">
           {renderMe}
+          {addWorkoutButton}
         </section>
       </main>
     );

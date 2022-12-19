@@ -90,6 +90,7 @@ export default class WorkoutForm extends React.Component {
             cooldownNotes: '',
             fetchingData: false
           });
+          window.location.hash = '#workouts';
         })
         .catch(error => {
           console.error('An error occured!', error);

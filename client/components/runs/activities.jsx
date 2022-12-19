@@ -2,6 +2,7 @@ import React from 'react';
 import TextInput from '../inputs/text-input';
 import RunMainCard from '../cards/run-main-card';
 import FilteredRuns from './filtered-runs';
+import AddButton from '../add-button';
 import { AppContext, filterRuns } from '../../lib';
 import LoadingSpinner from '../loading-spinner';
 import NetworkError from '../network-error';
@@ -124,11 +125,7 @@ export default class Activities extends React.Component {
               ? <p className="text-center italic">No runs found... Add a run using the &quot;+&quot; button in the bottom right.</p>
               : <FilteredRuns runData={filteredRuns} openModal={openModal}/>
             }
-          <div className="flex justify-end">
-            <div className="flex justify-center items-center bg-blue-100 rounded-2xl shadow-2xl border-2 border-blue-200 fixed bottom-8">
-              <a className="text-4xl xs:text-5xl flex justify-center items-center font-bold text-blue-800 w-[56px] h-[56px] xs:w-[70px] xs:h-[70px]" href="#run-form?mode=add"><i className="fa-solid fa-plus text-2xl xs:text-3xl" /></a>
-            </div>
-          </div>
+          <AddButton href="#run-form?mode=add" />
         </section>
         {modal}
       </>

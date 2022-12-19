@@ -6,7 +6,7 @@ export default function WorkoutCard(props) {
   const { date, description, warmupDistance, warmupNotes, workoutDistance, warmupDistanceUnits, workoutDistanceUnits, cooldownDistanceUnits, workoutNotes, cooldownDistance, cooldownNotes } = props.data;
   const formattedDate = format(removeTz(date), 'EEEE, LLL do');
   return (
-    <section className="font-caveat bg-blue-200 pt-3 pb-3 pl-4 pr-4 rounded-lg border border-gray-500 x2s:text-lg">
+    <section className="font-caveat bg-blue-200 pt-3 pb-3 pl-4 pr-4 rounded-lg border border-gray-500 x2s:text-lg shadow-lg">
       <div className="mb-1.5 flex flex-col gap-[2px]">
         <h1 className="text-lg x2s:text-2xl">{formattedDate}</h1>
         <p>{description}</p>
