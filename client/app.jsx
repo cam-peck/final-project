@@ -64,7 +64,7 @@ export default class App extends React.Component {
         return <Runs mode='edit' entryId={editId} />;
       } else return <Runs mode='add' />;
     }
-    if (path === 'workout-form') {
+    if (path === 'workout-form' || path === 'workouts') {
       const mode = route.params.get('mode');
       if (mode === 'edit') {
         return;
