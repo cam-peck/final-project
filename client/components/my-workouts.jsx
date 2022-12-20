@@ -58,7 +58,7 @@ export default class MyWorkouts extends React.Component {
           <h1 className="text-2xl font-lora font-medium mb-4">My Workouts</h1>
           <TextInput placeholder="Search by title, description, distance-type, or date..." type="text" name="searchbar" id="searchbar"/>
         </div>
-        <div className="flex flex-col gap-6 md:grid md:grid-cols-2 md:gap-8">
+        <div className="flex flex-col gap-6 md:grid md:grid-cols-2 md:gap-8 mb-4">
           { workoutData.map((workout, index) => { return <WorkoutCard key={index} data={workout}/>; })}
         </div>
       </>

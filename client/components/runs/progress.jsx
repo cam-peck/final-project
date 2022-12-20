@@ -47,7 +47,7 @@ export default class Progress extends React.Component {
     }
     const { yearlyRunData } = this.state;
     return (
-      <section className="pl-6 pr-6 max-w-6xl mx-auto mt-6">
+      <section className="pl-6 pr-6 max-w-6xl mx-auto mt-6 mb-4">
         <h1 className="font-lora font-medium text-2xl mb-6">My Progress</h1>
         <div className='mb-4'>
           <ProgressSquares data={yearlyRunData}/>

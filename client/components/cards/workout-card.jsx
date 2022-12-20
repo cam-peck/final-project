@@ -6,7 +6,7 @@ export default function WorkoutCard(props) {
   const { date, description, warmupDistance, warmupNotes, workoutDistance, warmupDistanceUnits, workoutDistanceUnits, cooldownDistanceUnits, workoutNotes, cooldownDistance, cooldownNotes } = props.data;
   const formattedDate = format(removeTz(date), 'EEEE, LLL do');
   return (
-    <section className="font-caveat bg-blue-200 pt-3 pb-3 pl-4 pr-4 rounded-lg border border-gray-500 x2s:text-lg shadow-lg">
+    <section className="font-caveat bg-blue-200 pt-3 pb-3 pl-4 pr-4 rounded-lg border border-gray-400 x2s:text-lg shadow-lg">
       <div className="mb-1.5 flex flex-col gap-[2px]">
         <h1 className="text-lg x2s:text-2xl">{formattedDate}</h1>
         <p>{description}</p>
@@ -15,15 +15,28 @@ export default function WorkoutCard(props) {
       <div className="flex flex-col gap-3.5">
         <div className="flex items-center gap-2">
           <i className="fa-solid fa-temperature-high text-red-400 text-lg" />
-          <p>{warmupDistance} {warmupDistanceUnits}  |  {warmupNotes}</p>
+          {
+            warmupDistance !== 0
+              ? <p>{warmupDistance} {warmupDistance !== 1 ? warmupDistanceUnits : warmupDistanceUnits.slice(0, -1)}  |  {warmupNotes}</p>
+              : <p>----- N / A ------</p>
+          }
+
         </div>
         <div className="flex items-center gap-2">
           <i className="fa-solid fa-fire text-red-700 text-lg" />
-          <p>{workoutDistance} {workoutDistanceUnits}  |  {workoutNotes}</p>
+          {
+            workoutDistance !== 0
+              ? <p>{workoutDistance} {workoutDistance !== 1 ? workoutDistanceUnits : workoutDistanceUnits.slice(0, -1)}  |  {workoutNotes}</p>
+              : <p>----- N / A ------</p>
+          }
         </div>
         <div className="flex items-center gap-2">
           <i className="fa-solid fa-temperature-low text-blue-400 text-lg" />
-          <p>{cooldownDistance} {cooldownDistanceUnits}  |  {cooldownNotes}</p>
+          {
+            cooldownDistance !== 0
+              ? <p>{cooldownDistance} {cooldownDistance !== 1 ? cooldownDistanceUnits : cooldownDistanceUnits.slice(0, -1)}  |  {cooldownNotes}</p>
+              : <p>----- N / A ------</p>
+          }
         </div>
       </div>
     </section>
