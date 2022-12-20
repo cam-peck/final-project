@@ -22,8 +22,8 @@ export default function WorkoutCard(props) {
           }
 
         </div>
-        <div className="flex items-center gap-2">
-          <i className="fa-solid fa-fire text-red-700 text-lg" />
+        <div className="flex items-center gap-3">
+          <i className="fa-solid fa-bolt text-red-700 text-lg" />
           {
             workoutDistance !== 0
               ? <p>{workoutDistance} {workoutDistance !== 1 ? workoutDistanceUnits : workoutDistanceUnits.slice(0, -1)}  |  {workoutNotes}</p>
