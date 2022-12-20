@@ -272,6 +272,7 @@ app.get('/api/workouts', (req, res, next) => {
   SELECT "date", "description", "warmupDistance", "warmupDistanceUnits", "warmupNotes", "workoutDistance", "workoutDistanceUnits", "workoutNotes", "cooldownDistance", "cooldownDistanceUnits", "cooldownNotes"
     FROM "workouts"
    WHERE "userId" = $1
+ORDER BY "date" DESC;
   `;
   const params = [userId];
   db.query(sql, params)
