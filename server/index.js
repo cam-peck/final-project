@@ -266,6 +266,23 @@ app.post('/api/workouts', (req, res, next) => {
     .catch(err => next(err));
 });
 
+app.get('/api/workouts', (req, res, next) => {
+  const { userId } = req.user;
+  const sql = `
+  SELECT "date", "description", "warmupDistance", "warmupDistanceUnits", "warmupNotes", "workoutDistance", "workoutDistanceUnits", "workoutNotes", "cooldownDistance", "cooldownDistanceUnits", "cooldownNotes"
+    FROM "workouts"
+   WHERE "userId" = $1
+ORDER BY "date" DESC;
+  `;
+  const params = [userId];
+  db.query(sql, params)
+    .then(result => {
+      const workouts = result.rows;
+      res.json(workouts);
+    })
+    .catch(err => next(err));
+});
+
 app.use(errorMiddleware);
 
 app.listen(process.env.PORT, () => {
