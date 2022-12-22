@@ -7,7 +7,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import LoadingSpinner from '../loading-spinner';
 import NetworkError from '../network-error';
 import { subYears } from 'date-fns';
-import { AppContext } from '../../lib';
+import { AppContext, removeTz } from '../../lib';
 
 export default class WorkoutForm extends React.Component {
   constructor(props) {
@@ -28,11 +28,73 @@ export default class WorkoutForm extends React.Component {
       cooldownDistanceUnits: 'miles',
       cooldownNotes: '',
       fetchingData: false,
-      networkError: false
+      networkError: false,
+      workoutIdError: false
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleDateChange = this.handleDateChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.prefillForm = this.prefillForm.bind(this);
+  }
+
+  componentDidMount() {
+    if (this.props.mode === 'edit') {
+      this.prefillForm();
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.workoutId !== prevProps.workoutId) {
+      this.prefillForm();
+    }
+  }
+
+  prefillForm() {
+    const { user } = this.context;
+    this.setState({
+      fetchingData: true
+    }, () => {
+      const workoutId = Number(this.props.workoutId);
+      const req = {
+        method: 'GET',
+        headers: {
+          'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
+        },
+        user
+      };
+      fetch(`/api/workouts/${workoutId}`, req)
+        .then(response => response.json())
+        .then(result => {
+          if (result.length === 0) {
+            this.setState({ networkError: true, workoutIdError: true });
+            return;
+          }
+          const { date, description, warmupCheck, workoutCheck, cooldownCheck, warmupDistance, warmupNotes, workoutDistance, warmupDistanceUnits, workoutDistanceUnits, cooldownDistanceUnits, workoutNotes, cooldownDistance, cooldownNotes } = result[0];
+          const dtDateOnly = removeTz(date);
+          this.setState({
+            date: dtDateOnly,
+            description,
+            warmupCheck,
+            workoutCheck,
+            cooldownCheck,
+            warmupDistance,
+            warmupDistanceUnits,
+            warmupNotes,
+            workoutDistance,
+            workoutDistanceUnits,
+            workoutNotes,
+            cooldownDistance,
+            cooldownDistanceUnits,
+            cooldownNotes,
+            fetchingData: false,
+            networkError: false
+          });
+        })
+        .catch(error => {
+          console.error('An error occured!', error);
+          this.setState({ networkError: true });
+        });
+    });
   }
 
   handleChange(event) {
@@ -101,6 +163,9 @@ export default class WorkoutForm extends React.Component {
 
   render() {
     if (this.state.networkError) {
+      if (this.state.workoutIdError) {
+        return <NetworkError id={this.props.workoutId} />;
+      }
       return <NetworkError />;
     }
     if (this.state.fetchingData) {
@@ -110,7 +175,6 @@ export default class WorkoutForm extends React.Component {
     const { handleChange, handleDateChange, handleSubmit } = this;
     const { mode } = this.props;
     const { date, description, warmupCheck, workoutCheck, cooldownCheck, warmupDistance, warmupNotes, workoutDistance, warmupDistanceUnits, workoutDistanceUnits, cooldownDistanceUnits, workoutNotes, cooldownDistance, cooldownNotes } = this.state;
-
     const titleMessage = mode === 'add'
       ? 'Add Workout'
       : 'Edit Workout';

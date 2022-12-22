@@ -283,9 +283,32 @@ ORDER BY "date" DESC;
     .catch(err => next(err));
 });
 
+app.get('/api/workouts/:workoutId', (req, res, next) => {
+  const { userId } = req.user;
+  const { workoutId } = req.params;
+  if (!workoutId) {
+    throw new ClientError(400, 'workoutId is a required paramter as /api/workouts/<parameter-id-here>');
+  }
+  const sql = `
+  SELECT "date", "description", "warmupDistance", "warmupDistanceUnits", "warmupNotes", "workoutDistance", "workoutDistanceUnits", "workoutNotes", "cooldownDistance", "cooldownDistanceUnits", "cooldownNotes"
+    FROM "workouts"
+   WHERE "userId" = $1 AND "workoutId" = $2;
+  `;
+  const params = [userId, workoutId];
+  db.query(sql, params)
+    .then(result => {
+      const data = result.rows;
+      res.json(data);
+    })
+    .catch(err => next(err));
+});
+
 app.put('/api/workouts/:workoutId', (req, res, next) => {
   const { userId } = req.user;
   const { workoutId } = req.params;
+  if (!workoutId) {
+    throw new ClientError(400, 'workoutId is a required paramter as /api/workouts/<parameter-id-here>');
+  }
   const { date, description, warmupDistanceUnits, workoutDistanceUnits, cooldownDistanceUnits } = req.body;
   let { warmupDistance, warmupNotes, workoutDistance, workoutNotes, cooldownDistance, cooldownNotes } = req.body;
   if (warmupDistance === '') {

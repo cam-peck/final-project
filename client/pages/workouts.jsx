@@ -8,11 +8,11 @@ import MyWorkouts from '../components/my-workouts';
 export default class Workouts extends React.Component {
   render() {
     const { user, route } = this.context;
-    const { mode } = this.props;
+    const { mode, workoutId } = this.props;
 
     if (!user) return <Redirect to="sign-in"/>;
     const renderMe = route.path === 'workout-form'
-      ? <WorkoutForm mode={mode} />
+      ? <WorkoutForm mode={mode} workoutId={workoutId} />
       : <MyWorkouts />;
     const addWorkoutButton = route.path === 'workouts'
       ? <AddButton href='#workout-form?mode=add'/>
