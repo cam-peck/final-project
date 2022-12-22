@@ -1,6 +1,8 @@
 import React from 'react';
 import { format } from 'date-fns';
 import { removeTz } from '../../lib';
+import EditDeleteMenu from '../edit-delete-menu';
+import DeleteSnackbar from '../delete-snackbar';
 
 export default class WorkoutCard extends React.Component {
   constructor(props) {
@@ -26,21 +28,16 @@ export default class WorkoutCard extends React.Component {
   handleClick(event, workoutId) {
     event.preventDefault();
     if (event.target.id === 'edit') {
-      console.log('edit!');
-      console.log(workoutId);
-      // window.location.hash = `#workout-form?mode=edit&entryId=${entryId}`;
+      window.location.hash = `#workout-form?mode=edit&workoutId=${workoutId}`;
     }
     if (event.target.id === 'delete') {
-      console.log('delete!');
-      // this.setState({ snackbarIsOpen: true });
-      // this.toggleMenu();
+      this.setState({ snackbarIsOpen: true });
+      this.toggleMenu();
     }
   }
 
-  handleDelete(event, entryId) {
-    event.preventDefault();
-    console.log('handling delete');
-    this.props.deleteWorkout(entryId);
+  handleDelete(workoutId) {
+    this.props.deleteWorkout(workoutId);
   }
 
   render() {
@@ -51,14 +48,11 @@ export default class WorkoutCard extends React.Component {
     return (
       <section className="font-caveat bg-blue-200 pt-3 pb-3 pl-4 pr-4 rounded-lg border border-gray-400 x2s:text-lg shadow-lg">
         <div className="mb-1.5 flex flex-col gap-[2px]">
-          <div className="flex justify-between">
+          <div className="flex justify-between relative">
             <h1 className="text-lg x2s:text-2xl">{formattedDate}</h1>
             <i onClick={toggleMenu} className="fa-solid fa-lg fa-ellipsis-vertical hover:cursor-pointer block pl-2 pt-3 pb-3" />
             {toggleMenuIsOpen === true
-              ? <div onClick={event => handleClick(event, workoutId)} className="flex flex-col absolute right-4 top-1 text-sm bg-gray-100 text-black rounded-sm shadow-md">
-                <a id="edit" className="hover:bg-blue-300 w-32 py-4 text-center" href="">Edit</a>
-                <a id="delete" className="hover:bg-blue-300 w-32 py-4 text-center" href="">Delete</a>
-              </div>
+              ? <EditDeleteMenu id={workoutId} handleClick={handleClick}/>
               : ''}
           </div>
           <p>{description}</p>
@@ -91,6 +85,9 @@ export default class WorkoutCard extends React.Component {
             }
           </div>
         </div>
+        {snackbarIsOpen === true
+          ? <DeleteSnackbar isOpen={snackbarIsOpen} toggle={toggleSnack} id={workoutId} handleDelete={handleDelete} />
+          : ''}
       </section>
     );
   }

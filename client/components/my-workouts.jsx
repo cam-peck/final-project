@@ -45,8 +45,8 @@ export default class MyWorkouts extends React.Component {
     });
   }
 
-  deleteWorkout(entryId) {
-    console.log('Deleting workout with entryId: ', entryId);
+  deleteWorkout(workoutId) {
+    // console.log('Deleting workout with workoutId: ', workoutId);
   }
 
   render() {

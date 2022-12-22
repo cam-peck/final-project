@@ -1,6 +1,7 @@
 import React from 'react';
 import { calculatePace, removeTz } from '../../lib';
 import DeleteSnackbar from '../delete-snackbar';
+import EditDeleteMenu from '../edit-delete-menu';
 import { format } from 'date-fns';
 
 export default class RunMainCard extends React.Component {
@@ -64,10 +65,7 @@ export default class RunMainCard extends React.Component {
                 <h1 className="font-lora text-lg md:text-xl font-bold">{title}</h1>
                 <i onClick={toggleMenu} className="fa-solid fa-lg fa-ellipsis-vertical hover:cursor-pointer block pl-2 pt-3 pb-3" />
                 {toggleMenuIsOpen === true
-                  ? <div onClick={event => handleClick(event, entryId)} className="flex flex-col absolute right-4 top-1 text-sm bg-gray-100 text-black rounded-sm shadow-md">
-                    <a id="edit" className="hover:bg-blue-300 w-32 py-4 text-center" href="#edit-run?">Edit</a>
-                    <a id="delete" className="hover:bg-blue-300 w-32 py-4 text-center" href="">Delete</a>
-                  </div>
+                  ? <EditDeleteMenu id={entryId} handleClick={handleClick} />
                   : '' }
               </div>
               <div className="flex flex-col x2s:flex-row font-lora text-md md:text-lg">
@@ -89,7 +87,7 @@ export default class RunMainCard extends React.Component {
           </div>
         </div>
         {snackbarIsOpen === true
-          ? <DeleteSnackbar isOpen={snackbarIsOpen} toggle={toggleSnack} entryId={entryId} handleDelete={handleDelete}/>
+          ? <DeleteSnackbar isOpen={snackbarIsOpen} toggle={toggleSnack} id={entryId} handleDelete={handleDelete}/>
           : '' }
       </div>
     );
