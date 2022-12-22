@@ -64,7 +64,7 @@ export default class RunMainCard extends React.Component {
                 <h1 className="font-lora text-lg md:text-xl font-bold">{title}</h1>
                 <i onClick={toggleMenu} className="fa-solid fa-lg fa-ellipsis-vertical hover:cursor-pointer block pl-2 pt-3 pb-3" />
                 {toggleMenuIsOpen === true
-                  ? <div onClick={(event, entryID) => handleClick(event, entryId)} className="flex flex-col absolute right-4 top-1 text-sm bg-gray-100 text-black rounded-sm shadow-md">
+                  ? <div onClick={event => handleClick(event, entryId)} className="flex flex-col absolute right-4 top-1 text-sm bg-gray-100 text-black rounded-sm shadow-md">
                     <a id="edit" className="hover:bg-blue-300 w-32 py-4 text-center" href="#edit-run?">Edit</a>
                     <a id="delete" className="hover:bg-blue-300 w-32 py-4 text-center" href="">Delete</a>
                   </div>

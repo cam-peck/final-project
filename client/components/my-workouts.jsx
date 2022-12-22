@@ -13,6 +13,7 @@ export default class MyWorkouts extends React.Component {
       fetchingData: false,
       networkError: false
     };
+    this.deleteWorkout = this.deleteWorkout.bind(this);
   }
 
   componentDidMount() {
@@ -44,6 +45,10 @@ export default class MyWorkouts extends React.Component {
     });
   }
 
+  deleteWorkout(entryId) {
+    console.log('Deleting workout with entryId: ', entryId);
+  }
+
   render() {
     if (this.state.networkError) {
       return <NetworkError />;
@@ -52,6 +57,7 @@ export default class MyWorkouts extends React.Component {
       return <LoadingSpinner />;
     }
     const { workoutData } = this.state;
+    const { deleteWorkout } = this;
     return (
       <>
         <div>
@@ -59,7 +65,7 @@ export default class MyWorkouts extends React.Component {
           <TextInput placeholder="Search by title, description, distance-type, or date..." type="text" name="searchbar" id="searchbar"/>
         </div>
         <div className="flex flex-col gap-6 md:grid md:grid-cols-2 md:gap-8 mb-4">
-          { workoutData.map((workout, index) => { return <WorkoutCard key={index} data={workout}/>; })}
+          { workoutData.map((workout, index) => { return <WorkoutCard key={workout.workoutId} data={workout} deleteWorkout={deleteWorkout} />; })}
         </div>
       </>
     );

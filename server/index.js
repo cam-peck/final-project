@@ -269,7 +269,7 @@ app.post('/api/workouts', (req, res, next) => {
 app.get('/api/workouts', (req, res, next) => {
   const { userId } = req.user;
   const sql = `
-  SELECT "date", "description", "warmupDistance", "warmupDistanceUnits", "warmupNotes", "workoutDistance", "workoutDistanceUnits", "workoutNotes", "cooldownDistance", "cooldownDistanceUnits", "cooldownNotes"
+  SELECT "date", "description", "warmupDistance", "warmupDistanceUnits", "warmupNotes", "workoutDistance", "workoutDistanceUnits", "workoutNotes", "cooldownDistance", "cooldownDistanceUnits", "cooldownNotes", "workoutId"
     FROM "workouts"
    WHERE "userId" = $1
 ORDER BY "date" DESC;
