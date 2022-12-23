@@ -126,8 +126,9 @@ export default class WorkoutForm extends React.Component {
       fetchingData: true
     }, () => {
       const { user } = this.context;
+      const { mode, workoutId } = this.props;
       const req = {
-        method: 'POST',
+        method: `${mode === 'add' ? 'POST' : 'PUT'}`,
         headers: {
           'Content-Type': 'application/json',
           'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
@@ -135,7 +136,7 @@ export default class WorkoutForm extends React.Component {
         user,
         body: JSON.stringify(this.state)
       };
-      fetch('/api/workouts', req)
+      fetch(`${mode === 'add' ? '/api/workouts' : '/api/workouts/' + workoutId}`, req)
         .then(response => response.json())
         .then(result => {
           this.setState({
