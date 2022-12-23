@@ -239,15 +239,12 @@ app.post('/api/workouts', (req, res, next) => {
   let { warmupDistance, warmupNotes, workoutDistance, workoutNotes, cooldownDistance, cooldownNotes } = req.body;
   if (warmupDistance === '') {
     warmupDistance = 0;
-    warmupNotes = null;
   }
   if (workoutDistance === '') {
     workoutDistance = 0;
-    workoutNotes = null;
   }
   if (cooldownDistance === '') {
     cooldownDistance = 0;
-    cooldownNotes = null;
   }
   if (!date | !description) {
     throw new ClientError(400, 'date and description are required fields.');
@@ -313,15 +310,12 @@ app.put('/api/workouts/:workoutId', (req, res, next) => {
   let { warmupDistance, warmupNotes, workoutDistance, workoutNotes, cooldownDistance, cooldownNotes } = req.body;
   if (warmupDistance === '') {
     warmupDistance = 0;
-    warmupNotes = null;
   }
   if (workoutDistance === '') {
     workoutDistance = 0;
-    workoutNotes = null;
   }
   if (cooldownDistance === '') {
     cooldownDistance = 0;
-    cooldownNotes = null;
   }
   if (!date | !description) {
     throw new ClientError(400, 'date and description are required fields.');
