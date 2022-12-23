@@ -69,8 +69,11 @@ export default class WorkoutForm extends React.Component {
             this.setState({ networkError: true, workoutIdError: true });
             return;
           }
-          const { date, description, warmupCheck, workoutCheck, cooldownCheck, warmupDistance, warmupNotes, workoutDistance, warmupDistanceUnits, workoutDistanceUnits, cooldownDistanceUnits, workoutNotes, cooldownDistance, cooldownNotes } = result[0];
+          const { date, description, warmupDistance, warmupNotes, workoutDistance, warmupDistanceUnits, workoutDistanceUnits, cooldownDistanceUnits, workoutNotes, cooldownDistance, cooldownNotes } = result[0];
           const dtDateOnly = removeTz(date);
+          const warmupCheck = Boolean(warmupNotes);
+          const workoutCheck = Boolean(workoutNotes);
+          const cooldownCheck = Boolean(cooldownNotes);
           this.setState({
             date: dtDateOnly,
             description,
@@ -200,9 +203,9 @@ export default class WorkoutForm extends React.Component {
           <div className="w-full mb-4">
             <fieldset className="border border-2 border-blue-300 rounded-lg p-5">
               <legend className="font-lora font-md text-lg x2s:text-xl font-medium p-2 bg-blue-200 rounded-md">What sections do you need?</legend>
-              <CheckboxInput id='warmupCheck' name='warmupCheck' value={warmupCheck} onChange={handleChange} label='Warmup'/>
+              <CheckboxInput id='warmupCheck' name='warmupCheck' value={warmupCheck} onChange={handleChange} label='Warmup' checked={warmupCheck}/>
               <CheckboxInput id='workoutCheck' name='workoutCheck' value={workoutCheck} onChange={handleChange} label='Workout' checked={workoutCheck}/>
-              <CheckboxInput id='cooldownCheck' name='cooldownCheck' value={cooldownCheck} onChange={handleChange} label='Cooldown'/>
+              <CheckboxInput id='cooldownCheck' name='cooldownCheck' value={cooldownCheck} onChange={handleChange} label='Cooldown' checked={cooldownCheck}/>
             </fieldset>
           </div>
           {/* Checkbox Fieldsets */}
