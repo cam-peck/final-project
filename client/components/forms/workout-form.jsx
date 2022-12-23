@@ -16,7 +16,7 @@ export default class WorkoutForm extends React.Component {
       date: new Date(),
       description: '',
       warmupCheck: false,
-      workoutCheck: false,
+      workoutCheck: true,
       cooldownCheck: false,
       warmupDistance: '',
       warmupDistanceUnits: 'miles',
@@ -139,7 +139,7 @@ export default class WorkoutForm extends React.Component {
             date: new Date(),
             description: '',
             warmupCheck: false,
-            workoutCheck: false,
+            workoutCheck: true,
             cooldownCheck: false,
             warmupDistance: '',
             warmupDistanceUnits: 'miles',
@@ -201,7 +201,7 @@ export default class WorkoutForm extends React.Component {
             <fieldset className="border border-2 border-blue-300 rounded-lg p-5">
               <legend className="font-lora font-md text-lg x2s:text-xl font-medium p-2 bg-blue-200 rounded-md">What sections do you need?</legend>
               <CheckboxInput id='warmupCheck' name='warmupCheck' value={warmupCheck} onChange={handleChange} label='Warmup'/>
-              <CheckboxInput id='workoutCheck' name='workoutCheck' value={workoutCheck} onChange={handleChange} label='Workout'/>
+              <CheckboxInput id='workoutCheck' name='workoutCheck' value={workoutCheck} onChange={handleChange} label='Workout' checked={workoutCheck}/>
               <CheckboxInput id='cooldownCheck' name='cooldownCheck' value={cooldownCheck} onChange={handleChange} label='Cooldown'/>
             </fieldset>
           </div>
@@ -216,7 +216,7 @@ export default class WorkoutForm extends React.Component {
           {
           workoutCheck === true
             ? <div className="w-full mb-4">
-              <WorkoutFieldset legendLabel='Workout' integerName='workoutDistance' integerValue={workoutDistance} distanceTypeName='workoutDistanceUnits' distanceTypeValue={workoutDistanceUnits} notesName='workoutNotes' notesValue={workoutNotes} notesPlaceholder='4 x 1k @ 3:20 / k' onChange={handleChange} />
+              <WorkoutFieldset legendLabel='Workout' integerName='workoutDistance' integerValue={workoutDistance} distanceTypeName='workoutDistanceUnits' distanceTypeValue={workoutDistanceUnits} notesName='workoutNotes' notesValue={workoutNotes} notesPlaceholder='4 x 1k @ 3:20 / k' onChange={handleChange} required={true}/>
             </div>
             : ''
         }
