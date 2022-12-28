@@ -46,7 +46,36 @@ export default class MyWorkouts extends React.Component {
   }
 
   deleteWorkout(workoutId) {
-    // console.log('Deleting workout with workoutId: ', workoutId);
+    this.setState({
+      fetchingData: true
+    }, () => {
+      const { user } = this.context;
+      const { workoutData } = this.state;
+      const req = {
+        method: 'DELETE',
+        headers: {
+          'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
+        },
+        user
+      };
+      fetch('/api/workouts/' + workoutId, req)
+        .then(response => response.json())
+        .then(result => {
+          const indexToRemove = workoutData.findIndex(workoutData => workoutData.workoutId === workoutId);
+          const newWorkoutData = Array.from(workoutData);
+          newWorkoutData.splice(indexToRemove, 1);
+          this.setState({
+            workoutData: newWorkoutData,
+            fetchingData: false
+          });
+        })
+        .catch(error => {
+          console.error('There was an error!', error);
+          this.setState({
+            networkError: true
+          });
+        });
+    });
   }
 
   render() {
