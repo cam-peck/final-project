@@ -96,7 +96,7 @@ export default class MyWorkouts extends React.Component {
         <section>
           {
             workoutData.length === 0
-              ? <p className="text-center italic">No workouts found... Add a run using the &quot;+&quot; button in the bottom right.</p>
+              ? <p className="text-center italic">No workouts found... Add a workout using the &quot;+&quot; button in the bottom right.</p>
               : <div className="md:grid md:grid-cols-2 gap-6 md:gap-8 flex flex-col mb-4"> { workoutData.map((workout, index) => { return <WorkoutCard key={workout.workoutId} data={workout} deleteWorkout={deleteWorkout} />; })} </div>
           }
         </section>
