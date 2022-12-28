@@ -87,7 +87,7 @@ export default class RunMainCard extends React.Component {
           </div>
         </div>
         {snackbarIsOpen === true
-          ? <DeleteSnackbar isOpen={snackbarIsOpen} toggle={toggleSnack} id={entryId} handleDelete={handleDelete}/>
+          ? <DeleteSnackbar isOpen={snackbarIsOpen} toggle={toggleSnack} id={entryId} handleDelete={handleDelete} bottom='bottom-8'/>
           : '' }
       </div>
     );
