@@ -145,7 +145,7 @@ export default class RunForm extends React.Component {
   render() {
     if (this.state.networkError) {
       if (this.state.runIdError) {
-        return <NetworkError entryId={this.props.entryId}/>;
+        return <NetworkError id={this.props.entryId}/>;
       }
       return <NetworkError />;
     }

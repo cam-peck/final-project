@@ -216,3 +216,9 @@ values (1, 'Half-marathon Race', 'Great race! Middle was sorta eh, but finished 
 
 insert into "runs" ("userId", "title", "description", "date", "duration", "distance", "distanceUnits", "hasGpx")
 values (1, '4 x 1mile peats', 'Mile repeats to get ready for raceday & strides after.', '2022-08-28', '00:30:30', 4.02, 'miles', false);
+
+insert into "workouts" ("userId", "date", "description", "warmupDistance", "warmupDistanceUnits", "warmupNotes", "workoutDistance", "workoutDistanceUnits", "workoutNotes", "cooldownDistance", "cooldownDistanceUnits", "cooldownNotes")
+values (1, '12-23-2022', 'Mile repeats to get ready for raceday & strides after.', 1, 'miles', '8:30 EZ', 4, 'miles', '4 x 1mi @ 5:45 w/ 60s recovery', 1.52, 'miles', '9:30 EZ');
+
+insert into "workouts" ("userId", "date", "description", "warmupDistance", "warmupDistanceUnits", "warmupNotes", "workoutDistance", "workoutDistanceUnits", "workoutNotes", "cooldownDistance", "cooldownDistanceUnits", "cooldownNotes")
+values (1, '12-22-2022', 'Weekly long run', 0, 'miles', '', 8.34, 'miles', '7:30 / mile STEADY', 0, 'miles', '');

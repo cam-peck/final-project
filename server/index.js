@@ -239,15 +239,12 @@ app.post('/api/workouts', (req, res, next) => {
   let { warmupDistance, warmupNotes, workoutDistance, workoutNotes, cooldownDistance, cooldownNotes } = req.body;
   if (warmupDistance === '') {
     warmupDistance = 0;
-    warmupNotes = null;
   }
   if (workoutDistance === '') {
     workoutDistance = 0;
-    workoutNotes = null;
   }
   if (cooldownDistance === '') {
     cooldownDistance = 0;
-    cooldownNotes = null;
   }
   if (!date | !description) {
     throw new ClientError(400, 'date and description are required fields.');
@@ -269,7 +266,7 @@ app.post('/api/workouts', (req, res, next) => {
 app.get('/api/workouts', (req, res, next) => {
   const { userId } = req.user;
   const sql = `
-  SELECT "date", "description", "warmupDistance", "warmupDistanceUnits", "warmupNotes", "workoutDistance", "workoutDistanceUnits", "workoutNotes", "cooldownDistance", "cooldownDistanceUnits", "cooldownNotes"
+  SELECT "date", "description", "warmupDistance", "warmupDistanceUnits", "warmupNotes", "workoutDistance", "workoutDistanceUnits", "workoutNotes", "cooldownDistance", "cooldownDistanceUnits", "cooldownNotes", "workoutId"
     FROM "workouts"
    WHERE "userId" = $1
 ORDER BY "date" DESC;
@@ -279,6 +276,71 @@ ORDER BY "date" DESC;
     .then(result => {
       const workouts = result.rows;
       res.json(workouts);
+    })
+    .catch(err => next(err));
+});
+
+app.get('/api/workouts/:workoutId', (req, res, next) => {
+  const { userId } = req.user;
+  const { workoutId } = req.params;
+  if (!workoutId) {
+    throw new ClientError(400, 'workoutId is a required paramter as /api/workouts/<parameter-id-here>');
+  }
+  const sql = `
+  SELECT "date", "description", "warmupDistance", "warmupDistanceUnits", "warmupNotes", "workoutDistance", "workoutDistanceUnits", "workoutNotes", "cooldownDistance", "cooldownDistanceUnits", "cooldownNotes"
+    FROM "workouts"
+   WHERE "userId" = $1 AND "workoutId" = $2;
+  `;
+  const params = [userId, workoutId];
+  db.query(sql, params)
+    .then(result => {
+      const data = result.rows;
+      res.json(data);
+    })
+    .catch(err => next(err));
+});
+
+app.put('/api/workouts/:workoutId', (req, res, next) => {
+  const { userId } = req.user;
+  const { workoutId } = req.params;
+  if (!workoutId) {
+    throw new ClientError(400, 'workoutId is a required paramter as /api/workouts/<parameter-id-here>');
+  }
+  const { date, description, warmupDistanceUnits, workoutDistanceUnits, cooldownDistanceUnits } = req.body;
+  let { warmupDistance, warmupNotes, workoutDistance, workoutNotes, cooldownDistance, cooldownNotes } = req.body;
+  if (warmupDistance === '') {
+    warmupDistance = 0;
+  }
+  if (workoutDistance === '') {
+    workoutDistance = 0;
+  }
+  if (cooldownDistance === '') {
+    cooldownDistance = 0;
+  }
+  if (!date | !description) {
+    throw new ClientError(400, 'date and description are required fields.');
+  }
+  const sql = `
+   UPDATE "workouts"
+      SET "date"                  = $1,
+          "description"           = $2,
+          "warmupDistance"        = $3,
+          "warmupDistanceUnits"   = $4,
+          "warmupNotes"           = $5,
+          "workoutDistance"       = $6,
+          "workoutDistanceUnits"  = $7,
+          "workoutNotes"          = $8,
+          "cooldownDistance"      = $9,
+          "cooldownDistanceUnits" = $10,
+          "cooldownNotes"         = $11
+    WHERE "workoutId" = $12 AND "userId" = $13
+RETURNING *
+  `;
+  const params = [date, description, warmupDistance, warmupDistanceUnits, warmupNotes, workoutDistance, workoutDistanceUnits, workoutNotes, cooldownDistance, cooldownDistanceUnits, cooldownNotes, workoutId, userId];
+  db.query(sql, params)
+    .then(result => {
+      const [editedWorkout] = result.rows;
+      res.json(editedWorkout);
     })
     .catch(err => next(err));
 });

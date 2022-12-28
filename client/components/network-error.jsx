@@ -1,8 +1,8 @@
 import React from 'react';
 
 export default function NetworkError(props) {
-  const errorMessage = props.entryId !== undefined
-    ? `Run with id: ${props.entryId} not found. Enter a valid entryId and refresh the page.`
+  const errorMessage = props.id !== undefined
+    ? `Id: ${props.id} not found. Enter a valid Id and refresh the page.`
     : 'Please check your internet connection and refresh the page.';
   return (
     <div className="max-w-6xl flex flex-col gap-2 justify-center items-center mt-8">
