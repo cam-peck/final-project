@@ -46,7 +46,7 @@ export default class WorkoutCard extends React.Component {
     const { toggleMenu, toggleSnack, handleClick, handleDelete } = this;
     const { toggleMenuIsOpen, snackbarIsOpen } = this.state;
     return (
-      <section className="font-caveat bg-blue-200 pt-3 pb-3 pl-4 pr-4 rounded-lg border border-gray-400 x2s:text-lg shadow-lg">
+      <section className="font-caveat bg-blue-200 pt-3 pb-3 pl-4 pr-4 rounded-lg border border-gray-400 x2s:text-lg shadow-lg relative">
         <div className="mb-1.5 flex flex-col gap-[2px]">
           <div className="flex justify-between relative">
             <h1 className="text-lg x2s:text-2xl">{formattedDate}</h1>
@@ -86,7 +86,7 @@ export default class WorkoutCard extends React.Component {
           </div>
         </div>
         {snackbarIsOpen === true
-          ? <DeleteSnackbar isOpen={snackbarIsOpen} toggle={toggleSnack} id={workoutId} handleDelete={handleDelete} />
+          ? <DeleteSnackbar isOpen={snackbarIsOpen} toggle={toggleSnack} id={workoutId} handleDelete={handleDelete} left='left-0' top='top-0' right='right-0' bottom='bottom-0' alignItems='items-center'/>
           : ''}
       </section>
     );

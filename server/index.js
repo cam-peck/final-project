@@ -345,6 +345,27 @@ RETURNING *
     .catch(err => next(err));
 });
 
+app.delete('/api/workouts/:workoutId', (req, res, next) => {
+  const { userId } = req.user;
+  const { workoutId } = req.params;
+  if (!workoutId) {
+    throw new ClientError(400, 'workoutId is a required paramter as /api/workouts/<parameter-id-here>');
+  }
+  const sql = `
+   DELETE
+     FROM "workouts"
+    WHERE "userId" = $1 AND "workoutId" = $2
+RETURNING *;
+  `;
+  const params = [userId, workoutId];
+  db.query(sql, params)
+    .then(result => {
+      const [deletedWorkout] = result.rows;
+      res.json(deletedWorkout);
+    })
+    .catch(err => next(err));
+});
+
 app.use(errorMiddleware);
 
 app.listen(process.env.PORT, () => {

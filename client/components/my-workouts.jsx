@@ -46,7 +46,36 @@ export default class MyWorkouts extends React.Component {
   }
 
   deleteWorkout(workoutId) {
-    // console.log('Deleting workout with workoutId: ', workoutId);
+    this.setState({
+      fetchingData: true
+    }, () => {
+      const { user } = this.context;
+      const { workoutData } = this.state;
+      const req = {
+        method: 'DELETE',
+        headers: {
+          'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
+        },
+        user
+      };
+      fetch('/api/workouts/' + workoutId, req)
+        .then(response => response.json())
+        .then(result => {
+          const indexToRemove = workoutData.findIndex(workoutData => workoutData.workoutId === workoutId);
+          const newWorkoutData = Array.from(workoutData);
+          newWorkoutData.splice(indexToRemove, 1);
+          this.setState({
+            workoutData: newWorkoutData,
+            fetchingData: false
+          });
+        })
+        .catch(error => {
+          console.error('There was an error!', error);
+          this.setState({
+            networkError: true
+          });
+        });
+    });
   }
 
   render() {
@@ -60,13 +89,17 @@ export default class MyWorkouts extends React.Component {
     const { deleteWorkout } = this;
     return (
       <>
-        <div>
+        <header>
           <h1 className="text-2xl font-lora font-medium mb-4">My Workouts</h1>
           <TextInput placeholder="Search by title, description, distance-type, or date..." type="text" name="searchbar" id="searchbar"/>
-        </div>
-        <div className="flex flex-col gap-6 md:grid md:grid-cols-2 md:gap-8 mb-4">
-          { workoutData.map((workout, index) => { return <WorkoutCard key={workout.workoutId} data={workout} deleteWorkout={deleteWorkout} />; })}
-        </div>
+        </header>
+        <section>
+          {
+            workoutData.length === 0
+              ? <p className="text-center italic">No workouts found... Add a workout using the &quot;+&quot; button in the bottom right.</p>
+              : <div className="md:grid md:grid-cols-2 gap-6 md:gap-8 flex flex-col mb-4"> { workoutData.map((workout, index) => { return <WorkoutCard key={workout.workoutId} data={workout} deleteWorkout={deleteWorkout} />; })} </div>
+          }
+        </section>
       </>
     );
   }
