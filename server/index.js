@@ -135,8 +135,12 @@ app.get('/api/runs/:entryId', (req, res, next) => {
   const params = [userId, entryId];
   db.query(sql, params)
     .then(result => {
-      const data = result.rows;
-      res.json(data);
+      const [data] = result.rows;
+      if (!data) {
+        res.status(404).json(`Error: Your id: ${entryId}, does not exist.`);
+      } else {
+        res.json(data);
+      }
     })
     .catch(err => next(err));
 });
@@ -168,7 +172,11 @@ app.put('/api/runs/:entryId', (req, res, next) => {
   db.query(sql, params)
     .then(result => {
       const [editedRun] = result.rows;
-      res.json(editedRun);
+      if (!editedRun) {
+        res.status(404).json(`Error: Your id: ${entryId}, does not exist.`);
+      } else {
+        res.json(editedRun);
+      }
     })
     .catch(err => next(err));
 });
@@ -188,8 +196,12 @@ app.delete('/api/runs/:entryId', (req, res, next) => {
   const params = [userId, entryId];
   db.query(sql, params)
     .then(result => {
-      const deletedRow = result.rows;
-      res.json(deletedRow);
+      const [deletedRow] = result.rows;
+      if (!deletedRow) {
+        res.status(404).json(`Error: Your id: ${entryId}, does not exist.`);
+      } else {
+        res.json(deletedRow);
+      }
     })
     .catch(err => next(err));
 });
@@ -294,8 +306,12 @@ app.get('/api/workouts/:workoutId', (req, res, next) => {
   const params = [userId, workoutId];
   db.query(sql, params)
     .then(result => {
-      const data = result.rows;
-      res.json(data);
+      const [data] = result.rows;
+      if (!data) {
+        res.status(404).json(`Error: Your id: ${workoutId}, does not exist.`);
+      } else {
+        res.json(data);
+      }
     })
     .catch(err => next(err));
 });
@@ -340,7 +356,11 @@ RETURNING *
   db.query(sql, params)
     .then(result => {
       const [editedWorkout] = result.rows;
-      res.json(editedWorkout);
+      if (!editedWorkout) {
+        res.status(404).json(`Error: Your id: ${workoutId}, does not exist.`);
+      } else {
+        res.json(editedWorkout);
+      }
     })
     .catch(err => next(err));
 });
@@ -361,7 +381,11 @@ RETURNING *;
   db.query(sql, params)
     .then(result => {
       const [deletedWorkout] = result.rows;
-      res.json(deletedWorkout);
+      if (!deletedWorkout) {
+        res.status(404).json(`Error: Your id: ${workoutId}, does not exist.`);
+      } else {
+        res.json(deletedWorkout);
+      }
     })
     .catch(err => next(err));
 });

@@ -59,13 +59,17 @@ export default class RunForm extends React.Component {
         user
       };
       fetch(`/api/runs/${entryId}`, req)
-        .then(response => response.json())
-        .then(result => {
-          if (result.length === 0) {
-            this.setState({ networkError: true, runIdError: true });
-            return;
+        .then(response => {
+          if (response.status === 404) {
+            this.setState({ runIdError: true });
+            // eslint-disable-next-line prefer-promise-reject-errors
+            return Promise.reject('Error 404');
+          } else {
+            return response.json();
           }
-          const { title, description, date, duration, distance, distanceUnits, hasGpx } = result[0];
+        })
+        .then(result => {
+          const { title, description, date, duration, distance, distanceUnits, hasGpx } = result;
           const splitDuration = duration.split(':');
           const dtDateOnly = removeTz(date);
           this.setState({

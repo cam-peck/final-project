@@ -63,13 +63,21 @@ export default class WorkoutForm extends React.Component {
         user
       };
       fetch(`/api/workouts/${workoutId}`, req)
-        .then(response => response.json())
+        .then(response => {
+          if (response.status === 404) {
+            this.setState({ workoutIdError: true });
+            // eslint-disable-next-line prefer-promise-reject-errors
+            return Promise.reject('Error 404');
+          } else {
+            return response.json();
+          }
+        })
         .then(result => {
           if (result.length === 0) {
             this.setState({ networkError: true, workoutIdError: true });
             return;
           }
-          const { date, description, warmupDistance, warmupNotes, workoutDistance, warmupDistanceUnits, workoutDistanceUnits, cooldownDistanceUnits, workoutNotes, cooldownDistance, cooldownNotes } = result[0];
+          const { date, description, warmupDistance, warmupNotes, workoutDistance, warmupDistanceUnits, workoutDistanceUnits, cooldownDistanceUnits, workoutNotes, cooldownDistance, cooldownNotes } = result;
           const dtDateOnly = removeTz(date);
           const warmupCheck = Boolean(warmupNotes);
           const workoutCheck = Boolean(workoutNotes);
