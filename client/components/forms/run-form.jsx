@@ -8,6 +8,7 @@ import DistanceInput from '../inputs/distance-input';
 import DurationInput from '../inputs/duration-input';
 import LoadingSpinner from '../loading-spinner';
 import NetworkError from '../network-error';
+import NotFound from '../../pages/not-found';
 
 export default class RunForm extends React.Component {
   constructor(props) {
@@ -24,7 +25,7 @@ export default class RunForm extends React.Component {
       hasGpx: false,
       fetchingData: false,
       networkError: false,
-      runIdError: false
+      idError: false
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -61,7 +62,7 @@ export default class RunForm extends React.Component {
       fetch(`/api/runs/${entryId}`, req)
         .then(response => {
           if (response.status === 404) {
-            this.setState({ runIdError: true });
+            this.setState({ idError: true });
             // eslint-disable-next-line prefer-promise-reject-errors
             return Promise.reject('Error 404');
           } else {
@@ -83,7 +84,8 @@ export default class RunForm extends React.Component {
             distanceUnits,
             hasGpx,
             fetchingData: false,
-            networkError: false
+            networkError: false,
+            idError: false
           });
         })
         .catch(error => {
@@ -147,10 +149,10 @@ export default class RunForm extends React.Component {
   }
 
   render() {
+    if (this.state.idError) {
+      return <NotFound />;
+    }
     if (this.state.networkError) {
-      if (this.state.runIdError) {
-        return <NetworkError id={this.props.entryId}/>;
-      }
       return <NetworkError />;
     }
     if (this.state.fetchingData) {
