@@ -8,6 +8,7 @@ import DistanceInput from '../inputs/distance-input';
 import DurationInput from '../inputs/duration-input';
 import LoadingSpinner from '../loading-spinner';
 import NetworkError from '../network-error';
+import NotFound from '../../pages/not-found';
 
 export default class RunForm extends React.Component {
   constructor(props) {
@@ -24,7 +25,7 @@ export default class RunForm extends React.Component {
       hasGpx: false,
       fetchingData: false,
       networkError: false,
-      runIdError: false
+      idError: false
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -59,13 +60,17 @@ export default class RunForm extends React.Component {
         user
       };
       fetch(`/api/runs/${entryId}`, req)
-        .then(response => response.json())
-        .then(result => {
-          if (result.length === 0) {
-            this.setState({ networkError: true, runIdError: true });
-            return;
+        .then(response => {
+          if (response.status === 404) {
+            this.setState({ idError: true });
+            // eslint-disable-next-line prefer-promise-reject-errors
+            return Promise.reject('Error 404');
+          } else {
+            return response.json();
           }
-          const { title, description, date, duration, distance, distanceUnits, hasGpx } = result[0];
+        })
+        .then(result => {
+          const { title, description, date, duration, distance, distanceUnits, hasGpx } = result;
           const splitDuration = duration.split(':');
           const dtDateOnly = removeTz(date);
           this.setState({
@@ -79,7 +84,8 @@ export default class RunForm extends React.Component {
             distanceUnits,
             hasGpx,
             fetchingData: false,
-            networkError: false
+            networkError: false,
+            idError: false
           });
         })
         .catch(error => {
@@ -143,10 +149,10 @@ export default class RunForm extends React.Component {
   }
 
   render() {
+    if (this.state.idError) {
+      return <NotFound />;
+    }
     if (this.state.networkError) {
-      if (this.state.runIdError) {
-        return <NetworkError id={this.props.entryId}/>;
-      }
       return <NetworkError />;
     }
     if (this.state.fetchingData) {

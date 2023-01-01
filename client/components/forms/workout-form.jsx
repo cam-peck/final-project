@@ -8,6 +8,7 @@ import LoadingSpinner from '../loading-spinner';
 import NetworkError from '../network-error';
 import { subYears } from 'date-fns';
 import { AppContext, removeTz } from '../../lib';
+import NotFound from '../../pages/not-found';
 
 export default class WorkoutForm extends React.Component {
   constructor(props) {
@@ -29,7 +30,7 @@ export default class WorkoutForm extends React.Component {
       cooldownNotes: '',
       fetchingData: false,
       networkError: false,
-      workoutIdError: false
+      idError: false
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleDateChange = this.handleDateChange.bind(this);
@@ -63,13 +64,21 @@ export default class WorkoutForm extends React.Component {
         user
       };
       fetch(`/api/workouts/${workoutId}`, req)
-        .then(response => response.json())
+        .then(response => {
+          if (response.status === 404) {
+            this.setState({ idError: true });
+            // eslint-disable-next-line prefer-promise-reject-errors
+            return Promise.reject('Error 404');
+          } else {
+            return response.json();
+          }
+        })
         .then(result => {
           if (result.length === 0) {
             this.setState({ networkError: true, workoutIdError: true });
             return;
           }
-          const { date, description, warmupDistance, warmupNotes, workoutDistance, warmupDistanceUnits, workoutDistanceUnits, cooldownDistanceUnits, workoutNotes, cooldownDistance, cooldownNotes } = result[0];
+          const { date, description, warmupDistance, warmupNotes, workoutDistance, warmupDistanceUnits, workoutDistanceUnits, cooldownDistanceUnits, workoutNotes, cooldownDistance, cooldownNotes } = result;
           const dtDateOnly = removeTz(date);
           const warmupCheck = Boolean(warmupNotes);
           const workoutCheck = Boolean(workoutNotes);
@@ -90,7 +99,8 @@ export default class WorkoutForm extends React.Component {
             cooldownDistanceUnits,
             cooldownNotes,
             fetchingData: false,
-            networkError: false
+            networkError: false,
+            idError: false
           });
         })
         .catch(error => {
@@ -166,10 +176,10 @@ export default class WorkoutForm extends React.Component {
   }
 
   render() {
+    if (this.state.idError) {
+      return <NotFound />;
+    }
     if (this.state.networkError) {
-      if (this.state.workoutIdError) {
-        return <NetworkError id={this.props.workoutId} />;
-      }
       return <NetworkError />;
     }
     if (this.state.fetchingData) {
