@@ -1,13 +1,13 @@
 import { format } from 'date-fns';
 
-export default function filterRuns(testString, runData) {
+export default function filterWorkouts(testString, workoutData) {
   const formattedTestString = testString.toLowerCase().replaceAll(',', '');
-  const filteredData = runData.filter(run => {
-    const dt = new Date(run.date);
+  const filteredData = workoutData.filter(workout => {
+    const dt = new Date(workout.date);
     const dtDateOnly = new Date(dt.valueOf() + dt.getTimezoneOffset() * 60 * 1000);
     const formattedDate = format(dtDateOnly, 'EEEE MMMM do yyyy');
-    const { title, description, distanceUnits } = run;
-    const runText = (title + description + distanceUnits + formattedDate).toLowerCase();
+    const { description, warmupNotes, workoutNotes, cooldownNotes } = workout;
+    const runText = (description + warmupNotes + workoutNotes + cooldownNotes + formattedDate).toLowerCase();
     if (runText.includes(formattedTestString)) {
       return true;
     } else return false;

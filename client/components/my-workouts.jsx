@@ -1,9 +1,9 @@
 import React from 'react';
-import WorkoutCard from './cards/workout-card';
+import FilteredWorkouts from './filtered-workouts';
 import TextInput from './inputs/text-input';
 import NetworkError from './network-error';
 import LoadingSpinner from './loading-spinner';
-import { AppContext } from '../lib';
+import { AppContext, filterWorkouts } from '../lib';
 
 export default class MyWorkouts extends React.Component {
   constructor(props) {
@@ -11,9 +11,11 @@ export default class MyWorkouts extends React.Component {
     this.state = {
       workoutData: [],
       fetchingData: false,
-      networkError: false
+      networkError: false,
+      searchText: ''
     };
     this.deleteWorkout = this.deleteWorkout.bind(this);
+    this.handleSearchChange = this.handleSearchChange.bind(this);
   }
 
   componentDidMount() {
@@ -78,6 +80,10 @@ export default class MyWorkouts extends React.Component {
     });
   }
 
+  handleSearchChange(event) {
+    this.setState({ searchText: event.target.value });
+  }
+
   render() {
     if (this.state.networkError) {
       return <NetworkError />;
@@ -85,19 +91,20 @@ export default class MyWorkouts extends React.Component {
     if (this.state.fetchingData) {
       return <LoadingSpinner />;
     }
-    const { workoutData } = this.state;
+    const { workoutData, searchText } = this.state;
     const { deleteWorkout } = this;
+    const filteredWorkouts = filterWorkouts(searchText, workoutData);
     return (
       <>
         <header>
           <h1 className="text-2xl font-lora font-medium mb-4">My Workouts</h1>
-          <TextInput placeholder="Search by title, description, distance-type, or date..." type="text" name="searchbar" id="searchbar"/>
+          <TextInput placeholder="Search by date, description, or notes..." type="text" name="searchbar" id="searchbar" value={searchText} onChange={this.handleSearchChange} disabled={workoutData.length === 0}/>
         </header>
         <section>
           {
             workoutData.length === 0
               ? <p className="text-center italic">No workouts found... Add a workout using the &quot;+&quot; button in the bottom right.</p>
-              : <div className="md:grid md:grid-cols-2 gap-6 md:gap-8 flex flex-col mb-4"> { workoutData.map((workout, index) => { return <WorkoutCard key={workout.workoutId} data={workout} deleteWorkout={deleteWorkout} />; })} </div>
+              : filteredWorkouts.length !== 0 ? <FilteredWorkouts workoutData={filteredWorkouts} deleteWorkout={deleteWorkout} /> : <p className='italic text-center'>No workouts found with your search parameters...</p>
           }
         </section>
       </>
