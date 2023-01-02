@@ -1,5 +1,5 @@
 import React from 'react';
-import WorkoutCard from './cards/workout-card';
+import FilteredWorkouts from './filtered-workouts';
 import TextInput from './inputs/text-input';
 import NetworkError from './network-error';
 import LoadingSpinner from './loading-spinner';
@@ -87,6 +87,7 @@ export default class MyWorkouts extends React.Component {
     }
     const { workoutData } = this.state;
     const { deleteWorkout } = this;
+    // const filteredWorkouts = filterWorkouts(searchText, workoutData);
     return (
       <>
         <header>
@@ -97,7 +98,7 @@ export default class MyWorkouts extends React.Component {
           {
             workoutData.length === 0
               ? <p className="text-center italic">No workouts found... Add a workout using the &quot;+&quot; button in the bottom right.</p>
-              : <div className="md:grid md:grid-cols-2 gap-6 md:gap-8 flex flex-col mb-4"> { workoutData.map((workout, index) => { return <WorkoutCard key={workout.workoutId} data={workout} deleteWorkout={deleteWorkout} />; })} </div>
+              : <FilteredWorkouts workoutData={workoutData} deleteWorkout={deleteWorkout}/>
           }
         </section>
       </>
