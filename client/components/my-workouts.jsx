@@ -104,7 +104,7 @@ export default class MyWorkouts extends React.Component {
           {
             workoutData.length === 0
               ? <p className="text-center italic">No workouts found... Add a workout using the &quot;+&quot; button in the bottom right.</p>
-              : <FilteredWorkouts workoutData={filteredWorkouts} deleteWorkout={deleteWorkout}/>
+              : filteredWorkouts.length !== 0 ? <FilteredWorkouts workoutData={filteredWorkouts} deleteWorkout={deleteWorkout} /> : <p className='italic text-center'>No workouts found with your search parameters...</p>
           }
         </section>
       </>
