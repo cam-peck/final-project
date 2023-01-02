@@ -98,7 +98,7 @@ export default class MyWorkouts extends React.Component {
       <>
         <header>
           <h1 className="text-2xl font-lora font-medium mb-4">My Workouts</h1>
-          <TextInput placeholder="Search by title, description, distance-type, or date..." type="text" name="searchbar" id="searchbar" value={searchText} onChange={this.handleSearchChange} disabled={workoutData.length === 0}/>
+          <TextInput placeholder="Search by date, description, or notes..." type="text" name="searchbar" id="searchbar" value={searchText} onChange={this.handleSearchChange} disabled={workoutData.length === 0}/>
         </header>
         <section>
           {
