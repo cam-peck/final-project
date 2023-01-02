@@ -8,11 +8,11 @@ export default function RunMiniCard(props) {
   const splitDuration = duration.split(':');
   const pace = calculatePace(distance, distanceUnits, splitDuration[0], splitDuration[1], splitDuration[2]);
   const dtDateOnly = removeTz(date);
-  const formattedDate = format(new Date(dtDateOnly), 'MMMM dd, yyyy');
+  const formattedDate = format(new Date(dtDateOnly), 'MMMM do, yyyy');
   return (
     <div className="w-full bg-blue-800 text-white flex justify-between items-center rounded-xl mb-6 shadow-lg hover:cursor-pointer p-2 x2s:p-0" onClick={() => { openModal(entryId); }}>
       <div className="flex items-center gap-4">
-        <div className="w-12 xs:w-14 md:w-16 ml-4 pt-4 pb-4 x2s:pt-0 x2s:pb-0">
+        <div className="w-12 xs:w-14 md:w-16 ml-1.5 x2s:ml-4 pt-4 pb-4 x2s:pt-0 x2s:pb-0">
           <img className="rounded-full p-1.5 border-black bg-white border-2" src="/images/run-shoe.png" alt="" />
         </div>
         <div className="flex flex-col gap-2 font-roboto">
