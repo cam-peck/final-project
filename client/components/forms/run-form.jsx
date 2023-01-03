@@ -2,6 +2,7 @@ import React from 'react';
 import { calculatePace, AppContext, removeTz } from '../../lib';
 import TextInput from '../inputs/text-input';
 import DatePicker from 'react-datepicker';
+import UploadRunCard from '../cards/upload-run-card';
 import { subYears } from 'date-fns';
 import 'react-datepicker/dist/react-datepicker.css';
 import DistanceInput from '../inputs/distance-input';
@@ -175,15 +176,20 @@ export default class RunForm extends React.Component {
     return (
       <form className="w-full" onSubmit={handleSubmit}>
         <h1 className="text-3xl font-lora font-bold mb-4">{titleMessage}</h1>
-        <div className="md:flex md:gap-6">
-          <div className="w-full">
-            <p className="font-lora font-md text-md font-medium pb-2" >Date</p>
-            <DatePicker className="w-full rounded-lg px-3 py-3.5 border border-gray-300 focus:outline-blue-500 mb-4" selected={date} onChange={handleDateChange} dateFormat='MM/dd/yyy' maxDate={new Date()} minDate={subYears(new Date(), 80)} required/>
-            <DistanceInput integerName='distance' integerValue={distance} distanceTypeName='distanceUnits' distanceTypeValue={distanceUnits} onChange={handleChange}/>
-            <DurationInput value={durationObj} onChange={handleChange}/>
-            <TextInput type="pace" name="pace" placeholder="0:00 / mi" value={pace} showLabel={true} label="Pace" onChange={handleChange} />
+        <section className="md:flex gap-6">
+          <div className="md:w-2/4 w-full flex-shrink-0 mt-0.5">
+            <UploadRunCard />
           </div>
-        </div>
+          <div className="md:flex md:gap-6">
+            <div className="w-full">
+              <p className="font-lora font-md text-md font-medium pb-2" >Date</p>
+              <DatePicker className="w-full rounded-lg px-3 py-3.5 border border-gray-300 focus:outline-blue-500 mb-4" selected={date} onChange={handleDateChange} dateFormat='MM/dd/yyy' maxDate={new Date()} minDate={subYears(new Date(), 80)} required/>
+              <DistanceInput integerName='distance' integerValue={distance} distanceTypeName='distanceUnits' distanceTypeValue={distanceUnits} onChange={handleChange}/>
+              <DurationInput value={durationObj} onChange={handleChange}/>
+              <TextInput type="pace" name="pace" placeholder="0:00 / mi" value={pace} showLabel={true} label="Pace" onChange={handleChange} />
+            </div>
+          </div>
+        </section>
         <TextInput type="text" name="title" showLabel={true} label="Title" placeholder="Morning Sun Run" value={title} onChange={handleChange} />
         <TextInput type="text" name="description" showLabel={true} label="Description" placeholder="Easy run with great weather -- nice recovery day" value={description} onChange={handleChange} />
         <div className="flex justify-end mt-2 mb-8">
