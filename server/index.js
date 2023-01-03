@@ -7,6 +7,8 @@ const ClientError = require('./client-error');
 const staticMiddleware = require('./static-middleware');
 const authorizationMiddleware = require('./authorization-middleware');
 const errorMiddleware = require('./error-middleware');
+const { XMLParser, XMLValidator } = require('fast-xml-parser');
+const fs = require('fs');
 
 const db = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
@@ -20,6 +22,26 @@ const app = express();
 app.use(staticMiddleware);
 
 app.use(express.json());
+
+// GPX Data //
+
+app.post('/api/runs/gpxdata', (req, res, next) => {
+  fs.readFile('server/public/gpx-data/test-run.gpx', 'utf-8', function (err, data) {
+    if (err) {
+      res.status(404).send('No file found.');
+      return console.error(err);
+    }
+    if (XMLValidator.validate(data)) {
+      const options = {
+        ignoreAttributes: false,
+        attributeNamePrefix: ''
+      };
+      const parser = new XMLParser(options);
+      const xmlAsJson = parser.parse(data);
+      res.send(xmlAsJson);
+    } else { res.status(400).send('XML data could not be read.'); }
+  });
+});
 
 // Auth Routes //
 
