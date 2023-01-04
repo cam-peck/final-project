@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { createRef } from 'react';
 import { calculatePace, AppContext, removeTz } from '../../lib';
 import TextInput from '../inputs/text-input';
 import DatePicker from 'react-datepicker';
@@ -24,6 +24,7 @@ export default class RunForm extends React.Component {
       distance: '',
       distanceUnits: 'miles',
       hasGpx: false,
+      fileData: null,
       fetchingData: false,
       networkError: false,
       idError: false
@@ -32,6 +33,8 @@ export default class RunForm extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleDateChange = this.handleDateChange.bind(this);
     this.prefillForm = this.prefillForm.bind(this);
+    this.toggleGpxTrue = this.toggleGpxTrue.bind(this);
+    this.fileInputRef = createRef();
   }
 
   componentDidMount() {
@@ -109,10 +112,15 @@ export default class RunForm extends React.Component {
     });
   }
 
+  toggleGpxTrue() {
+    this.setState({ hasGpx: true });
+  }
+
   handleSubmit(event) {
     event.preventDefault();
     this.setState({
-      fetchingData: true
+      fetchingData: true,
+      fileData: this.fileInputRef
     }, () => {
       const { user } = this.context;
       const { mode, entryId } = this.props;
@@ -128,6 +136,27 @@ export default class RunForm extends React.Component {
       fetch(`${mode === 'add' ? '/api/runs' : '/api/runs/' + entryId}`, req)
         .then(response => response.json())
         .then(result => {
+          if (this.state.hasGpx) {
+            const formData = new FormData();
+            formData.append('file', this.state.fileData);
+            const options = {
+              method: 'POST',
+              body: formData,
+              headers: {
+                'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
+              },
+              user
+            };
+            fetch('/api/runs/gpxData/' + result.entryId, options)
+              .then(response => response.json())
+              .then(result => {
+                this.setState({ hasGpx: false, fileData: null });
+              })
+              .catch(error => {
+                console.error('An error occured!', error);
+                this.setState({ networkError: true });
+              });
+          }
           this.setState({
             title: '',
             description: '',
@@ -160,7 +189,7 @@ export default class RunForm extends React.Component {
       return <LoadingSpinner />;
     }
     const { title, description, date, distance, distanceUnits, durationHours, durationMinutes, durationSeconds } = this.state;
-    const { handleChange, handleSubmit, handleDateChange } = this;
+    const { handleChange, handleSubmit, handleDateChange, toggleGpxTrue, fileInputRef } = this;
     const { mode } = this.props;
     const durationObj = { durationHours, durationMinutes, durationSeconds };
     const pace = calculatePace(distance, distanceUnits, durationHours, durationMinutes, durationSeconds);
@@ -178,7 +207,7 @@ export default class RunForm extends React.Component {
         <h1 className="text-3xl font-lora font-bold mb-4">{titleMessage}</h1>
         <section className="md:flex gap-6">
           <div className="md:w-2/4 w-full flex-shrink-0 mt-0.5">
-            <UploadRunCard />
+            <UploadRunCard fileInputRef={fileInputRef} toggleGpxTrue={toggleGpxTrue}/>
           </div>
           <div className="md:flex md:gap-6">
             <div className="w-full">

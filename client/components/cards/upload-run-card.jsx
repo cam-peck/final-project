@@ -1,6 +1,7 @@
 import React from 'react';
 
 export default function UploadRunCard(props) {
+  const { fileInputRef, toggleGpxTrue } = props;
   return (
     <section className="flex flex-col mb-4 pt-1">
       <div className="">
@@ -8,7 +9,7 @@ export default function UploadRunCard(props) {
       </div>
       <div className="bg-blue-200 flex justify-between items-center rounded-br-xl rounded-bl-xl px-5 py-3">
         <p className="font-lora text-lg">Have GPS data?</p>
-        <button type="button" className="bg-blue-600 text-white px-7 py-3 rounded-3xl">Upload here!</button>
+        <input type="file" name="file" accept=".gpx" onChange={toggleGpxTrue} className="bg-blue-600 text-white px-7 py-3 rounded-3xl" ref={fileInputRef}/>
       </div>
     </section>
   );

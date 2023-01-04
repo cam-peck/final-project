@@ -394,8 +394,9 @@ RETURNING *;
 
 // GPX Data //
 
-app.post('/api/runs/gpxdata', (req, res, next) => {
+app.post('/api/runs/gpxdata/:entryId', (req, res, next) => {
   const { userId } = req.user;
+  const { entryId } = req.params;
   fs.readFile('server/public/gpx-data/test-run.gpx', 'utf-8', function (err, data) {
     if (err) {
       res.status(404).send('No file found.');
@@ -410,7 +411,6 @@ app.post('/api/runs/gpxdata', (req, res, next) => {
       const parser = new XMLParser(options);
       const xmlAsJson = parser.parse(data);
       const runData = xmlAsJson.gpx.trk.trkseg.trkpt;
-      const entryId = 1;
       for (let i = 0; i < runData.length; i++) {
         const sql = `
         INSERT INTO "gpxData" ("userId", "entryId", "latitude", "longitude", "elevation", "time", "speed", "recordedAt")
