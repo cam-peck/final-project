@@ -23,26 +23,6 @@ app.use(staticMiddleware);
 
 app.use(express.json());
 
-// GPX Data //
-
-app.post('/api/runs/gpxdata', (req, res, next) => {
-  fs.readFile('server/public/gpx-data/test-run.gpx', 'utf-8', function (err, data) {
-    if (err) {
-      res.status(404).send('No file found.');
-      return console.error(err);
-    }
-    if (XMLValidator.validate(data)) {
-      const options = {
-        ignoreAttributes: false,
-        attributeNamePrefix: ''
-      };
-      const parser = new XMLParser(options);
-      const xmlAsJson = parser.parse(data);
-      res.send(xmlAsJson);
-    } else { res.status(400).send('XML data could not be read.'); }
-  });
-});
-
 // Auth Routes //
 
 app.post('/api/auth/sign-up', (req, res, next) => {
@@ -410,6 +390,39 @@ RETURNING *;
       }
     })
     .catch(err => next(err));
+});
+
+// GPX Data //
+
+app.post('/api/runs/gpxdata', (req, res, next) => {
+  const { userId } = req.user;
+  fs.readFile('server/public/gpx-data/test-run.gpx', 'utf-8', function (err, data) {
+    if (err) {
+      res.status(404).send('No file found.');
+      return console.error(err);
+    }
+    if (XMLValidator.validate(data)) {
+      const options = {
+        ignoreDeclaration: true,
+        ignoreAttributes: false,
+        attributeNamePrefix: ''
+      };
+      const parser = new XMLParser(options);
+      const xmlAsJson = parser.parse(data);
+      const runData = xmlAsJson.gpx.trk.trkseg.trkpt;
+      const entryId = 1;
+      for (let i = 0; i < runData.length; i++) {
+        const sql = `
+        INSERT INTO "gpxData" ("userId", "entryId", "latitude", "longitude", "elevation", "time", "speed", "recordedAt")
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+          RETURNING *;
+        `;
+        const params = [userId, entryId, runData[i].lat, runData[i].lon, runData[i].ele, runData[i].time, runData[i].extensions.speed, xmlAsJson.gpx.metadata.time];
+        db.query(sql, params);
+      }
+      res.status(201).send(xmlAsJson);
+    } else { res.status(400).send('XML data could not be read.'); }
+  });
 });
 
 app.use(errorMiddleware);
