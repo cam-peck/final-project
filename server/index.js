@@ -9,6 +9,8 @@ const authorizationMiddleware = require('./authorization-middleware');
 const errorMiddleware = require('./error-middleware');
 const { XMLParser, XMLValidator } = require('fast-xml-parser');
 const fs = require('fs');
+const dateFns = require('date-fns');
+const getLatLonDistanceInKm = require('./get-lat-long-distance-in-km');
 
 const db = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
@@ -22,6 +24,42 @@ const app = express();
 app.use(staticMiddleware);
 
 app.use(express.json());
+
+app.get('/api/runs/previewRun', (req, res, next) => {
+  fs.readFile('server/public/gpx-data/test-run.gpx', 'utf-8', function (err, data) {
+    if (err) {
+      res.status(404).send('No file found.');
+      return console.error(err);
+    }
+    if (XMLValidator.validate(data)) {
+      const options = {
+        ignoreDeclaration: true,
+        ignoreAttributes: false,
+        attributeNamePrefix: ''
+      };
+      const parser = new XMLParser(options);
+      const xmlAsJson = parser.parse(data);
+      const runData = xmlAsJson.gpx.trk.trkseg.trkpt;
+      // Preview Data //
+      const date = xmlAsJson.gpx.trk.name.split(' ')[1];
+      const startTime = runData[0].time;
+      const endTime = runData[runData.length - 1].time;
+      const duration = dateFns.differenceInSeconds(dateFns.parseISO(endTime), dateFns.parseISO(startTime));
+      console.log('rundate', date);
+      console.log('duration in seconds: ', duration);
+      const path = [];
+      for (let i = 0; i < runData.length; i++) {
+        const distanceObj = {};
+        distanceObj.lat = runData[i].lat;
+        distanceObj.lng = runData[i].lon;
+        path.push(distanceObj);
+      }
+      const distance = getLatLonDistanceInKm(path);
+      console.log('distance in km: ', distance);
+      res.status(200).send('success');
+    } else { res.status(400).send('XML data could not be read.'); }
+  });
+});
 
 // Auth Routes //
 
