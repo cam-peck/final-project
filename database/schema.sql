@@ -41,9 +41,8 @@ CREATE TABLE "public"."gpxData" (
 	"recordedAt" TIMESTAMPTZ NOT NULL,
 	"latitude" TEXT NOT NULL,
 	"longitude" TEXT NOT NULL,
-	"elevation" REAL NOT NULL,
+	"elevation" TEXT NOT NULL,
   "time" TIMESTAMPTZ NOT NULL,
-	"speed" REAL,
 	CONSTRAINT "gpxData_pk" PRIMARY KEY ("gpxDataId")
 ) WITH (
   OIDS=FALSE

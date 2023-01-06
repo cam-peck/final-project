@@ -7,11 +7,6 @@ const ClientError = require('./client-error');
 const staticMiddleware = require('./static-middleware');
 const authorizationMiddleware = require('./authorization-middleware');
 const errorMiddleware = require('./error-middleware');
-const { XMLParser, XMLValidator } = require('fast-xml-parser');
-const fs = require('fs');
-const multer = require('multer');
-const os = require('os');
-const upload = multer({ dest: os.tmpdir() });
 
 const db = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
@@ -104,6 +99,28 @@ app.post('/api/runs', (req, res, next) => {
   db.query(sql, params)
     .then(result => {
       const [newRun] = result.rows;
+      if (hasGpx === true) {
+        const { gpxPath, gpxRunRecordedTime } = req.body;
+        if (!gpxPath || !gpxRunRecordedTime) {
+          throw new ClientError(400, 'gpxPath and gpxRunRecordedTime are required fields.');
+        }
+        const entryId = newRun.entryId;
+        const gpxResponse = [];
+        for (let i = 0; i < gpxPath.length; i++) {
+          const sql = `
+          INSERT INTO "gpxData" ("userId", "entryId", "latitude", "longitude", "elevation", "time", "recordedAt")
+               VALUES ($1, $2, $3, $4, $5, $6, $7)
+            RETURNING *;
+          `;
+          const params = [userId, entryId, gpxPath[i].lat, gpxPath[i].lng, gpxPath[i].elevation, gpxPath[i].time, gpxRunRecordedTime];
+          db.query(sql, params)
+            .then(result => {
+              const [data] = result.rows;
+              gpxResponse.push(data);
+            })
+            .catch(err => next(err));
+        }
+      }
       res.status(201).json(newRun);
     })
     .catch(err => next(err));
@@ -393,39 +410,6 @@ RETURNING *;
       }
     })
     .catch(err => next(err));
-});
-
-// GPX Data //
-
-app.post('/api/runs/gpxdata/:entryId', upload.single('file'), (req, res, next) => {
-  const { userId } = req.user;
-  const { entryId } = req.params;
-  fs.readFile(req.file.path, 'utf-8', function (err, data) {
-    if (err) {
-      res.status(404).send('No file found.');
-      return console.error(err);
-    }
-    if (XMLValidator.validate(data)) {
-      const options = {
-        ignoreDeclaration: true,
-        ignoreAttributes: false,
-        attributeNamePrefix: ''
-      };
-      const parser = new XMLParser(options);
-      const xmlAsJson = parser.parse(data);
-      const runData = xmlAsJson.gpx.trk.trkseg.trkpt;
-      for (let i = 0; i < runData.length; i++) {
-        const sql = `
-        INSERT INTO "gpxData" ("userId", "entryId", "latitude", "longitude", "elevation", "time", "speed", "recordedAt")
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-          RETURNING *;
-        `;
-        const params = [userId, entryId, parseFloat(runData[i].lat), parseFloat(runData[i].lon), runData[i].ele, runData[i].time, runData[i].extensions.speed, xmlAsJson.gpx.metadata.time];
-        db.query(sql, params);
-      }
-      res.status(201).send(xmlAsJson);
-    } else { res.status(400).send('XML data could not be read.'); }
-  });
 });
 
 app.use(errorMiddleware);

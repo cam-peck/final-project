@@ -26,6 +26,7 @@ export default class RunForm extends React.Component {
       hasGpx: false,
       gpxFile: '',
       gpxPath: [],
+      gpxRunRecordedTime: '',
       fetchingData: false,
       networkError: false,
       idError: false
@@ -135,10 +136,13 @@ export default class RunForm extends React.Component {
         const path = [];
         for (let i = 0; i < trkptData.length; i++) {
           const runObj = {};
+          runObj.time = trkptData[i].querySelector('time').textContent;
+          runObj.elevation = trkptData[i].querySelector('ele').textContent;
           runObj.lat = parseFloat(trkptData[i].getAttribute('lat'));
           runObj.lng = parseFloat(trkptData[i].getAttribute('lon'));
           path.push(runObj);
         }
+        const gpxRunRecordedTime = xmlDoc.querySelector('trk').querySelector('name').textContent.split(' ')[1];
         const startTime = trkptData[0].querySelector('time').textContent;
         const endTime = trkptData[trkptData.length - 1].querySelector('time').textContent;
         const durationInSeconds = differenceInSeconds(parseISO(endTime), parseISO(startTime));
@@ -151,7 +155,8 @@ export default class RunForm extends React.Component {
           distanceUnits: 'kilometers',
           durationHours: String(durationObj.hours),
           durationMinutes: String(durationObj.minutes),
-          durationSeconds: String(durationObj.seconds)
+          durationSeconds: String(durationObj.seconds),
+          gpxRunRecordedTime
         });
       } catch (error) {
         this.fileInputRef.current.value = '';
@@ -165,6 +170,7 @@ export default class RunForm extends React.Component {
           durationSeconds: '',
           distance: '',
           distanceUnits: 'miles',
+          gpxPath: [],
           hasGpx: false,
           fetchingData: false
         });
@@ -194,39 +200,6 @@ export default class RunForm extends React.Component {
       fetch(`${mode === 'add' ? '/api/runs' : '/api/runs/' + entryId}`, req)
         .then(response => response.json())
         .then(result => {
-          if (this.state.hasGpx) {
-            const formData = new FormData();
-            formData.append('file', this.state.gpxFile);
-            const options = {
-              method: 'POST',
-              body: formData,
-              headers: {
-                'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
-              },
-              user
-            };
-            fetch('/api/runs/gpxData/' + result.entryId, options)
-              .then(response => response.json())
-              .then(result => {
-                this.setState({ hasGpx: false, fileData: null });
-              })
-              .catch(error => {
-                console.error('An error occured!', error);
-                this.setState({ networkError: true });
-              });
-          }
-          this.setState({
-            title: '',
-            description: '',
-            date: new Date(),
-            durationHours: '',
-            durationMinutes: '',
-            durationSeconds: '',
-            distance: '',
-            distanceUnits: 'miles',
-            hasGpx: false,
-            fetchingData: false
-          });
           window.location.hash = '#home?tab=activities';
         })
         .catch(error => {
@@ -246,7 +219,7 @@ export default class RunForm extends React.Component {
     if (this.state.fetchingData) {
       return <LoadingSpinner />;
     }
-    const { title, description, date, distance, distanceUnits, durationHours, durationMinutes, durationSeconds, gpxPath } = this.state;
+    const { title, description, date, distance, distanceUnits, durationHours, durationMinutes, durationSeconds, gpxPath, hasGpx } = this.state;
     const { handleChange, handleSubmit, handleDateChange, toggleGpxTrue, fileInputRef, handleGpxData } = this;
     const { mode } = this.props;
     const durationObj = { durationHours, durationMinutes, durationSeconds };
@@ -265,7 +238,7 @@ export default class RunForm extends React.Component {
         <h1 className="text-3xl font-lora font-bold mb-4">{titleMessage}</h1>
         <section className="md:flex gap-6">
           <div className="md:w-2/4 w-full flex-shrink-0 mt-0.5">
-            <UploadRunCard fileInputRef={fileInputRef} toggleGpxTrue={toggleGpxTrue} handleGpxData={handleGpxData} gpxPath={gpxPath}/>
+            <UploadRunCard fileInputRef={fileInputRef} toggleGpxTrue={toggleGpxTrue} handleGpxData={handleGpxData} gpxPath={gpxPath} hasGpx={hasGpx}/>
           </div>
           <div className="md:flex md:gap-6">
             <div className="w-full">
