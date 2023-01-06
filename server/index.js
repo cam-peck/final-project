@@ -24,7 +24,7 @@ const app = express();
 
 app.use(staticMiddleware);
 
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
 // Auth Routes //
 

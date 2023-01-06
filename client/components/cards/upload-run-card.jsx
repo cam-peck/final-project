@@ -1,12 +1,12 @@
 import React from 'react';
-import RunFormMap from '../gmaps/run-form-map';
+import Map from '../gmaps/map';
 
 export default function UploadRunCard(props) {
   const { fileInputRef, toggleGpxTrue, handleGpxData, gpxPath } = props;
   return (
     <section className="flex flex-col mb-4 pt-1">
       <div className="">
-        <RunFormMap gpxPath={gpxPath}/>
+        <Map gpxPath={gpxPath}/>
       </div>
       <div className="bg-blue-200 flex justify-between items-center rounded-br-xl rounded-bl-xl px-5 py-3">
         <p className="font-lora text-lg">Have GPS data?</p>

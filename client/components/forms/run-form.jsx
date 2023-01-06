@@ -120,6 +120,11 @@ export default class RunForm extends React.Component {
 
   handleGpxData(event) {
     const file = event.target.files[0];
+    if (file.size > 10485760) {
+      this.fileInputRef.current.value = '';
+      alert('File is too large. Maximum file size is 10MB.');
+      return;
+    }
     const reader = new FileReader();
     reader.onload = event => {
       try {
@@ -151,6 +156,18 @@ export default class RunForm extends React.Component {
       } catch (error) {
         this.fileInputRef.current.value = '';
         alert('Could not read GPX data. Check your GPX file to ensure data is valid.');
+        this.setState({
+          title: '',
+          description: '',
+          date: new Date(),
+          durationHours: '',
+          durationMinutes: '',
+          durationSeconds: '',
+          distance: '',
+          distanceUnits: 'miles',
+          hasGpx: false,
+          fetchingData: false
+        });
         console.error(error);
       }
     };
