@@ -3,7 +3,7 @@ export default function getLatLonDistanceInKm(coordsArray) {
   let totalDistance = 0;
   for (let i = 0; i < coordsArray.length - 1; i++) {
     const dLat = deg2rad(coordsArray[i + 1].lat - coordsArray[i].lat);
-    const dLon = deg2rad(coordsArray[i + 1].lon - coordsArray[i].lon);
+    const dLon = deg2rad(coordsArray[i + 1].lng - coordsArray[i].lng);
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos(deg2rad(coordsArray[i].lat)) * Math.cos(deg2rad(coordsArray[i + 1].lat)) *

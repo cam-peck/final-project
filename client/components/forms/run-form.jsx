@@ -122,31 +122,37 @@ export default class RunForm extends React.Component {
     const file = event.target.files[0];
     const reader = new FileReader();
     reader.onload = event => {
-      const parser = new DOMParser();
-      const xmlDoc = parser.parseFromString(event.target.result, 'text/xml');
-      const date = xmlDoc.querySelector('name').textContent.split(' ')[1];
-      const trkptData = xmlDoc.querySelectorAll('trkpt');
-      const path = [];
-      for (let i = 0; i < trkptData.length; i++) {
-        const runObj = {};
-        runObj.lat = parseFloat(trkptData[i].getAttribute('lat'));
-        runObj.lon = parseFloat(trkptData[i].getAttribute('lon'));
-        path.push(runObj);
+      try {
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(event.target.result, 'text/xml');
+        const date = xmlDoc.querySelector('name').textContent.split(' ')[1];
+        const trkptData = xmlDoc.querySelectorAll('trkpt');
+        const path = [];
+        for (let i = 0; i < trkptData.length; i++) {
+          const runObj = {};
+          runObj.lat = parseFloat(trkptData[i].getAttribute('lat'));
+          runObj.lng = parseFloat(trkptData[i].getAttribute('lon'));
+          path.push(runObj);
+        }
+        const startTime = trkptData[0].querySelector('time').textContent;
+        const endTime = trkptData[trkptData.length - 1].querySelector('time').textContent;
+        const durationInSeconds = differenceInSeconds(parseISO(endTime), parseISO(startTime));
+        const durationObj = intervalToDuration({ start: 0, end: durationInSeconds * 1000 });
+        const distance = getLatLonDistanceInKm(path);
+        this.setState({
+          date: removeTz(new Date(date)),
+          gpxPath: path,
+          distance,
+          distanceUnits: 'kilometers',
+          durationHours: String(durationObj.hours),
+          durationMinutes: String(durationObj.minutes),
+          durationSeconds: String(durationObj.seconds)
+        });
+      } catch (error) {
+        this.fileInputRef.current.value = '';
+        alert('Could not read GPX data. Check your GPX file to ensure data is valid.');
+        console.error(error);
       }
-      const startTime = trkptData[0].querySelector('time').textContent;
-      const endTime = trkptData[trkptData.length - 1].querySelector('time').textContent;
-      const durationInSeconds = differenceInSeconds(parseISO(endTime), parseISO(startTime));
-      const durationObj = intervalToDuration({ start: 0, end: durationInSeconds * 1000 });
-      const distance = getLatLonDistanceInKm(path);
-      this.setState({
-        date: removeTz(new Date(date)),
-        gpxPath: path,
-        distance,
-        distanceUnits: 'kilometers',
-        durationHours: String(durationObj.hours),
-        durationMinutes: String(durationObj.minutes),
-        durationSeconds: String(durationObj.seconds)
-      });
     };
     reader.readAsText(file);
   }
