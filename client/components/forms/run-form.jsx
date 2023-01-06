@@ -1,9 +1,9 @@
 import React, { createRef } from 'react';
-import { calculatePace, AppContext, removeTz } from '../../lib';
+import { calculatePace, AppContext, removeTz, getLatLonDistanceInKm } from '../../lib';
 import TextInput from '../inputs/text-input';
 import DatePicker from 'react-datepicker';
 import UploadRunCard from '../cards/upload-run-card';
-import { subYears } from 'date-fns';
+import { subYears, intervalToDuration, differenceInSeconds, parseISO } from 'date-fns';
 import 'react-datepicker/dist/react-datepicker.css';
 import DistanceInput from '../inputs/distance-input';
 import DurationInput from '../inputs/duration-input';
@@ -24,7 +24,8 @@ export default class RunForm extends React.Component {
       distance: '',
       distanceUnits: 'miles',
       hasGpx: false,
-      fileData: null,
+      gpxFile: '',
+      gpxPath: [],
       fetchingData: false,
       networkError: false,
       idError: false
@@ -34,6 +35,7 @@ export default class RunForm extends React.Component {
     this.handleDateChange = this.handleDateChange.bind(this);
     this.prefillForm = this.prefillForm.bind(this);
     this.toggleGpxTrue = this.toggleGpxTrue.bind(this);
+    this.handleGpxData = this.handleGpxData.bind(this);
     this.fileInputRef = createRef();
   }
 
@@ -116,11 +118,44 @@ export default class RunForm extends React.Component {
     this.setState({ hasGpx: true });
   }
 
+  handleGpxData(event) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.onload = event => {
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(event.target.result, 'text/xml');
+      const date = xmlDoc.querySelector('name').textContent.split(' ')[1];
+      const trkptData = xmlDoc.querySelectorAll('trkpt');
+      const path = [];
+      for (let i = 0; i < trkptData.length; i++) {
+        const runObj = {};
+        runObj.lat = parseFloat(trkptData[i].getAttribute('lat'));
+        runObj.lon = parseFloat(trkptData[i].getAttribute('lon'));
+        path.push(runObj);
+      }
+      const startTime = trkptData[0].querySelector('time').textContent;
+      const endTime = trkptData[trkptData.length - 1].querySelector('time').textContent;
+      const durationInSeconds = differenceInSeconds(parseISO(endTime), parseISO(startTime));
+      const durationObj = intervalToDuration({ start: 0, end: durationInSeconds * 1000 });
+      const distance = getLatLonDistanceInKm(path);
+      this.setState({
+        date: removeTz(new Date(date)),
+        gpxPath: path,
+        distance,
+        distanceUnits: 'kilometers',
+        durationHours: String(durationObj.hours),
+        durationMinutes: String(durationObj.minutes),
+        durationSeconds: String(durationObj.seconds)
+      });
+    };
+    reader.readAsText(file);
+  }
+
   handleSubmit(event) {
     event.preventDefault();
     this.setState({
       fetchingData: true,
-      fileData: this.fileInputRef
+      gpxFile: this.fileInputRef.current.files[0]
     }, () => {
       const { user } = this.context;
       const { mode, entryId } = this.props;
@@ -138,7 +173,7 @@ export default class RunForm extends React.Component {
         .then(result => {
           if (this.state.hasGpx) {
             const formData = new FormData();
-            formData.append('file', this.state.fileData);
+            formData.append('file', this.state.gpxFile);
             const options = {
               method: 'POST',
               body: formData,
@@ -188,8 +223,8 @@ export default class RunForm extends React.Component {
     if (this.state.fetchingData) {
       return <LoadingSpinner />;
     }
-    const { title, description, date, distance, distanceUnits, durationHours, durationMinutes, durationSeconds } = this.state;
-    const { handleChange, handleSubmit, handleDateChange, toggleGpxTrue, fileInputRef } = this;
+    const { title, description, date, distance, distanceUnits, durationHours, durationMinutes, durationSeconds, gpxPath } = this.state;
+    const { handleChange, handleSubmit, handleDateChange, toggleGpxTrue, fileInputRef, handleGpxData } = this;
     const { mode } = this.props;
     const durationObj = { durationHours, durationMinutes, durationSeconds };
     const pace = calculatePace(distance, distanceUnits, durationHours, durationMinutes, durationSeconds);
@@ -207,7 +242,7 @@ export default class RunForm extends React.Component {
         <h1 className="text-3xl font-lora font-bold mb-4">{titleMessage}</h1>
         <section className="md:flex gap-6">
           <div className="md:w-2/4 w-full flex-shrink-0 mt-0.5">
-            <UploadRunCard fileInputRef={fileInputRef} toggleGpxTrue={toggleGpxTrue}/>
+            <UploadRunCard fileInputRef={fileInputRef} toggleGpxTrue={toggleGpxTrue} handleGpxData={handleGpxData} gpxPath={gpxPath}/>
           </div>
           <div className="md:flex md:gap-6">
             <div className="w-full">

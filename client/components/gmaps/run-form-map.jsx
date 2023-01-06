@@ -1,25 +1,22 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { GoogleMap, useLoadScript, Marker, Polyline } from '@react-google-maps/api';
 import LoadingSpinner from '../loading-spinner';
 
-export default function RunFormMap() {
+export default function RunFormMap(props) {
+  const { gpxPath } = props;
   const { isLoaded } = useLoadScript({
     // googleMapsApiKey:
   });
 
   if (!isLoaded) return <LoadingSpinner />;
-  return <TestMap />;
+  return <TestMap gpxPath={gpxPath}/>;
 }
 
-function TestMap() {
-
-  const center = useMemo(() => ({ lat: 39.773221, lng: -86.278677 }), []);
-  const path = [
-    { lat: 39.773221, lng: -86.278677 },
-    { lat: 39.770658, lng: -86.283520 },
-    { lat: 39.766298, lng: -86.283975 },
-    { lat: 39.774586, lng: -86.281190 }
-  ];
+function TestMap(props) {
+  const { gpxPath } = props;
+  const center = gpxPath.length !== 0
+    ? { lat: gpxPath[0].lat, lng: gpxPath[0].lng }
+    : { lat: 39.7684, lng: -86.1581 };
   const options = {
     strokeColor: '#FF0000',
     strokeOpacity: 0.8,
@@ -27,17 +24,15 @@ function TestMap() {
     visible: true,
     radius: 30000
   };
-  // const length = google.maps.geometry.spherical.computeLength(path);
-  // console.log(length, 'meters');
   return (
     <GoogleMap
-      zoom={13}
+      zoom={15}
       center={center}
       mapContainerClassName="object-cover w-full h-72 md:h-80 rounded-tr-xl rounded-tl-xl"
     >
-      <Marker position={path[0]}/>
-      <Marker position={path[path.length - 1]}/>
-      <Polyline path={path} options={options}/>
+      <Marker position={gpxPath[0]}/>
+      <Marker position={gpxPath[gpxPath.length - 1]}/>
+      <Polyline path={gpxPath} options={options}/>
     </GoogleMap>
   );
 }
