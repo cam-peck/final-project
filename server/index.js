@@ -19,7 +19,7 @@ const app = express();
 
 app.use(staticMiddleware);
 
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
 // Auth Routes //
 
@@ -99,6 +99,28 @@ app.post('/api/runs', (req, res, next) => {
   db.query(sql, params)
     .then(result => {
       const [newRun] = result.rows;
+      if (hasGpx === true) {
+        const { gpxPath, gpxRunRecordedTime } = req.body;
+        if (!gpxPath || !gpxRunRecordedTime) {
+          throw new ClientError(400, 'gpxPath and gpxRunRecordedTime are required fields.');
+        }
+        const entryId = newRun.entryId;
+        const gpxResponse = [];
+        for (let i = 0; i < gpxPath.length; i++) {
+          const sql = `
+          INSERT INTO "gpxData" ("userId", "entryId", "latitude", "longitude", "elevation", "time", "recordedAt")
+               VALUES ($1, $2, $3, $4, $5, $6, $7)
+            RETURNING *;
+          `;
+          const params = [userId, entryId, gpxPath[i].lat, gpxPath[i].lng, gpxPath[i].elevation, gpxPath[i].time, gpxRunRecordedTime];
+          db.query(sql, params)
+            .then(result => {
+              const [data] = result.rows;
+              gpxResponse.push(data);
+            })
+            .catch(err => next(err));
+        }
+      }
       res.status(201).json(newRun);
     })
     .catch(err => next(err));

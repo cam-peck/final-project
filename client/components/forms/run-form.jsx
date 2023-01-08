@@ -1,8 +1,9 @@
-import React from 'react';
-import { calculatePace, AppContext, removeTz } from '../../lib';
+import React, { createRef } from 'react';
+import { calculatePace, AppContext, removeTz, getLatLonDistanceInKm } from '../../lib';
 import TextInput from '../inputs/text-input';
 import DatePicker from 'react-datepicker';
-import { subYears } from 'date-fns';
+import UploadRunCard from '../cards/upload-run-card';
+import { subYears, intervalToDuration, differenceInSeconds, parseISO } from 'date-fns';
 import 'react-datepicker/dist/react-datepicker.css';
 import DistanceInput from '../inputs/distance-input';
 import DurationInput from '../inputs/duration-input';
@@ -23,6 +24,9 @@ export default class RunForm extends React.Component {
       distance: '',
       distanceUnits: 'miles',
       hasGpx: false,
+      gpxFile: '',
+      gpxPath: [],
+      gpxRunRecordedTime: '',
       fetchingData: false,
       networkError: false,
       idError: false
@@ -31,6 +35,9 @@ export default class RunForm extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleDateChange = this.handleDateChange.bind(this);
     this.prefillForm = this.prefillForm.bind(this);
+    this.toggleGpxTrue = this.toggleGpxTrue.bind(this);
+    this.handleGpxData = this.handleGpxData.bind(this);
+    this.fileInputRef = createRef();
   }
 
   componentDidMount() {
@@ -108,10 +115,76 @@ export default class RunForm extends React.Component {
     });
   }
 
+  toggleGpxTrue() {
+    this.setState({ hasGpx: true });
+  }
+
+  handleGpxData(event) {
+    const file = event.target.files[0];
+    if (file.size > 10485760) {
+      this.fileInputRef.current.value = '';
+      alert('File is too large. Maximum file size is 10MB.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = event => {
+      try {
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(event.target.result, 'text/xml');
+        const date = xmlDoc.querySelector('name').textContent.split(' ')[1];
+        const trkptData = xmlDoc.querySelectorAll('trkpt');
+        const path = [];
+        for (let i = 0; i < trkptData.length; i++) {
+          const runObj = {};
+          runObj.time = trkptData[i].querySelector('time').textContent;
+          runObj.elevation = trkptData[i].querySelector('ele').textContent;
+          runObj.lat = parseFloat(trkptData[i].getAttribute('lat'));
+          runObj.lng = parseFloat(trkptData[i].getAttribute('lon'));
+          path.push(runObj);
+        }
+        const gpxRunRecordedTime = xmlDoc.querySelector('trk').querySelector('name').textContent.split(' ')[1];
+        const startTime = trkptData[0].querySelector('time').textContent;
+        const endTime = trkptData[trkptData.length - 1].querySelector('time').textContent;
+        const durationInSeconds = differenceInSeconds(parseISO(endTime), parseISO(startTime));
+        const durationObj = intervalToDuration({ start: 0, end: durationInSeconds * 1000 });
+        const distance = getLatLonDistanceInKm(path);
+        this.setState({
+          date: removeTz(new Date(date)),
+          gpxPath: path,
+          distance,
+          distanceUnits: 'kilometers',
+          durationHours: String(durationObj.hours),
+          durationMinutes: String(durationObj.minutes),
+          durationSeconds: String(durationObj.seconds),
+          gpxRunRecordedTime
+        });
+      } catch (error) {
+        this.fileInputRef.current.value = '';
+        alert('Could not read GPX data. Check your GPX file to ensure data is valid.');
+        this.setState({
+          title: '',
+          description: '',
+          date: new Date(),
+          durationHours: '',
+          durationMinutes: '',
+          durationSeconds: '',
+          distance: '',
+          distanceUnits: 'miles',
+          gpxPath: [],
+          hasGpx: false,
+          fetchingData: false
+        });
+        console.error(error);
+      }
+    };
+    reader.readAsText(file);
+  }
+
   handleSubmit(event) {
     event.preventDefault();
     this.setState({
-      fetchingData: true
+      fetchingData: true,
+      gpxFile: this.fileInputRef.current.files[0]
     }, () => {
       const { user } = this.context;
       const { mode, entryId } = this.props;
@@ -127,18 +200,6 @@ export default class RunForm extends React.Component {
       fetch(`${mode === 'add' ? '/api/runs' : '/api/runs/' + entryId}`, req)
         .then(response => response.json())
         .then(result => {
-          this.setState({
-            title: '',
-            description: '',
-            date: new Date(),
-            durationHours: '',
-            durationMinutes: '',
-            durationSeconds: '',
-            distance: '',
-            distanceUnits: 'miles',
-            hasGpx: false,
-            fetchingData: false
-          });
           window.location.hash = '#home?tab=activities';
         })
         .catch(error => {
@@ -158,8 +219,8 @@ export default class RunForm extends React.Component {
     if (this.state.fetchingData) {
       return <LoadingSpinner />;
     }
-    const { title, description, date, distance, distanceUnits, durationHours, durationMinutes, durationSeconds } = this.state;
-    const { handleChange, handleSubmit, handleDateChange } = this;
+    const { title, description, date, distance, distanceUnits, durationHours, durationMinutes, durationSeconds, gpxPath, hasGpx } = this.state;
+    const { handleChange, handleSubmit, handleDateChange, toggleGpxTrue, fileInputRef, handleGpxData } = this;
     const { mode } = this.props;
     const durationObj = { durationHours, durationMinutes, durationSeconds };
     const pace = calculatePace(distance, distanceUnits, durationHours, durationMinutes, durationSeconds);
@@ -175,15 +236,20 @@ export default class RunForm extends React.Component {
     return (
       <form className="w-full" onSubmit={handleSubmit}>
         <h1 className="text-3xl font-lora font-bold mb-4">{titleMessage}</h1>
-        <div className="md:flex md:gap-6">
-          <div className="w-full">
-            <p className="font-lora font-md text-md font-medium pb-2" >Date</p>
-            <DatePicker className="w-full rounded-lg px-3 py-3.5 border border-gray-300 focus:outline-blue-500 mb-4" selected={date} onChange={handleDateChange} dateFormat='MM/dd/yyy' maxDate={new Date()} minDate={subYears(new Date(), 80)} required/>
-            <DistanceInput integerName='distance' integerValue={distance} distanceTypeName='distanceUnits' distanceTypeValue={distanceUnits} onChange={handleChange}/>
-            <DurationInput value={durationObj} onChange={handleChange}/>
-            <TextInput type="pace" name="pace" placeholder="0:00 / mi" value={pace} showLabel={true} label="Pace" onChange={handleChange} />
+        <section className="md:flex gap-6">
+          <div className="md:w-2/4 w-full flex-shrink-0 mt-0.5">
+            <UploadRunCard fileInputRef={fileInputRef} toggleGpxTrue={toggleGpxTrue} handleGpxData={handleGpxData} gpxPath={gpxPath} hasGpx={hasGpx}/>
           </div>
-        </div>
+          <div className="md:flex md:gap-6">
+            <div className="w-full">
+              <p className="font-lora font-md text-md font-medium pb-2" >Date</p>
+              <DatePicker className="w-full rounded-lg px-3 py-3.5 border border-gray-300 focus:outline-blue-500 mb-4" selected={date} onChange={handleDateChange} dateFormat='MM/dd/yyy' maxDate={new Date()} minDate={subYears(new Date(), 80)} required/>
+              <DistanceInput integerName='distance' integerValue={distance} distanceTypeName='distanceUnits' distanceTypeValue={distanceUnits} onChange={handleChange}/>
+              <DurationInput value={durationObj} onChange={handleChange}/>
+              <TextInput type="pace" name="pace" placeholder="0:00 / mi" value={pace} showLabel={true} label="Pace" onChange={handleChange} />
+            </div>
+          </div>
+        </section>
         <TextInput type="text" name="title" showLabel={true} label="Title" placeholder="Morning Sun Run" value={title} onChange={handleChange} />
         <TextInput type="text" name="description" showLabel={true} label="Description" placeholder="Easy run with great weather -- nice recovery day" value={description} onChange={handleChange} />
         <div className="flex justify-end mt-2 mb-8">
