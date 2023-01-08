@@ -129,10 +129,10 @@ app.post('/api/runs', (req, res, next) => {
 app.get('/api/runs', (req, res, next) => {
   const { userId } = req.user;
   const sql = `
-  SELECT "title", "description", "date", "duration", "distance", "distanceUnits", "entryId"
-    FROM "runs"
-   WHERE "userId" = $1
-ORDER BY "date" DESC;
+   SELECT "title", "description", "date", "duration", "distance", "distanceUnits", "entryId", "hasGpx"
+     FROM "runs"
+    WHERE "userId" = $1
+ ORDER BY "date" DESC
   `;
   const params = [userId];
   db.query(sql, params)
@@ -141,6 +141,25 @@ ORDER BY "date" DESC;
       res.json(data);
     })
     .catch(err => next(err));
+});
+
+app.get('/api/runs/gpxData/:entryId', (req, res, next) => {
+  const { userId } = req.user;
+  const { entryId } = req.params;
+  const sql = `
+  SELECT "latitude", "longitude", "elevation", "time"
+    FROM "gpxData"
+   WHERE "entryId" = $1 AND "userId" = $2
+ORDER BY "time";
+  `;
+  const params = [entryId, userId];
+  db.query(sql, params)
+    .then(result => {
+      const gpxData = result.rows;
+      res.json(gpxData);
+    })
+    .catch(err => next(err));
+
 });
 
 app.get('/api/runs/:entryId', (req, res, next) => {
