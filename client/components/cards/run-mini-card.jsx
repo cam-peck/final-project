@@ -1,10 +1,11 @@
 import React from 'react';
 import { calculatePace, removeTz } from '../../lib';
+import NoGpxFound from '../gmaps/no-gpx-found';
 import { format } from 'date-fns';
 
 export default function RunMiniCard(props) {
 
-  const { date, distance, distanceUnits, duration, entryId, openModal } = props;
+  const { date, distance, distanceUnits, duration, entryId, gpxData, openModal } = props;
   const splitDuration = duration.split(':');
   const pace = calculatePace(distance, distanceUnits, splitDuration[0], splitDuration[1], splitDuration[2]);
   const dtDateOnly = removeTz(date);
@@ -24,7 +25,18 @@ export default function RunMiniCard(props) {
         </div>
       </div>
       <div className="hidden x2s:block x2s:w-28">
-        <img className="rounded-tr-lg rounded-br-lg" src="/images/placeholder-img-sq.jpg" alt="" />
+        {
+          gpxData !== null
+            ? <iframe
+              width="100%"
+              height='120px'
+              frameBorder="0"
+              referrerPolicy="no-referrer-when-downgrade"
+              src={`https://www.google.com/maps/embed/v1/view?key=AIzaSyAAj10rTFTNBVWhQ5CkPwSDOP1ZpD7N64c&center=${gpxData[0].lat},${gpxData[0].lng}&zoom=10`}
+              allowfullscreen={false} />
+            : < NoGpxFound height="h-[120px]" borderRounded="rounded-tr-lg rounded-br-lg" width="w-full" textSize="text-[12px]"/>
+        }
+
       </div>
     </div>
   );

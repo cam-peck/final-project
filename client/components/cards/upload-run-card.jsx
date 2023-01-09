@@ -10,7 +10,7 @@ export default function UploadRunCard(props) {
         {
           hasGpx === true
             ? <Map gpxPath={gpxPath} />
-            : <NoGpxFound borderRounded="rounded-tr-xl rounded-tl-xl" height="h-72 md:h-80" width="w-full"/>
+            : <NoGpxFound borderRounded="rounded-tr-xl rounded-tl-xl" textSize="text-xl" height="h-72 md:h-80" width="w-full"/>
         }
       </div>
       <div className="bg-blue-200 flex justify-between items-center rounded-br-xl rounded-bl-xl px-5 py-3">

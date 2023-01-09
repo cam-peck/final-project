@@ -105,7 +105,7 @@ export default class Activities extends React.Component {
     if (this.state.fetchingData) {
       return <LoadingSpinner />;
     }
-    const { runData, searchText } = this.state;
+    const { runData, gpxData, searchText } = this.state;
     const { openModal, handleSearchChange } = this;
     const filteredRuns = filterRuns(searchText, runData);
     const modal = this.state.modalIsOpen === true
@@ -130,7 +130,7 @@ export default class Activities extends React.Component {
           {
             runData.length === 0
               ? <p className="text-center italic">No runs found... Add a run using the &quot;+&quot; button in the bottom right.</p>
-              : filteredRuns.length !== 0 ? <FilteredRuns runData={filteredRuns} openModal={openModal} /> : <p className='italic text-center'>No runs found with your search parameters...</p>
+              : filteredRuns.length !== 0 ? <FilteredRuns runData={filteredRuns} gpxData={gpxData} openModal={openModal} /> : <p className='italic text-center'>No runs found with your search parameters...</p>
             }
           <AddButton href="#run-form?mode=add" />
         </section>

@@ -57,7 +57,7 @@ export default class RunMainCard extends React.Component {
           <button onClick={closeModal} className="absolute -top-4 -right-5 w-10 h-10 rounded-full bg-red-600 text-white"><i className="fa-regular fa-xl fa-circle-xmark" /></button>
           {
             gpxData === undefined
-              ? <NoGpxFound borderRounded="rounded-xl" height="h-56 xxs:h-64 xs:h-80" width="w-full " />
+              ? <NoGpxFound borderRounded="rounded-xl" height="h-56 xxs:h-64 xs:h-80" textSize="text-xl" width="w-full " />
               : <Map gpxPath={gpxData} />
           }
           {/* content */}
