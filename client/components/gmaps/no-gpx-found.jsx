@@ -6,7 +6,7 @@ export default function NoGpxFound(props) {
     <div className="relative">
       <img className={`object-cover ${width} ${height} ${borderRounded}`} src='/images/gps-map-placeholder.png' alt='placeholder-map' />
       <div className={`bg-black absolute top-0 opacity-70 ${width} ${height} ${borderRounded} flex justify-center items-center`}>
-        <h1 className='text-white text-xl'>No GPS data found...</h1>
+        <h1 className='text-white text-xl p-4 text-center'>No GPS data found...</h1>
       </div>
     </div>
   );
