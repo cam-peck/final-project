@@ -2,6 +2,7 @@ import React from 'react';
 import { calculatePace, removeTz } from '../../lib';
 import DeleteSnackbar from '../delete-snackbar';
 import EditDeleteMenu from '../edit-delete-menu';
+import Map from '../gmaps/map';
 import NoGpxFound from '../gmaps/no-gpx-found';
 import { format } from 'date-fns';
 
@@ -42,7 +43,7 @@ export default class RunMainCard extends React.Component {
   }
 
   render() {
-    const { title, date, description, distance, distanceUnits, duration, closeModal, entryId } = this.props;
+    const { title, date, description, distance, distanceUnits, duration, closeModal, entryId, gpxData } = this.props;
     const splitDuration = duration.split(':');
     const pace = calculatePace(distance, distanceUnits, splitDuration[0], splitDuration[1], splitDuration[2]);
     const dtDateOnly = removeTz(date);
@@ -55,7 +56,11 @@ export default class RunMainCard extends React.Component {
         <div className="absolute top-20 x2s:relative x2s:-top-12 bg-white rounded-xl p-6 max-w-2xl ml-6 mr-6">
           <button onClick={closeModal} className="absolute -top-4 -right-5 w-10 h-10 rounded-full bg-red-600 text-white"><i className="fa-regular fa-xl fa-circle-xmark" /></button>
           {/* hero-img */}
-          <NoGpxFound borderRounded="rounded-xl" height="h-56 xxs:h-64 xs:h-80" width="w-full "/>
+          {
+            gpxData === undefined
+              ? <NoGpxFound borderRounded="rounded-xl" height="h-56 xxs:h-64 xs:h-80" width="w-full " />
+              : <Map gpxPath={gpxData} />
+          }
           {/* content */}
           <div className="pl-1 mt-4">
             {/* content-header */}

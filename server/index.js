@@ -143,20 +143,29 @@ app.get('/api/runs', (req, res, next) => {
     .catch(err => next(err));
 });
 
-app.get('/api/runs/gpxData/:entryId', (req, res, next) => {
+app.get('/api/runs/gpxData', (req, res, next) => {
   const { userId } = req.user;
-  const { entryId } = req.params;
   const sql = `
-  SELECT "latitude", "longitude", "elevation", "time"
+  SELECT "entryId", "latitude", "longitude", "elevation", "time"
     FROM "gpxData"
-   WHERE "entryId" = $1 AND "userId" = $2
+   WHERE "userId" = $1
 ORDER BY "time";
   `;
-  const params = [entryId, userId];
+  const params = [userId];
   db.query(sql, params)
     .then(result => {
       const gpxData = result.rows;
-      res.json(gpxData);
+      const gpxObj = {};
+      for (let i = 0; i < gpxData.length; i++) {
+        const currentObj = {};
+        currentObj.lat = parseFloat(gpxData[i].latitude);
+        currentObj.lng = parseFloat(gpxData[i].longitude);
+        if (!gpxObj[gpxData[i].entryId]) {
+          gpxObj[gpxData[i].entryId] = [];
+        }
+        gpxObj[gpxData[i].entryId].push(currentObj);
+      }
+      res.json(gpxObj);
     })
     .catch(err => next(err));
 
