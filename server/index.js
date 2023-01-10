@@ -7,6 +7,7 @@ const ClientError = require('./client-error');
 const staticMiddleware = require('./static-middleware');
 const authorizationMiddleware = require('./authorization-middleware');
 const errorMiddleware = require('./error-middleware');
+const bodyParser = require('body-parser');
 
 const db = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
@@ -19,7 +20,7 @@ const app = express();
 
 app.use(staticMiddleware);
 
-app.use(express.json({ limit: '10mb' }));
+app.use(bodyParser.json({ limit: '10mb' }));
 
 // Auth Routes //
 
@@ -238,20 +239,29 @@ app.delete('/api/runs/:entryId', (req, res, next) => {
     throw new ClientError(400, 'entryId is a required paramter as /api/runs/<parameter-id-here>');
   }
   const sql = `
-  DELETE
-    FROM "runs"
-   WHERE "userId" = $1 AND "entryId" = $2
-   RETURNING *;
+   DELETE
+     FROM "gpxData"
+    WHERE "userId" = $1 AND "entryId" IN ($2);
   `;
   const params = [userId, entryId];
   db.query(sql, params)
     .then(result => {
-      const [deletedRow] = result.rows;
-      if (!deletedRow) {
-        res.status(404).json(`Error: Your id: ${entryId}, does not exist.`);
-      } else {
-        res.json(deletedRow);
-      }
+      const sql2 = `
+       DELETE
+         FROM "runs"
+        WHERE "userId" = $1 AND "entryId" = $2
+    RETURNING *;
+      `;
+      db.query(sql2, params)
+        .then(result => {
+          const [deletedRow] = result.rows;
+          if (!deletedRow) {
+            res.status(404).json(`Error: Your id: ${entryId}, does not exist.`);
+          } else {
+            res.json(deletedRow);
+          }
+        })
+        .catch(err => next(err));
     })
     .catch(err => next(err));
 });

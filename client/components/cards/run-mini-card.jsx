@@ -32,8 +32,8 @@ export default function RunMiniCard(props) {
               height='120px'
               frameBorder="0"
               referrerPolicy="no-referrer-when-downgrade"
-              src={`https://www.google.com/maps/embed/v1/view?key=AIzaSyAAj10rTFTNBVWhQ5CkPwSDOP1ZpD7N64c&center=${gpxData[0].lat},${gpxData[0].lng}&zoom=10`}
-              allowfullscreen={false} />
+              src={`https://www.google.com/maps/embed/v1/view?key=AIzaSyAq_9iRADDdUQeorMC-jUYATyjoE4y76d8&center=${gpxData[0].lat},${gpxData[0].lng}&zoom=10`}
+              />
             : < NoGpxFound height="h-[120px]" borderRounded="rounded-tr-lg rounded-br-lg" width="w-full" textSize="text-[12px]"/>
         }
 
