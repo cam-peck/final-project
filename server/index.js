@@ -7,7 +7,6 @@ const ClientError = require('./client-error');
 const staticMiddleware = require('./static-middleware');
 const authorizationMiddleware = require('./authorization-middleware');
 const errorMiddleware = require('./error-middleware');
-const bodyParser = require('body-parser');
 
 const db = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
@@ -20,7 +19,7 @@ const app = express();
 
 app.use(staticMiddleware);
 
-app.use(bodyParser.json({ limit: '10mb' }));
+app.use(express.json({ limit: '10mb' }));
 
 // Auth Routes //
 
