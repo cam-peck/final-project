@@ -32,7 +32,7 @@ export default function RunMiniCard(props) {
               height='120px'
               frameBorder="0"
               referrerPolicy="no-referrer-when-downgrade"
-              src={`https://www.google.com/maps/embed/v1/view?key=AIzaSyAq_9iRADDdUQeorMC-jUYATyjoE4y76d8&center=${gpxData[0].lat},${gpxData[0].lng}&zoom=10`}
+              src={`https://www.google.com/maps/embed/v1/view?key=${process.env.GMAPS_API_KEY}&center=${gpxData[0].lat},${gpxData[0].lng}&zoom=10`}
               />
             : < NoGpxFound height="h-[120px]" borderRounded="rounded-tr-lg rounded-br-lg" width="w-full" textSize="text-[12px]"/>
         }
