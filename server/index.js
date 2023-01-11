@@ -129,10 +129,10 @@ app.post('/api/runs', (req, res, next) => {
 app.get('/api/runs', (req, res, next) => {
   const { userId } = req.user;
   const sql = `
-  SELECT "title", "description", "date", "duration", "distance", "distanceUnits", "entryId"
-    FROM "runs"
-   WHERE "userId" = $1
-ORDER BY "date" DESC;
+   SELECT "title", "description", "date", "duration", "distance", "distanceUnits", "entryId", "hasGpx"
+     FROM "runs"
+    WHERE "userId" = $1
+ ORDER BY "date" DESC
   `;
   const params = [userId];
   db.query(sql, params)
@@ -141,6 +141,34 @@ ORDER BY "date" DESC;
       res.json(data);
     })
     .catch(err => next(err));
+});
+
+app.get('/api/runs/gpxData', (req, res, next) => {
+  const { userId } = req.user;
+  const sql = `
+  SELECT "entryId", "latitude", "longitude", "elevation", "time"
+    FROM "gpxData"
+   WHERE "userId" = $1
+ORDER BY "time";
+  `;
+  const params = [userId];
+  db.query(sql, params)
+    .then(result => {
+      const gpxData = result.rows;
+      const gpxObj = {};
+      for (let i = 0; i < gpxData.length; i++) {
+        const currentObj = {};
+        currentObj.lat = parseFloat(gpxData[i].latitude);
+        currentObj.lng = parseFloat(gpxData[i].longitude);
+        if (!gpxObj[gpxData[i].entryId]) {
+          gpxObj[gpxData[i].entryId] = [];
+        }
+        gpxObj[gpxData[i].entryId].push(currentObj);
+      }
+      res.json(gpxObj);
+    })
+    .catch(err => next(err));
+
 });
 
 app.get('/api/runs/:entryId', (req, res, next) => {
@@ -210,20 +238,29 @@ app.delete('/api/runs/:entryId', (req, res, next) => {
     throw new ClientError(400, 'entryId is a required paramter as /api/runs/<parameter-id-here>');
   }
   const sql = `
-  DELETE
-    FROM "runs"
-   WHERE "userId" = $1 AND "entryId" = $2
-   RETURNING *;
+   DELETE
+     FROM "gpxData"
+    WHERE "userId" = $1 AND "entryId" IN ($2);
   `;
   const params = [userId, entryId];
   db.query(sql, params)
     .then(result => {
-      const [deletedRow] = result.rows;
-      if (!deletedRow) {
-        res.status(404).json(`Error: Your id: ${entryId}, does not exist.`);
-      } else {
-        res.json(deletedRow);
-      }
+      const sql2 = `
+       DELETE
+         FROM "runs"
+        WHERE "userId" = $1 AND "entryId" = $2
+    RETURNING *;
+      `;
+      db.query(sql2, params)
+        .then(result => {
+          const [deletedRow] = result.rows;
+          if (!deletedRow) {
+            res.status(404).json(`Error: Your id: ${entryId}, does not exist.`);
+          } else {
+            res.json(deletedRow);
+          }
+        })
+        .catch(err => next(err));
     })
     .catch(err => next(err));
 });

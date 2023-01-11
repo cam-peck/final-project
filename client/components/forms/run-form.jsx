@@ -24,7 +24,7 @@ export default class RunForm extends React.Component {
       distance: '',
       distanceUnits: 'miles',
       hasGpx: false,
-      gpxFile: '',
+      gpxFileSize: '',
       gpxPath: [],
       gpxRunRecordedTime: '',
       fetchingData: false,
@@ -151,6 +151,7 @@ export default class RunForm extends React.Component {
         this.setState({
           date: removeTz(new Date(date)),
           gpxPath: path,
+          gpxFileSize: file.size,
           distance,
           distanceUnits: 'kilometers',
           durationHours: String(durationObj.hours),
@@ -183,8 +184,7 @@ export default class RunForm extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
     this.setState({
-      fetchingData: true,
-      gpxFile: this.fileInputRef.current.files[0]
+      fetchingData: true
     }, () => {
       const { user } = this.context;
       const { mode, entryId } = this.props;
