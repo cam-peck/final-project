@@ -35,10 +35,10 @@ Check out the site --> https://runningfuze.cjpeck.dev/
 - User Can Delete Their Runs
 - User Can View Their RunSquares
 - User Can View Weekly Run Data
-- User Can Add Custom Workout (pending)
-- User Can View Custom Workouts (pending)
-- User Can Edit Custom Workouts (pending)
-- User Can Delete Custom Workouts (pending)
+- User Can Add Custom Workout
+- User Can View Custom Workouts
+- User Can Edit Custom Workouts
+- User Can Delete Custom Workouts
 
 ## Stretch Features
 
