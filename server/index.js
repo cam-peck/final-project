@@ -247,6 +247,33 @@ app.put('/api/runs/:entryId', (req, res, next) => {
       if (!editedRun) {
         res.status(404).json(`Error: Your id: ${entryId}, does not exist.`);
       } else {
+        if (editedRun.hasGpx) { // delete any old gps data
+          const sql2 = `
+          DELETE
+            FROM "gpxData"
+           WHERE "userId" = $1 AND "entryId" IN ($2);
+          `;
+          const params2 = [userId, entryId];
+          db.query(sql2, params2)
+            .then(result => {
+              const { gpxPath } = req.body;
+              const gpxResponse = [];
+              for (let i = 0; i < gpxPath.length; i++) {
+                const sql3 = `
+                INSERT INTO "gpxData" ("userId", "entryId", "latitude", "longitude", "elevation", "time")
+                     VALUES ($1, $2, $3, $4, $5, $6)
+                  RETURNING *;
+                `;
+                const params3 = [userId, entryId, gpxPath[i].lat, gpxPath[i].lng, gpxPath[i].elevation, gpxPath[i].time];
+                db.query(sql3, params3)
+                  .then(result => {
+                    const [data] = result.rows;
+                    gpxResponse.push(data);
+                  })
+                  .catch(err => next(err));
+              }
+            });
+        }
         res.json(editedRun);
       }
     })
