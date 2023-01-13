@@ -90,34 +90,29 @@ app.post('/api/runs', (req, res, next) => {
     throw new ClientError(400, 'title, description, date, durationHours, durationMinutes, durationSeconds, distance, and distanceUnits are required fields.');
   }
   const duration = `${durationHours}:${durationMinutes}:${durationSeconds}`;
-  const sql = `
+  const insertRunSql = `
   INSERT INTO "runs" ("userId", "title", "description", "date", "duration", "distance", "distanceUnits", "hasGpx")
   VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
   RETURNING *;
   `;
-  const params = [userId, title, description, date, duration, distance, distanceUnits, hasGpx];
-  db.query(sql, params)
+  const insertRunParams = [userId, title, description, date, duration, distance, distanceUnits, hasGpx];
+  db.query(insertRunSql, insertRunParams)
     .then(result => {
       const [newRun] = result.rows;
       if (hasGpx === true) {
-        const { gpxPath, gpxRunRecordedTime } = req.body;
-        if (!gpxPath || !gpxRunRecordedTime) {
-          throw new ClientError(400, 'gpxPath and gpxRunRecordedTime are required fields.');
+        const { gpxPath } = req.body;
+        if (!gpxPath) {
+          throw new ClientError(400, 'gpxPath is a required field.');
         }
         const entryId = newRun.entryId;
-        const gpxResponse = [];
         for (let i = 0; i < gpxPath.length; i++) {
-          const sql = `
-          INSERT INTO "gpxData" ("userId", "entryId", "latitude", "longitude", "elevation", "time", "recordedAt")
-               VALUES ($1, $2, $3, $4, $5, $6, $7)
+          const insertGpxSql = `
+          INSERT INTO "gpxData" ("userId", "entryId", "latitude", "longitude", "elevation", "time")
+               VALUES ($1, $2, $3, $4, $5, $6)
             RETURNING *;
           `;
-          const params = [userId, entryId, gpxPath[i].lat, gpxPath[i].lng, gpxPath[i].elevation, gpxPath[i].time, gpxRunRecordedTime];
-          db.query(sql, params)
-            .then(result => {
-              const [data] = result.rows;
-              gpxResponse.push(data);
-            })
+          const insertGpxParams = [userId, entryId, gpxPath[i].lat, gpxPath[i].lng, gpxPath[i].elevation, gpxPath[i].time];
+          db.query(insertGpxSql, insertGpxParams)
             .catch(err => next(err));
         }
       }
@@ -177,19 +172,41 @@ app.get('/api/runs/:entryId', (req, res, next) => {
   if (!entryId) {
     throw new ClientError(400, 'entryId is a required paramter as /api/runs/<parameter-id-here>');
   }
-  const sql = `
+  const getRunSql = `
   SELECT "title", "description", "date", "duration", "distance", "distanceUnits", "hasGpx"
     FROM "runs"
    WHERE "userId" = $1 AND "entryId" = $2;
   `;
   const params = [userId, entryId];
-  db.query(sql, params)
+  db.query(getRunSql, params)
     .then(result => {
-      const [data] = result.rows;
-      if (!data) {
-        res.status(404).json(`Error: Your id: ${entryId}, does not exist.`);
+      const [runData] = result.rows;
+      if (runData.hasGpx) {
+        const getGpxSql = `
+        SELECT "latitude", "longitude"
+          FROM "gpxData"
+         WHERE "userId" = $1 AND "entryId" = $2
+      ORDER BY "time"
+        `;
+        db.query(getGpxSql, params)
+          .then(result => {
+            const stringGpxData = result.rows;
+            const gpxData = []; // gpx data as 6 decimal point integers
+            for (let i = 0; i < stringGpxData.length; i++) {
+              const currentPoint = {};
+              currentPoint.lat = parseFloat(stringGpxData[i].latitude);
+              currentPoint.lng = parseFloat(stringGpxData[i].longitude);
+              gpxData.push(currentPoint);
+            }
+            res.json({ runData, gpxData });
+          })
+          .catch(err => next(err));
       } else {
-        res.json(data);
+        if (!runData) {
+          res.status(404).json(`Error: Your id: ${entryId}, does not exist.`);
+        } else {
+          res.json({ runData });
+        }
       }
     })
     .catch(err => next(err));
@@ -206,7 +223,7 @@ app.put('/api/runs/:entryId', (req, res, next) => {
     throw new ClientError(400, 'entryId is a required paramter as /api/runs/<parameter-id-here>');
   }
   const duration = `${durationHours}:${durationMinutes}:${durationSeconds}`;
-  const sql = `
+  const updateRunSql = `
   UPDATE "runs"
      SET "title"         = $1,
          "description"   = $2,
@@ -218,13 +235,35 @@ app.put('/api/runs/:entryId', (req, res, next) => {
    WHERE "entryId" = $8 AND "userId" = $9
    RETURNING *;
   `;
-  const params = [title, description, date, duration, distance, distanceUnits, hasGpx, entryId, userId];
-  db.query(sql, params)
+  const updateRunParams = [title, description, date, duration, distance, distanceUnits, hasGpx, entryId, userId];
+  db.query(updateRunSql, updateRunParams)
     .then(result => {
       const [editedRun] = result.rows;
       if (!editedRun) {
         res.status(404).json(`Error: Your id: ${entryId}, does not exist.`);
       } else {
+        if (editedRun.hasGpx) { // delete any old gps data
+          const deleteGpxSql = `
+          DELETE
+            FROM "gpxData"
+           WHERE "userId" = $1 AND "entryId" IN ($2);
+          `;
+          const deleteGpxParams = [userId, entryId];
+          db.query(deleteGpxSql, deleteGpxParams)
+            .then(result => {
+              const { gpxPath } = req.body;
+              for (let i = 0; i < gpxPath.length; i++) {
+                const insertNewGpxSql = `
+                INSERT INTO "gpxData" ("userId", "entryId", "latitude", "longitude", "elevation", "time")
+                     VALUES ($1, $2, $3, $4, $5, $6)
+                  RETURNING *;
+                `;
+                const insertNewGpxParams = [userId, entryId, gpxPath[i].lat, gpxPath[i].lng, gpxPath[i].elevation, gpxPath[i].time];
+                db.query(insertNewGpxSql, insertNewGpxParams)
+                  .catch(err => next(err));
+              }
+            });
+        }
         res.json(editedRun);
       }
     })
@@ -237,21 +276,21 @@ app.delete('/api/runs/:entryId', (req, res, next) => {
   if (!entryId) {
     throw new ClientError(400, 'entryId is a required paramter as /api/runs/<parameter-id-here>');
   }
-  const sql = `
+  const deleteGpxSql = `
    DELETE
      FROM "gpxData"
     WHERE "userId" = $1 AND "entryId" IN ($2);
   `;
   const params = [userId, entryId];
-  db.query(sql, params)
+  db.query(deleteGpxSql, params)
     .then(result => {
-      const sql2 = `
+      const deleteRunSql = `
        DELETE
          FROM "runs"
         WHERE "userId" = $1 AND "entryId" = $2
     RETURNING *;
       `;
-      db.query(sql2, params)
+      db.query(deleteRunSql, params)
         .then(result => {
           const [deletedRow] = result.rows;
           if (!deletedRow) {

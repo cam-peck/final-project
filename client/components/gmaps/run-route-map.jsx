@@ -1,8 +1,12 @@
 import React from 'react';
 import { GoogleMap, Marker, Polyline } from '@react-google-maps/api';
+import LoadingSpinner from '../loading-spinner';
 
 export default function RunRouteMap(props) {
   const { gpxPath } = props;
+  if (!gpxPath) {
+    return <LoadingSpinner />;
+  }
   const center = gpxPath.length !== 0
     ? { lat: gpxPath[0].lat, lng: gpxPath[0].lng }
     : { lat: 39.7684, lng: -86.1581 };
