@@ -77,7 +77,8 @@ export default class RunForm extends React.Component {
           }
         })
         .then(result => {
-          const { title, description, date, duration, distance, distanceUnits, hasGpx } = result;
+          const { runData, gpxData } = result;
+          const { title, description, date, duration, distance, distanceUnits, hasGpx } = runData;
           const splitDuration = duration.split(':');
           const dtDateOnly = removeTz(date);
           this.setState({
@@ -90,6 +91,7 @@ export default class RunForm extends React.Component {
             distance,
             distanceUnits,
             hasGpx,
+            gpxPath: gpxData,
             fetchingData: false,
             networkError: false,
             idError: false

@@ -185,11 +185,33 @@ app.get('/api/runs/:entryId', (req, res, next) => {
   const params = [userId, entryId];
   db.query(sql, params)
     .then(result => {
-      const [data] = result.rows;
-      if (!data) {
-        res.status(404).json(`Error: Your id: ${entryId}, does not exist.`);
+      const [runData] = result.rows;
+      if (runData.hasGpx) {
+        const sql2 = `
+        SELECT "latitude", "longitude"
+          FROM "gpxData"
+         WHERE "userId" = $1 AND "entryId" = $2
+      ORDER BY "time"
+        `;
+        db.query(sql2, params)
+          .then(result => {
+            const stringGpxData = result.rows;
+            const gpxData = []; // gpx data as 6 decimal point integers
+            for (let i = 0; i < stringGpxData.length; i++) {
+              const currentPoint = {};
+              currentPoint.lat = parseFloat(stringGpxData[i].latitude);
+              currentPoint.lng = parseFloat(stringGpxData[i].longitude);
+              gpxData.push(currentPoint);
+            }
+            res.json({ runData, gpxData });
+          })
+          .catch(err => next(err));
       } else {
-        res.json(data);
+        if (!runData) {
+          res.status(404).json(`Error: Your id: ${entryId}, does not exist.`);
+        } else {
+          res.json({ runData });
+        }
       }
     })
     .catch(err => next(err));
