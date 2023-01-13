@@ -38,11 +38,11 @@ CREATE TABLE "public"."gpxData" (
 	"gpxDataId" serial NOT NULL,
 	"userId" integer NOT NULL,
 	"entryId" integer NOT NULL,
-	"recordedAt" TIMESTAMPTZ NOT NULL,
 	"latitude" TEXT NOT NULL,
 	"longitude" TEXT NOT NULL,
 	"elevation" TEXT NOT NULL,
   "time" TIMESTAMPTZ NOT NULL,
+  "createdAt" TIMESTAMPTZ NOT NULL default now(),
 	CONSTRAINT "gpxData_pk" PRIMARY KEY ("gpxDataId")
 ) WITH (
   OIDS=FALSE

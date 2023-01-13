@@ -100,19 +100,19 @@ app.post('/api/runs', (req, res, next) => {
     .then(result => {
       const [newRun] = result.rows;
       if (hasGpx === true) {
-        const { gpxPath, gpxRunRecordedTime } = req.body;
-        if (!gpxPath || !gpxRunRecordedTime) {
-          throw new ClientError(400, 'gpxPath and gpxRunRecordedTime are required fields.');
+        const { gpxPath } = req.body;
+        if (!gpxPath) {
+          throw new ClientError(400, 'gpxPath is a required fields.');
         }
         const entryId = newRun.entryId;
         const gpxResponse = [];
         for (let i = 0; i < gpxPath.length; i++) {
           const sql = `
-          INSERT INTO "gpxData" ("userId", "entryId", "latitude", "longitude", "elevation", "time", "recordedAt")
-               VALUES ($1, $2, $3, $4, $5, $6, $7)
+          INSERT INTO "gpxData" ("userId", "entryId", "latitude", "longitude", "elevation", "time")
+               VALUES ($1, $2, $3, $4, $5, $6)
             RETURNING *;
           `;
-          const params = [userId, entryId, gpxPath[i].lat, gpxPath[i].lng, gpxPath[i].elevation, gpxPath[i].time, gpxRunRecordedTime];
+          const params = [userId, entryId, gpxPath[i].lat, gpxPath[i].lng, gpxPath[i].elevation, gpxPath[i].time];
           db.query(sql, params)
             .then(result => {
               const [data] = result.rows;

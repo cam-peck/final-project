@@ -24,9 +24,7 @@ export default class RunForm extends React.Component {
       distance: '',
       distanceUnits: 'miles',
       hasGpx: false,
-      gpxFileSize: '',
       gpxPath: [],
-      gpxRunRecordedTime: '',
       fetchingData: false,
       networkError: false,
       idError: false
@@ -144,7 +142,6 @@ export default class RunForm extends React.Component {
           runObj.lng = parseFloat(trkptData[i].getAttribute('lon'));
           path.push(runObj);
         }
-        const gpxRunRecordedTime = xmlDoc.querySelector('trk').querySelector('name').textContent.split(' ')[1];
         const startTime = trkptData[0].querySelector('time').textContent;
         const endTime = trkptData[trkptData.length - 1].querySelector('time').textContent;
         const durationInSeconds = differenceInSeconds(parseISO(endTime), parseISO(startTime));
@@ -158,8 +155,7 @@ export default class RunForm extends React.Component {
           distanceUnits: 'kilometers',
           durationHours: String(durationObj.hours),
           durationMinutes: String(durationObj.minutes),
-          durationSeconds: String(durationObj.seconds),
-          gpxRunRecordedTime
+          durationSeconds: String(durationObj.seconds)
         });
       } catch (error) {
         this.fileInputRef.current.value = '';
