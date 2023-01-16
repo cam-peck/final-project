@@ -162,19 +162,6 @@ export default class RunForm extends React.Component {
       } catch (error) {
         this.fileInputRef.current.value = '';
         alert('Could not read GPX data. Check your GPX file to ensure data is valid.');
-        this.setState({
-          title: '',
-          description: '',
-          date: new Date(),
-          durationHours: '',
-          durationMinutes: '',
-          durationSeconds: '',
-          distance: '',
-          distanceUnits: 'miles',
-          gpxPath: [],
-          hasGpx: false,
-          fetchingData: false
-        });
         console.error(error);
       }
     };
