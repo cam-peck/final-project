@@ -37,6 +37,7 @@ export default class RunForm extends React.Component {
     this.prefillForm = this.prefillForm.bind(this);
     this.toggleGpxTrue = this.toggleGpxTrue.bind(this);
     this.handleGpxData = this.handleGpxData.bind(this);
+    this.retryTimeout = this.retryTimeout.bind(this);
     this.fileInputRef = createRef();
   }
 
@@ -200,6 +201,10 @@ export default class RunForm extends React.Component {
     });
   }
 
+  retryTimeout() {
+    this.setState({ timeoutError: false });
+  }
+
   render() {
     if (this.state.idError) {
       return <NotFound />;
@@ -208,7 +213,7 @@ export default class RunForm extends React.Component {
       return <NetworkError />;
     }
     if (this.state.timeoutError) {
-      return <TimeoutError handleSubmit={this.handleSubmit}/>;
+      return <TimeoutError handleSubmit={this.handleSubmit} retryTimeout={this.retryTimeout}/>;
     }
     if (this.state.fetchingData) {
       return <LoadingSpinner />;
