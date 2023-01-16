@@ -188,10 +188,6 @@ export default class RunForm extends React.Component {
       fetch(`${mode === 'add' ? '/api/runs' : '/api/runs/' + entryId}`, req)
         .then(response => response.json())
         .then(result => {
-          if (result.error) {
-            this.setState({ timeoutError: true });
-            return;
-          }
           window.location.hash = '#home?tab=activities';
         })
         .catch(error => {
