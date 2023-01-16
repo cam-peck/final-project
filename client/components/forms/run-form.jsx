@@ -9,6 +9,7 @@ import DistanceInput from '../inputs/distance-input';
 import DurationInput from '../inputs/duration-input';
 import LoadingSpinner from '../loading-spinner';
 import NetworkError from '../network-error';
+import TimeoutError from '../timeout-error';
 import NotFound from '../../pages/not-found';
 
 export default class RunForm extends React.Component {
@@ -27,6 +28,7 @@ export default class RunForm extends React.Component {
       gpxPath: [],
       fetchingData: false,
       networkError: false,
+      timeoutError: false,
       idError: false
     };
     this.handleChange = this.handleChange.bind(this);
@@ -189,7 +191,7 @@ export default class RunForm extends React.Component {
       const req = {
         method: `${mode === 'add' ? 'POST' : 'PUT'}`,
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json; charset=utf-8',
           'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
         },
         user,
@@ -198,6 +200,10 @@ export default class RunForm extends React.Component {
       fetch(`${mode === 'add' ? '/api/runs' : '/api/runs/' + entryId}`, req)
         .then(response => response.json())
         .then(result => {
+          if (result.error) {
+            this.setState({ timeoutError: true });
+            return;
+          }
           window.location.hash = '#home?tab=activities';
         })
         .catch(error => {
@@ -213,6 +219,9 @@ export default class RunForm extends React.Component {
     }
     if (this.state.networkError) {
       return <NetworkError />;
+    }
+    if (this.state.timeoutError) {
+      return <TimeoutError handleSubmit={this.handleSubmit}/>;
     }
     if (this.state.fetchingData) {
       return <LoadingSpinner />;
