@@ -185,7 +185,7 @@ app.get('/api/runs/:entryId', (req, res, next) => {
       const [runData] = result.rows;
       if (runData.hasGpx) {
         const getGpxSql = `
-        SELECT "latitude", "longitude"
+        SELECT "latitude", "longitude", "elevation", "time"
           FROM "gpxData"
          WHERE "userId" = $1 AND "entryId" = $2
       ORDER BY "time"
@@ -198,6 +198,8 @@ app.get('/api/runs/:entryId', (req, res, next) => {
               const currentPoint = {};
               currentPoint.lat = parseFloat(stringGpxData[i].latitude);
               currentPoint.lng = parseFloat(stringGpxData[i].longitude);
+              currentPoint.elevation = stringGpxData[i].elevation;
+              currentPoint.time = stringGpxData[i].time;
               gpxData.push(currentPoint);
             }
             res.json({ runData, gpxData });

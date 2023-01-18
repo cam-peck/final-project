@@ -153,7 +153,6 @@ export default class RunForm extends React.Component {
         this.setState({
           date: removeTz(new Date(date)),
           gpxPath: path,
-          gpxFileSize: file.size,
           distance,
           distanceUnits: 'kilometers',
           durationHours: String(durationObj.hours),
