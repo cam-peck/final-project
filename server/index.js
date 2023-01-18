@@ -7,6 +7,7 @@ const ClientError = require('./client-error');
 const staticMiddleware = require('./static-middleware');
 const authorizationMiddleware = require('./authorization-middleware');
 const errorMiddleware = require('./error-middleware');
+const timeout = require('connect-timeout');
 
 const db = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
@@ -16,6 +17,8 @@ const db = new pg.Pool({
 });
 
 const app = express();
+
+app.use(timeout('15s'));
 
 app.use(staticMiddleware);
 
@@ -80,7 +83,6 @@ app.post('/api/auth/sign-in', (req, res, next) => {
 });
 
 app.use(authorizationMiddleware);
-
 // CRUD Runs Routes //
 
 app.post('/api/runs', (req, res, next) => {

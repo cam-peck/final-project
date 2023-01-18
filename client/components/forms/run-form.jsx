@@ -9,6 +9,7 @@ import DistanceInput from '../inputs/distance-input';
 import DurationInput from '../inputs/duration-input';
 import LoadingSpinner from '../loading-spinner';
 import NetworkError from '../network-error';
+import TimeoutError from '../timeout-error';
 import NotFound from '../../pages/not-found';
 
 export default class RunForm extends React.Component {
@@ -27,6 +28,7 @@ export default class RunForm extends React.Component {
       gpxPath: [],
       fetchingData: false,
       networkError: false,
+      timeoutError: false,
       idError: false
     };
     this.handleChange = this.handleChange.bind(this);
@@ -35,6 +37,7 @@ export default class RunForm extends React.Component {
     this.prefillForm = this.prefillForm.bind(this);
     this.toggleGpxTrue = this.toggleGpxTrue.bind(this);
     this.handleGpxData = this.handleGpxData.bind(this);
+    this.retryTimeout = this.retryTimeout.bind(this);
     this.fileInputRef = createRef();
   }
 
@@ -160,19 +163,6 @@ export default class RunForm extends React.Component {
       } catch (error) {
         this.fileInputRef.current.value = '';
         alert('Could not read GPX data. Check your GPX file to ensure data is valid.');
-        this.setState({
-          title: '',
-          description: '',
-          date: new Date(),
-          durationHours: '',
-          durationMinutes: '',
-          durationSeconds: '',
-          distance: '',
-          distanceUnits: 'miles',
-          gpxPath: [],
-          hasGpx: false,
-          fetchingData: false
-        });
         console.error(error);
       }
     };
@@ -189,7 +179,7 @@ export default class RunForm extends React.Component {
       const req = {
         method: `${mode === 'add' ? 'POST' : 'PUT'}`,
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json; charset=utf-8',
           'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
         },
         user,
@@ -207,12 +197,19 @@ export default class RunForm extends React.Component {
     });
   }
 
+  retryTimeout() {
+    this.setState({ timeoutError: false });
+  }
+
   render() {
     if (this.state.idError) {
       return <NotFound />;
     }
     if (this.state.networkError) {
       return <NetworkError />;
+    }
+    if (this.state.timeoutError) {
+      return <TimeoutError handleSubmit={this.handleSubmit} retryTimeout={this.retryTimeout}/>;
     }
     if (this.state.fetchingData) {
       return <LoadingSpinner />;

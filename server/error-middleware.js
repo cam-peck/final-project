@@ -5,6 +5,10 @@ function errorMiddleware(err, req, res, next) {
     res.status(err.status).json({
       error: err.message
     });
+  } else if (err.timeout) {
+    res.status(err.status).json({
+      error: 'request timed out'
+    });
   } else {
     console.error(err);
     res.status(500).json({
