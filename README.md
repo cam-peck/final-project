@@ -42,9 +42,9 @@ Check out the site --> https://runningfuze.cjpeck.dev/
 
 ## Stretch Features
 
-- User Can Add GPS Data (.gpx) to Runs
-- User Can View Pace & Elevation Data for Runs
-- User Can View Labels on Weekly Run Chart
+- User Can Add / View / Edit/ Delete GPS Data (.gpx) to Runs
+- User Can View Pace & Elevation Data for Runs (Pending)
+- User Can View Labels on Weekly Run Chart (Pending)
 
 ## Preview
 
