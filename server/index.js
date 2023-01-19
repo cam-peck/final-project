@@ -299,7 +299,7 @@ RETURNING *;
 
 // Running Tab Routes //
 
-app.get('/api/progress', (req, res, next) => {
+app.get('/api/progress', async (req, res, next) => {
   const { userId } = req.user;
 
   const squaresSql = `
@@ -308,14 +308,13 @@ app.get('/api/progress', (req, res, next) => {
    WHERE "userId" = $1
   `;
   const params = [userId];
-  db.query(squaresSql, params)
-    .then(result => {
-      const runDates = result.rows;
-      res.json({
-        runDates
-      });
-    })
-    .catch(err => next(err));
+  try {
+    const result = await db.query(squaresSql, params);
+    const runDates = result.rows;
+    res.json(runDates);
+  } catch (err) {
+    next(err);
+  }
 });
 
 app.get('/api/profile', (req, res, next) => {

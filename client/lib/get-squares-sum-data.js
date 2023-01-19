@@ -3,11 +3,11 @@ export default function getSquaresSumData(runData) {
   let monthSum = 0;
   const currentYear = (new Date()).getFullYear();
   const currentMonth = ((new Date()).getMonth()) + 1;
-  for (let i = 0; i < runData.runDates.length; i++) {
-    if (Number(runData.runDates[i].date.split('T')[0].split('-')[0]) === currentYear) {
+  for (let i = 0; i < runData.length; i++) {
+    if (Number(runData[i].date.split('T')[0].split('-')[0]) === currentYear) {
       yearSum++;
     }
-    if (Number(runData.runDates[i].date.split('T')[0].split('-')[1]) === currentMonth) {
+    if (Number(runData[i].date.split('T')[0].split('-')[1]) === currentMonth) {
       monthSum++;
     }
   }
