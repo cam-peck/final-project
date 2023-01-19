@@ -151,7 +151,7 @@ export default class RunForm extends React.Component {
     event.preventDefault();
     this.setState({
       fetchingData: true
-    }, () => {
+    }, async () => {
       const { user } = this.context;
       const { mode, entryId } = this.props;
       const req = {
@@ -163,19 +163,18 @@ export default class RunForm extends React.Component {
         user,
         body: JSON.stringify(this.state)
       };
-      fetch(`${mode === 'add' ? '/api/runs' : '/api/runs/' + entryId}`, req)
-        .then(response => response.json())
-        .then(result => {
-          if (result.error) {
-            this.setState({ timeoutError: true });
-            return;
-          }
-          window.location.hash = '#home?tab=activities';
-        })
-        .catch(error => {
-          console.error('An error occured!', error);
-          this.setState({ networkError: true });
-        });
+      try {
+        const response = await fetch(`${mode === 'add' ? '/api/runs' : '/api/runs/' + entryId}`, req);
+        const result = await response.json();
+        if (result.error) {
+          this.setState({ timeoutError: true });
+          return;
+        }
+        window.location.hash = '#home?tab=activities';
+      } catch (err) {
+        console.error('An error occured!', err);
+        this.setState({ networkError: true });
+      }
     });
   }
 

@@ -54,7 +54,7 @@ export default class WorkoutForm extends React.Component {
     const { user } = this.context;
     this.setState({
       fetchingData: true
-    }, () => {
+    }, async () => {
       const workoutId = Number(this.props.workoutId);
       const req = {
         method: 'GET',
@@ -63,50 +63,41 @@ export default class WorkoutForm extends React.Component {
         },
         user
       };
-      fetch(`/api/workouts/${workoutId}`, req)
-        .then(response => {
-          if (response.status === 404) {
-            this.setState({ idError: true });
-            // eslint-disable-next-line prefer-promise-reject-errors
-            return Promise.reject('Error 404');
-          } else {
-            return response.json();
-          }
-        })
-        .then(result => {
-          if (result.length === 0) {
-            this.setState({ networkError: true, workoutIdError: true });
-            return;
-          }
-          const { date, description, warmupDistance, warmupNotes, workoutDistance, warmupDistanceUnits, workoutDistanceUnits, cooldownDistanceUnits, workoutNotes, cooldownDistance, cooldownNotes } = result;
-          const dtDateOnly = removeTz(date);
-          const warmupCheck = Boolean(warmupNotes);
-          const workoutCheck = Boolean(workoutNotes);
-          const cooldownCheck = Boolean(cooldownNotes);
-          this.setState({
-            date: dtDateOnly,
-            description,
-            warmupCheck,
-            workoutCheck,
-            cooldownCheck,
-            warmupDistance,
-            warmupDistanceUnits,
-            warmupNotes,
-            workoutDistance,
-            workoutDistanceUnits,
-            workoutNotes,
-            cooldownDistance,
-            cooldownDistanceUnits,
-            cooldownNotes,
-            fetchingData: false,
-            networkError: false,
-            idError: false
-          });
-        })
-        .catch(error => {
-          console.error('An error occured!', error);
-          this.setState({ networkError: true });
+      try {
+        const response = await fetch(`/api/workouts/${workoutId}`, req);
+        if (response.status === 404) {
+          this.setState({ idError: true });
+          return;
+        }
+        const result = await response.json();
+        const { date, description, warmupDistance, warmupNotes, workoutDistance, warmupDistanceUnits, workoutDistanceUnits, cooldownDistanceUnits, workoutNotes, cooldownDistance, cooldownNotes } = result;
+        const dtDateOnly = removeTz(date);
+        const warmupCheck = Boolean(warmupNotes);
+        const workoutCheck = Boolean(workoutNotes);
+        const cooldownCheck = Boolean(cooldownNotes);
+        this.setState({
+          date: dtDateOnly,
+          description,
+          warmupCheck,
+          workoutCheck,
+          cooldownCheck,
+          warmupDistance,
+          warmupDistanceUnits,
+          warmupNotes,
+          workoutDistance,
+          workoutDistanceUnits,
+          workoutNotes,
+          cooldownDistance,
+          cooldownDistanceUnits,
+          cooldownNotes,
+          fetchingData: false,
+          networkError: false,
+          idError: false
         });
+      } catch (err) {
+        console.error('An error occured!', err);
+        this.setState({ networkError: true });
+      }
     });
   }
 
@@ -134,7 +125,7 @@ export default class WorkoutForm extends React.Component {
     event.preventDefault();
     this.setState({
       fetchingData: true
-    }, () => {
+    }, async () => {
       const { user } = this.context;
       const { mode, workoutId } = this.props;
       const req = {
@@ -146,32 +137,31 @@ export default class WorkoutForm extends React.Component {
         user,
         body: JSON.stringify(this.state)
       };
-      fetch(`${mode === 'add' ? '/api/workouts' : '/api/workouts/' + workoutId}`, req)
-        .then(response => response.json())
-        .then(result => {
-          this.setState({
-            date: new Date(),
-            description: '',
-            warmupCheck: false,
-            workoutCheck: true,
-            cooldownCheck: false,
-            warmupDistance: '',
-            warmupDistanceUnits: 'miles',
-            warmupNotes: '',
-            workoutDistance: '',
-            workoutDistanceUnits: 'miles',
-            workoutNotes: '',
-            cooldownDistance: '',
-            cooldownDistanceUnits: 'miles',
-            cooldownNotes: '',
-            fetchingData: false
-          });
-          window.location.hash = '#workouts';
-        })
-        .catch(error => {
-          console.error('An error occured!', error);
-          this.setState({ networkError: true });
+      try {
+        const response = await fetch(`${mode === 'add' ? '/api/workouts' : '/api/workouts/' + workoutId}`, req);
+        await response.json();
+        this.setState({
+          date: new Date(),
+          description: '',
+          warmupCheck: false,
+          workoutCheck: true,
+          cooldownCheck: false,
+          warmupDistance: '',
+          warmupDistanceUnits: 'miles',
+          warmupNotes: '',
+          workoutDistance: '',
+          workoutDistanceUnits: 'miles',
+          workoutNotes: '',
+          cooldownDistance: '',
+          cooldownDistanceUnits: 'miles',
+          cooldownNotes: '',
+          fetchingData: false
         });
+        window.location.hash = '#workouts';
+      } catch (err) {
+        console.error('An error occured!', err);
+        this.setState({ networkError: true });
+      }
     });
   }
 
