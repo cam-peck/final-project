@@ -317,7 +317,7 @@ app.get('/api/progress', async (req, res, next) => {
   }
 });
 
-app.get('/api/profile', (req, res, next) => {
+app.get('/api/profile', async (req, res, next) => {
   const { userId } = req.user;
   const profileSql = `
   SELECT "displayName", "email", "dateOfBirth"
@@ -325,17 +325,18 @@ app.get('/api/profile', (req, res, next) => {
    WHERE "userId" = $1;
   `;
   const params = [userId];
-  db.query(profileSql, params)
-    .then(result => {
-      const [profileData] = result.rows;
-      res.send(profileData);
-    })
-    .catch(err => next(err));
+  try {
+    const result = await db.query(profileSql, params);
+    const [profileData] = result.rows;
+    res.send(profileData);
+  } catch (err) {
+    next(err);
+  }
 });
 
 // CRUD Workout Routes //
 
-app.post('/api/workouts', (req, res, next) => {
+app.post('/api/workouts', async (req, res, next) => {
   const { userId } = req.user;
   const { date, description, warmupDistanceUnits, workoutDistanceUnits, cooldownDistanceUnits } = req.body;
   let { warmupDistance, warmupNotes, workoutDistance, workoutNotes, cooldownDistance, cooldownNotes } = req.body;
@@ -357,15 +358,16 @@ app.post('/api/workouts', (req, res, next) => {
     RETURNING *
   `;
   const params = [userId, date, description, warmupDistance, warmupDistanceUnits, warmupNotes, workoutDistance, workoutDistanceUnits, workoutNotes, cooldownDistance, cooldownDistanceUnits, cooldownNotes];
-  db.query(workoutSql, params)
-    .then(result => {
-      const [newWorkout] = result.rows;
-      res.status(201).send(newWorkout);
-    })
-    .catch(err => next(err));
+  try {
+    const result = await db.query(workoutSql, params);
+    const [newWorkout] = result.rows;
+    res.status(201).send(newWorkout);
+  } catch (err) {
+    next(err);
+  }
 });
 
-app.get('/api/workouts', (req, res, next) => {
+app.get('/api/workouts', async (req, res, next) => {
   const { userId } = req.user;
   const sql = `
   SELECT "date", "description", "warmupDistance", "warmupDistanceUnits", "warmupNotes", "workoutDistance", "workoutDistanceUnits", "workoutNotes", "cooldownDistance", "cooldownDistanceUnits", "cooldownNotes", "workoutId"
@@ -374,15 +376,16 @@ app.get('/api/workouts', (req, res, next) => {
 ORDER BY "date" DESC;
   `;
   const params = [userId];
-  db.query(sql, params)
-    .then(result => {
-      const workouts = result.rows;
-      res.json(workouts);
-    })
-    .catch(err => next(err));
+  try {
+    const result = await db.query(sql, params);
+    const workouts = result.rows;
+    res.json(workouts);
+  } catch (err) {
+    next(err);
+  }
 });
 
-app.get('/api/workouts/:workoutId', (req, res, next) => {
+app.get('/api/workouts/:workoutId', async (req, res, next) => {
   const { userId } = req.user;
   const { workoutId } = req.params;
   if (!workoutId) {
@@ -394,19 +397,20 @@ app.get('/api/workouts/:workoutId', (req, res, next) => {
    WHERE "userId" = $1 AND "workoutId" = $2;
   `;
   const params = [userId, workoutId];
-  db.query(sql, params)
-    .then(result => {
-      const [data] = result.rows;
-      if (!data) {
-        res.status(404).json(`Error: Your id: ${workoutId}, does not exist.`);
-      } else {
-        res.json(data);
-      }
-    })
-    .catch(err => next(err));
+  try {
+    const result = await db.query(sql, params);
+    const [data] = result.rows;
+    if (!data) {
+      res.status(404).json(`Error: Your id: ${workoutId}, does not exist.`);
+    } else {
+      res.json(data);
+    }
+  } catch (err) {
+    next(err);
+  }
 });
 
-app.put('/api/workouts/:workoutId', (req, res, next) => {
+app.put('/api/workouts/:workoutId', async (req, res, next) => {
   const { userId } = req.user;
   const { workoutId } = req.params;
   if (!workoutId) {
@@ -443,19 +447,20 @@ app.put('/api/workouts/:workoutId', (req, res, next) => {
 RETURNING *
   `;
   const params = [date, description, warmupDistance, warmupDistanceUnits, warmupNotes, workoutDistance, workoutDistanceUnits, workoutNotes, cooldownDistance, cooldownDistanceUnits, cooldownNotes, workoutId, userId];
-  db.query(sql, params)
-    .then(result => {
-      const [editedWorkout] = result.rows;
-      if (!editedWorkout) {
-        res.status(404).json(`Error: Your id: ${workoutId}, does not exist.`);
-      } else {
-        res.json(editedWorkout);
-      }
-    })
-    .catch(err => next(err));
+  try {
+    const result = await db.query(sql, params);
+    const [editedWorkout] = result.rows;
+    if (!editedWorkout) {
+      res.status(404).json(`Error: Your id: ${workoutId}, does not exist.`);
+    } else {
+      res.json(editedWorkout);
+    }
+  } catch (err) {
+    next(err);
+  }
 });
 
-app.delete('/api/workouts/:workoutId', (req, res, next) => {
+app.delete('/api/workouts/:workoutId', async (req, res, next) => {
   const { userId } = req.user;
   const { workoutId } = req.params;
   if (!workoutId) {
@@ -468,16 +473,17 @@ app.delete('/api/workouts/:workoutId', (req, res, next) => {
 RETURNING *;
   `;
   const params = [userId, workoutId];
-  db.query(sql, params)
-    .then(result => {
-      const [deletedWorkout] = result.rows;
-      if (!deletedWorkout) {
-        res.status(404).json(`Error: Your id: ${workoutId}, does not exist.`);
-      } else {
-        res.json(deletedWorkout);
-      }
-    })
-    .catch(err => next(err));
+  try {
+    const result = await db.query(sql, params);
+    const [deletedWorkout] = result.rows;
+    if (!deletedWorkout) {
+      res.status(404).json(`Error: Your id: ${workoutId}, does not exist.`);
+    } else {
+      res.json(deletedWorkout);
+    }
+  } catch (err) {
+    next(err);
+  }
 });
 
 app.use(errorMiddleware);
