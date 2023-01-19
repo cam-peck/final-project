@@ -25,7 +25,7 @@ export default class Activities extends React.Component {
     this.handleSearchChange = this.handleSearchChange.bind(this);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const req = {
       method: 'GET',
       headers: {
@@ -33,21 +33,16 @@ export default class Activities extends React.Component {
       },
       user: this.context.user
     };
-    fetch('/api/runs', req)
-      .then(response => response.json())
-      .then(runsResult => {
-        fetch('/api/runs/gpxData', req)
-          .then(response => response.json())
-          .then(gpxResult => {
-            this.setState({ runData: runsResult, gpxData: gpxResult, fetchingData: false });
-          });
-      })
-      .catch(error => {
-        console.error('There was an error!', error);
-        this.setState({
-          networkError: true
-        });
-      });
+    try {
+      const runsResponse = await fetch('/api/runs', req);
+      const runsResult = await runsResponse.json();
+      const gpxResponse = await fetch('/api/runs/gpxData', req);
+      const gpxResult = await gpxResponse.json();
+      this.setState({ runData: runsResult, gpxData: gpxResult, fetchingData: false });
+    } catch (err) {
+      console.error('There was an error!', err);
+      this.setState({ networkError: true });
+    }
   }
 
   openModal(entryId) {
@@ -64,7 +59,7 @@ export default class Activities extends React.Component {
 
   deleteRun(entryId) {
     this.setState({ fetchingData: true },
-      () => {
+      async () => {
         const { user } = this.context;
         const { runData } = this.state;
         const req = {
@@ -74,21 +69,20 @@ export default class Activities extends React.Component {
           },
           user
         };
-        fetch(`/api/runs/${entryId}`, req)
-          .then(response => response.json())
-          .then(result => {
-            const indexToRemove = runData.findIndex(run => run.entryId === entryId);
-            const newRunData = Array.from(runData);
-            newRunData.splice(indexToRemove, 1);
-            this.setState({ openRun: {}, runData: newRunData, fetchingData: false });
-            this.closeModal();
-          })
-          .catch(error => {
-            console.error('There was an error!', error);
-            this.setState({
-              networkError: true
-            });
+        try {
+          const response = await fetch(`/api/runs/${entryId}`, req);
+          await response.json();
+          const indexToRemove = runData.findIndex(run => run.entryId === entryId);
+          const newRunData = Array.from(runData);
+          newRunData.splice(indexToRemove, 1);
+          this.setState({ openRun: {}, runData: newRunData, fetchingData: false });
+          this.closeModal();
+        } catch (err) {
+          console.error('There was an error!', err);
+          this.setState({
+            networkError: true
           });
+        }
       });
   }
 
