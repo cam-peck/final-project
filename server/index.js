@@ -26,30 +26,28 @@ app.use(express.json({ limit: '10mb' }));
 
 // Auth Routes //
 
-app.post('/api/auth/sign-up', (req, res, next) => {
+app.post('/api/auth/sign-up', async (req, res, next) => {
   const { displayName, profilePhoto, email, dateOfBirth, password } = req.body;
   if (!displayName || !profilePhoto || !email || !dateOfBirth || !password) {
     throw new ClientError(400, 'displayName, profilePhoto, email, dateOfBirth, and password are required fields.');
   }
-  argon2
-    .hash(password)
-    .then(hashedPassword => {
-      const sql = `
+  try {
+    const hashedPassword = await argon2.hash(password);
+    const sql = `
       INSERT INTO "users" ("displayName", "profilePhoto", "email", "dateOfBirth", "password")
       VALUES ($1, $2, $3, $4, $5)
       RETURNING "userId", "displayName", "profilePhoto", "email", "dateOfBirth", "createdAt";
       `;
-      const params = [displayName, profilePhoto, email, dateOfBirth, hashedPassword];
-      return db.query(sql, params);
-    })
-    .then(result => {
-      const [user] = result.rows;
-      res.status(201).json(user);
-    })
-    .catch(err => next(err));
+    const params = [displayName, profilePhoto, email, dateOfBirth, hashedPassword];
+    const result = await db.query(sql, params);
+    const [user] = result.rows;
+    res.status(201).json(user);
+  } catch (err) {
+    next(err);
+  }
 });
 
-app.post('/api/auth/sign-in', (req, res, next) => {
+app.post('/api/auth/sign-in', async (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password) {
     throw new ClientError(401, 'invalid login');
@@ -61,25 +59,21 @@ app.post('/api/auth/sign-in', (req, res, next) => {
    WHERE "email" = $1;
   `;
   const params = [email];
-  db.query(sql, params)
-    .then(result => {
-      const [user] = result.rows;
-      if (!user) {
-        throw new ClientError(401, 'invalid login');
-      }
-      const { userId } = user;
-      return argon2
-        .verify(user.password, password)
-        .then(isMatching => {
-          if (!isMatching) {
-            throw new ClientError(401, 'invalid login');
-          }
-          const payload = { userId, email };
-          const token = jwt.sign(payload, process.env.TOKEN_SECRET);
-          res.json({ token, user: payload });
-        });
-    })
-    .catch(err => next(err));
+  try {
+    // Query the db for the password and user //
+    const result = await db.query(sql, params);
+    const [user] = result.rows;
+    if (!user) throw new ClientError(401, 'Invalid login.');
+    const { userId } = user;
+    // Verify the user's password //
+    const isMatching = await argon2.verify(user.password, password);
+    if (!isMatching) throw new ClientError(401, 'Invalid login.');
+    const payload = { userId, email };
+    const token = jwt.sign(payload, process.env.TOKEN_SECRET);
+    res.json({ token, user: payload });
+  } catch (err) {
+    next(err);
+  }
 });
 
 app.use(authorizationMiddleware);
