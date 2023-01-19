@@ -1,9 +1,9 @@
 import React, { createRef } from 'react';
-import { calculatePace, AppContext, removeTz, getLatLonDistanceInKm } from '../../lib';
+import { calculatePace, AppContext, removeTz, parseGpxData } from '../../lib';
 import TextInput from '../inputs/text-input';
 import DatePicker from 'react-datepicker';
 import UploadRunCard from '../cards/upload-run-card';
-import { subYears, intervalToDuration, differenceInSeconds, parseISO } from 'date-fns';
+import { subYears } from 'date-fns';
 import 'react-datepicker/dist/react-datepicker.css';
 import DistanceInput from '../inputs/distance-input';
 import DurationInput from '../inputs/duration-input';
@@ -57,7 +57,7 @@ export default class RunForm extends React.Component {
     const { user } = this.context;
     this.setState({
       fetchingData: true
-    }, () => {
+    }, async () => {
       const entryId = Number(this.props.entryId);
       const req = {
         method: 'GET',
@@ -67,41 +67,36 @@ export default class RunForm extends React.Component {
         },
         user
       };
-      fetch(`/api/runs/${entryId}`, req)
-        .then(response => {
-          if (response.status === 404) {
-            this.setState({ idError: true });
-            // eslint-disable-next-line prefer-promise-reject-errors
-            return Promise.reject('Error 404');
-          } else {
-            return response.json();
-          }
-        })
-        .then(result => {
-          const { runData, gpxData } = result;
-          const { title, description, date, duration, distance, distanceUnits, hasGpx } = runData;
-          const splitDuration = duration.split(':');
-          const dtDateOnly = removeTz(date);
-          this.setState({
-            title,
-            description,
-            date: dtDateOnly,
-            durationHours: splitDuration[0],
-            durationMinutes: splitDuration[1],
-            durationSeconds: splitDuration[2],
-            distance,
-            distanceUnits,
-            hasGpx,
-            gpxPath: gpxData,
-            fetchingData: false,
-            networkError: false,
-            idError: false
-          });
-        })
-        .catch(error => {
-          console.error('An error occured!', error);
-          this.setState({ networkError: true });
+      try {
+        const response = await fetch(`/api/runs/${entryId}`, req);
+        if (response.status === 404) {
+          this.setState({ idError: true });
+          return;
+        }
+        const result = await response.json();
+        const { runData, gpxData } = result;
+        const { title, description, date, duration, distance, distanceUnits, hasGpx } = runData;
+        const splitDuration = duration.split(':');
+        const dtDateOnly = removeTz(date);
+        this.setState({
+          title,
+          description,
+          date: dtDateOnly,
+          durationHours: splitDuration[0],
+          durationMinutes: splitDuration[1],
+          durationSeconds: splitDuration[2],
+          distance,
+          distanceUnits,
+          hasGpx,
+          gpxPath: gpxData,
+          fetchingData: false,
+          networkError: false,
+          idError: false
         });
+      } catch (err) {
+        console.error('An error occured!', err);
+        this.setState({ networkError: true });
+      }
     });
   }
 
@@ -132,24 +127,8 @@ export default class RunForm extends React.Component {
     const reader = new FileReader();
     reader.onload = event => {
       try {
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(event.target.result, 'text/xml');
-        const date = xmlDoc.querySelector('name').textContent.split(' ')[1];
-        const trkptData = xmlDoc.querySelectorAll('trkpt');
-        const path = [];
-        for (let i = 0; i < trkptData.length; i++) {
-          const runObj = {};
-          runObj.time = trkptData[i].querySelector('time').textContent;
-          runObj.elevation = trkptData[i].querySelector('ele').textContent;
-          runObj.lat = parseFloat(trkptData[i].getAttribute('lat'));
-          runObj.lng = parseFloat(trkptData[i].getAttribute('lon'));
-          path.push(runObj);
-        }
-        const startTime = trkptData[0].querySelector('time').textContent;
-        const endTime = trkptData[trkptData.length - 1].querySelector('time').textContent;
-        const durationInSeconds = differenceInSeconds(parseISO(endTime), parseISO(startTime));
-        const durationObj = intervalToDuration({ start: 0, end: durationInSeconds * 1000 });
-        const distance = getLatLonDistanceInKm(path);
+        const parsedData = parseGpxData(event.target.result);
+        const { date, path, distance, durationObj } = parsedData;
         this.setState({
           date: removeTz(new Date(date)),
           gpxPath: path,

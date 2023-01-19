@@ -52,7 +52,7 @@ export default class AuthForm extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    this.setState({ fetchingData: true }, () => {
+    this.setState({ fetchingData: true }, async () => {
       const { action } = this.props;
       const req = {
         method: 'POST',
@@ -61,34 +61,32 @@ export default class AuthForm extends React.Component {
         },
         body: JSON.stringify(this.state)
       };
-      fetch(`/api/auth/${action}`, req)
-        .then(response => response.json())
-        .then(result => {
-          if (action === 'sign-up') {
-            this.resetState();
-            window.location.hash = 'sign-in';
+      try {
+        const response = await fetch(`/api/auth/${action}`, req);
+        const result = await response.json();
+        if (action === 'sign-up') {
+          this.resetState();
+          window.location.hash = 'sign-in';
 
-          } else if (result.user && result.token) {
-            this.resetState();
-            this.props.onSignIn(result);
-            window.location.hash = '#home?tab=activities';
-          } else {
-            this.setState({ signInWasInvalid: true, fetchingData: false });
-          }
-        })
-        .catch(error => {
-          console.error('There was an error!', error);
-          this.setState({
-            networkError: true,
-            fetchingData: false
-          });
+        } else if (result.user && result.token) {
+          this.resetState();
+          this.props.onSignIn(result);
+          window.location.hash = '#home?tab=activities';
+        } else {
+          this.setState({ signInWasInvalid: true, fetchingData: false });
+        }
+      } catch (err) {
+        console.error('There was an error!', err);
+        this.setState({
+          networkError: true,
+          fetchingData: false
         });
+      }
     });
-
   }
 
   oneClickSignIn() {
-    this.setState({ fetchingData: true }, () => {
+    this.setState({ fetchingData: true }, async () => {
       const req = {
         method: 'POST',
         headers: {
@@ -99,24 +97,23 @@ export default class AuthForm extends React.Component {
           password: 'password1'
         })
       };
-      fetch('/api/auth/sign-in', req)
-        .then(response => response.json())
-        .then(result => {
-          if (result.user && result.token) {
-            this.resetState();
-            this.props.onSignIn(result);
-            window.location.hash = '#home?tab=activities';
-          } else {
-            this.setState({ signInWasInvalid: true, fetchingData: false });
-          }
-        })
-        .catch(error => {
-          console.error('There was an error!', error);
-          this.setState({
-            networkError: true,
-            fetchingData: false
-          });
+      try {
+        const response = await fetch('/api/auth/sign-in', req);
+        const result = await response.json();
+        if (result.user && result.token) {
+          this.resetState();
+          this.props.onSignIn(result);
+          window.location.hash = '#home?tab=activities';
+        } else {
+          this.setState({ signInWasInvalid: true, fetchingData: false });
+        }
+      } catch (err) {
+        console.error('There was an error!', err);
+        this.setState({
+          networkError: true,
+          fetchingData: false
         });
+      }
     });
   }
 
