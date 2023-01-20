@@ -9,7 +9,7 @@ export default function formatRunningSquares(runData) {
     start: startDate,
     end: new Date()
   });
-  const mappedRuns = runData.runDates.map(runDate => runDate.date.split('T')[0]);
+  const mappedRuns = runData.map(runDate => runDate.date.split('T')[0]);
   const mappedYear = thisYear.map(date => {
     if (mappedRuns.includes(date.toJSON().split('T')[0])) {
       return { date: date.toJSON().split('T')[0], runStatus: 'run' };

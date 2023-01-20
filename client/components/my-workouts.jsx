@@ -21,7 +21,7 @@ export default class MyWorkouts extends React.Component {
   componentDidMount() {
     this.setState({
       fetchingData: true
-    }, () => {
+    }, async () => {
       const { user } = this.context;
       const req = {
         method: 'GET',
@@ -30,27 +30,26 @@ export default class MyWorkouts extends React.Component {
         },
         user
       };
-      fetch('/api/workouts', req)
-        .then(response => response.json())
-        .then(result => {
-          this.setState({
-            workoutData: result,
-            fetchingData: false
-          });
-        })
-        .catch(error => {
-          console.error('There was an error!', error);
-          this.setState({
-            networkError: true
-          });
+      try {
+        const response = await fetch('/api/workouts', req);
+        const result = await response.json();
+        this.setState({
+          workoutData: result,
+          fetchingData: false
         });
+      } catch (err) {
+        console.error('There was an error!', err);
+        this.setState({
+          networkError: true
+        });
+      }
     });
   }
 
   deleteWorkout(workoutId) {
     this.setState({
       fetchingData: true
-    }, () => {
+    }, async () => {
       const { user } = this.context;
       const { workoutData } = this.state;
       const req = {
@@ -60,23 +59,22 @@ export default class MyWorkouts extends React.Component {
         },
         user
       };
-      fetch('/api/workouts/' + workoutId, req)
-        .then(response => response.json())
-        .then(result => {
-          const indexToRemove = workoutData.findIndex(workoutData => workoutData.workoutId === workoutId);
-          const newWorkoutData = Array.from(workoutData);
-          newWorkoutData.splice(indexToRemove, 1);
-          this.setState({
-            workoutData: newWorkoutData,
-            fetchingData: false
-          });
-        })
-        .catch(error => {
-          console.error('There was an error!', error);
-          this.setState({
-            networkError: true
-          });
+      try {
+        const response = await fetch('/api/workouts/' + workoutId, req);
+        await response.json();
+        const indexToRemove = workoutData.findIndex(workoutData => workoutData.workoutId === workoutId);
+        const newWorkoutData = Array.from(workoutData);
+        newWorkoutData.splice(indexToRemove, 1);
+        this.setState({
+          workoutData: newWorkoutData,
+          fetchingData: false
         });
+      } catch (err) {
+        console.error('There was an error!', err);
+        this.setState({
+          networkError: true
+        });
+      }
     });
   }
 

@@ -15,7 +15,7 @@ export default class Progress extends React.Component {
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const { user } = this.context;
     const req = {
       method: 'GET',
@@ -24,18 +24,17 @@ export default class Progress extends React.Component {
       },
       user
     };
-    fetch('/api/progress', req)
-      .then(response => response.json())
-      .then(result => {
-        this.setState({
-          yearlyRunData: result,
-          fetchingData: false
-        });
-      })
-      .catch(error => {
-        console.error('An error occured!', error);
-        this.setState({ networkError: true });
+    try {
+      const response = await fetch('/api/progress', req);
+      const result = await response.json();
+      this.setState({
+        yearlyRunData: result,
+        fetchingData: false
       });
+    } catch (err) {
+      console.error('An error occured!', err);
+      this.setState({ networkError: true });
+    }
   }
 
   render() {
