@@ -8,7 +8,7 @@ export default function FilteredWorkouts(props) {
       {
         workoutData.map((workout, index) => {
           return (
-            <WorkoutCard key={workout.workoutId} data={workout} deleteWorkout={deleteWorkout} />
+            <WorkoutCard key={workout.workoutId} data={workout} deleteWorkout={deleteWorkout} editDeleteEnabled={true}/>
           );
         })
       }
