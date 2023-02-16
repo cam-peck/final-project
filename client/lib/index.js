@@ -12,3 +12,4 @@ export { default as filterRuns } from './filter-runs';
 export { default as filterWorkouts } from './filter-workouts';
 export { default as getLatLonDistanceInKm } from './get-lat-long-distance-in-km';
 export { default as parseGpxData } from './parse-gpx-data';
+export { default as getNextWeeksWorkouts } from './get-next-weeks-workouts';

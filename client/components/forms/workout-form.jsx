@@ -6,7 +6,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import LoadingSpinner from '../loading-spinner';
 import NetworkError from '../network-error';
-import { subYears } from 'date-fns';
+import { subYears, addYears } from 'date-fns';
 import { AppContext, removeTz } from '../../lib';
 import NotFound from '../../pages/not-found';
 
@@ -194,7 +194,7 @@ export default class WorkoutForm extends React.Component {
           {/* Date */}
           <div className="w-full">
             <p className="font-lora font-md text-md font-medium pb-2" >Date</p>
-            <DatePicker className="w-full rounded-lg px-3 py-3.5 border border-gray-300 focus:outline-blue-500 mb-4" selected={date} onChange={handleDateChange} dateFormat='MM/dd/yyy' maxDate={new Date()} minDate={subYears(new Date(), 80)} required />
+            <DatePicker className="w-full rounded-lg px-3 py-3.5 border border-gray-300 focus:outline-blue-500 mb-4" selected={date} onChange={handleDateChange} dateFormat='MM/dd/yyy' maxDate={addYears(new Date(), 1)} minDate={subYears(new Date(), 80)} required />
           </div>
           {/* Description */}
           <div className="w-full mb-6">
