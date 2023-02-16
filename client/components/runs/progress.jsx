@@ -66,7 +66,7 @@ export default class Progress extends React.Component {
             {
               nextWeeksWorkouts.length === 0
                 ? <div className= "flex justify-center items-center h-60" ><p className="text-center italic">No workouts found for the next 7 days...</p></div>
-                : nextWeeksWorkouts.map(workout => <div className="mb-4" key={workout.workoutId}> <WorkoutCard data={workout} /> </div>)
+                : nextWeeksWorkouts.map(workout => <div className="mb-4" key={workout.workoutId}> <WorkoutCard data={workout} editDeleteEnabled={false} /> </div>)
             }
           </div>
         </div>

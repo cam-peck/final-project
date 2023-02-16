@@ -42,6 +42,7 @@ export default class WorkoutCard extends React.Component {
 
   render() {
     const { date, description, warmupDistance, warmupNotes, workoutDistance, warmupDistanceUnits, workoutDistanceUnits, cooldownDistanceUnits, workoutNotes, cooldownDistance, cooldownNotes, workoutId } = this.props.data;
+    const { editDeleteEnabled } = this.props;
     const formattedDate = format(removeTz(date), 'EEEE, LLL do');
     const { toggleMenu, toggleSnack, handleClick, handleDelete } = this;
     const { toggleMenuIsOpen, snackbarIsOpen } = this.state;
@@ -50,7 +51,7 @@ export default class WorkoutCard extends React.Component {
         <div className="mb-1.5 flex flex-col gap-[2px]">
           <div className="flex justify-between relative">
             <h1 className="text-lg x2s:text-2xl">{formattedDate}</h1>
-            <i onClick={toggleMenu} className="fa-solid fa-lg fa-ellipsis-vertical hover:cursor-pointer block pl-2 pt-3 pb-3" />
+            <i onClick={toggleMenu} className={`fa-solid fa-lg fa-ellipsis-vertical ${editDeleteEnabled ? '' : 'hidden'} hover:cursor-pointer block pl-2 pt-3 pb-3`} />
             {toggleMenuIsOpen === true
               ? <EditDeleteMenu id={workoutId} handleClick={handleClick}/>
               : ''}
