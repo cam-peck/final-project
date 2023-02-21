@@ -70,6 +70,7 @@ CREATE TABLE "public"."restDays" (
 	"restId" serial NOT NULL,
 	"date" DATE NOT NULL,
 	"description" TEXT NOT NULL,
+  "isCustom" BOOLEAN NOT NULL,
 	"userId" integer NOT NULL,
 	CONSTRAINT "restDays_pk" PRIMARY KEY ("restId")
 ) WITH (

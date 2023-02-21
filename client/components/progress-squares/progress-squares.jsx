@@ -42,20 +42,19 @@ export default class ProgressSquares extends React.Component {
 
   toggleRestDayModal() {
     this.setState({ restMenuIsOpen: !this.state.restMenuIsOpen });
-    console.log('rest day clicked');
   }
 
   render() {
-    const { data } = this.props;
-    const runningSquareData = formatRunningSquares(data);
-    const runningSquareSumData = getSquaresSumData(data);
+    const { runData, restData } = this.props;
+    const runningSquareData = formatRunningSquares(runData);
+    const runningSquareSumData = getSquaresSumData(runData);
     const { setMouseDown, setMouseUp, drag, ref, toggleRestDayModal } = this;
     const { restMenuIsOpen } = this.state;
 
     return (
       <div className="bg-white pl-6 pr-6 pt-5 pb-3 rounded-xl border border-gray-300 shadow-sm">
-        <ProgressSquareHeader data={runningSquareSumData} toggleRestDayModal={toggleRestDayModal}/>
-        {restMenuIsOpen ? <RestDayModal closeModal={toggleRestDayModal}/> : '' }
+        <ProgressSquareHeader sumData={runningSquareSumData} toggleRestDayModal={toggleRestDayModal}/>
+        {restMenuIsOpen ? <RestDayModal closeModal={toggleRestDayModal} restData={restData}/> : '' }
         <hr className="border"/>
         <div ref={ref} onMouseDown={event => setMouseDown(event)} onMouseUp={setMouseUp} onMouseMove={event => drag(event)} onMouseLeave={setMouseUp} className="overflow-scroll active:cursor-grabbing active:scale-[1.01]">
           <div className="flex">

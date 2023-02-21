@@ -308,7 +308,7 @@ app.get('/api/progress', async (req, res, next) => {
    WHERE "userId" = $1
   `;
   const restDaysSql = `
-  SELECT "date"
+  SELECT "date", "isCustom"
   FROM "restDays"
   WHERE "userId" = $1
   `;

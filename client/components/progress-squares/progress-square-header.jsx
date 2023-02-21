@@ -1,8 +1,8 @@
 import React from 'react';
 
 export default function ProgressSquareHeader(props) {
-  const { data, toggleRestDayModal } = props;
-  const { yearSum, monthSum } = data;
+  const { sumData, toggleRestDayModal } = props;
+  const { yearSum, monthSum } = sumData;
   return (
     <div className="font-lora mb-4 flex flex-col gap-1">
       <div className="flex justify-between items-center">

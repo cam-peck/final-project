@@ -11,6 +11,7 @@ export default class Progress extends React.Component {
     super(props);
     this.state = {
       yearlyRunData: [],
+      yearlyRestData: [],
       workoutData: [],
       fetchingData: true,
       networkError: false
@@ -50,13 +51,13 @@ export default class Progress extends React.Component {
     if (this.state.fetchingData) {
       return <LoadingSpinner />;
     }
-    const { yearlyRunData, workoutData } = this.state;
+    const { yearlyRunData, workoutData, yearlyRestData } = this.state;
     const nextWeeksWorkouts = getNextWeeksWorkouts(workoutData);
     return (
       <section className="pl-6 pr-6 max-w-6xl mx-auto mt-6 mb-4">
         <h1 className="font-lora font-medium text-2xl mb-6">My Progress</h1>
         <div className='mb-4'>
-          <ProgressSquares data={yearlyRunData}/>
+          <ProgressSquares runData={yearlyRunData} restData={yearlyRestData}/>
         </div>
         <div className="flex flex-col md:flex-row">
           <div className='w-full md:pr-4 md:w-6/12 lg:w-6/12 mb-4'>
