@@ -307,11 +307,18 @@ app.get('/api/progress', async (req, res, next) => {
     FROM "runs"
    WHERE "userId" = $1
   `;
+  const restDaysSql = `
+  SELECT "date"
+  FROM "restDays"
+  WHERE "userId" = $1
+  `;
   const params = [userId];
   try {
-    const result = await db.query(squaresSql, params);
-    const runDates = result.rows;
-    res.json(runDates);
+    const squaresSqlResult = await db.query(squaresSql, params);
+    const restDaysSqlResult = await db.query(restDaysSql, params);
+    const runDates = squaresSqlResult.rows;
+    const restDates = restDaysSqlResult.rows;
+    res.json({ runDates, restDates });
   } catch (err) {
     next(err);
   }
