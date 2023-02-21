@@ -1,7 +1,7 @@
 import React from 'react';
 
 export default function ProgressSquareHeader(props) {
-  const { data } = props;
+  const { data, toggleRestDayModal } = props;
   const { yearSum, monthSum } = data;
   return (
     <div className="font-lora mb-4 flex flex-col gap-1">
@@ -15,7 +15,7 @@ export default function ProgressSquareHeader(props) {
         <p className="text-lg">
           {yearSum} {yearSum === 1 ? 'run' : 'runs'} this year
         </p>
-        <i className="fa-solid fa-couch hover:cursor-pointer" />
+        <i onClick={toggleRestDayModal} className="fa-solid fa-couch hover:cursor-pointer" />
       </div>
     </div>
   );

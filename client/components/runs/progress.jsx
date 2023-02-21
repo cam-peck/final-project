@@ -31,7 +31,6 @@ export default class Progress extends React.Component {
       const progressResult = await progressResponse.json();
       const workoutResponse = await fetch('/api/workouts', req);
       const workoutResult = await workoutResponse.json();
-      console.log(progressResult);
       this.setState({
         yearlyRunData: progressResult.runDates,
         yearlyRestData: progressResult.restDates,
