@@ -71,6 +71,7 @@ CREATE TABLE "public"."restDays" (
 	"date" DATE NOT NULL,
 	"description" TEXT NOT NULL,
   "isCustom" BOOLEAN NOT NULL,
+  "isWeeklyDay" BOOLEAN NOT NULL,
 	"userId" integer NOT NULL,
 	CONSTRAINT "restDays_pk" PRIMARY KEY ("restId")
 ) WITH (
