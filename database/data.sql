@@ -234,3 +234,15 @@ values (1, '12-24-2022', 'Vacation', true, false);
 
 insert into "restDays" ("userId", "date", "description", "isCustom", "isWeeklyDay")
 values (1, '1-18-2023', 'Weekly rest day', false, true);
+
+insert into "restDays" ("userId", "date", "description", "isCustom", "isWeeklyDay")
+values (1, '12-19-2022', 'Vacation', true, false);
+
+insert into "restDays" ("userId", "date", "description", "isCustom", "isWeeklyDay")
+values (1, '12-18-2022', 'Vacation', true, false);
+
+insert into "restDays" ("userId", "date", "description", "isCustom", "isWeeklyDay")
+values (1, '12-17-2022', 'Vacation', true, false);
+
+insert into "restDays" ("userId", "date", "description", "isCustom", "isWeeklyDay")
+values (1, '1-15-2023', 'Weekly rest day', false, true);

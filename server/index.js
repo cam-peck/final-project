@@ -311,6 +311,7 @@ app.get('/api/progress', async (req, res, next) => {
   SELECT "date", "isCustom", "isWeeklyDay"
   FROM "restDays"
   WHERE "userId" = $1
+  ORDER BY "date" DESC
   `;
   const params = [userId];
   try {
