@@ -9,7 +9,7 @@ export default function RestDayForm(props) {
   const [weeklyRestDay, setWeeklyRestDay] = useState('None');
   const [customRestDay, setCustomRestDay] = useState(undefined);
   const [restDayDuplicateError, setRestDayDuplicateError] = useState(false);
-  const addCustomRestDay = e => {
+  const addCustomRestDay = event => {
     const isoDate = formatISO(customRestDay);
     if (restData.find(restDay => restDay.date.split('T')[0] === isoDate.split('T')[0])) { // TODO: add error handling here for duplicates!
       setRestDayDuplicateError(true);
@@ -25,12 +25,17 @@ export default function RestDayForm(props) {
       setRestDayDuplicateError(false);
     }
   };
+  const submitForm = event => {
+    event.preventDefault();
+    console.log('Form Submitted');
+  };
+  const { closeModal } = props;
   return (
-    <section className="flex flex-col gap-4">
+    <form className="flex flex-col gap-4" onSubmit={ event => submitForm(event) }>
       <div>
         <WeekdaySelector value={weeklyRestDay} onChange={event => setWeeklyRestDay(event.target.value) }/>
       </div>
-      <div className='flex flex-col gap-2'>
+      <div className='flex flex-col gap-2 mb-2'>
         <div>
           <p className="font-lora font-medium text-md mb-2">Custom Rest Days</p>
           <CustomRestDays restData={restData}/>
@@ -41,6 +46,10 @@ export default function RestDayForm(props) {
         </div>
         { restDayDuplicateError ? <p className='text-red-500 italic font-lora pl-0.5 text-sm'>That date has already been added.</p> : '' }
       </div>
-    </section>
+      <div className="flex justify-end gap-2">
+        <button type="button" onClick={closeModal} className="w-1/2 x2s:w-1/4 bg-red-500 transition-colors ease-in-out duration-300 hover:bg-red-600 text-white p-3 rounded-lg font-bold mb-2">Cancel</button>
+        <button type="submit" className="w-1/2 x2s:w-3/4 bg-blue-500 transition-colors ease-in-out duration-300 hover:bg-blue-600 text-white p-3 rounded-lg font-bold mb-2">Save</button>
+      </div>
+    </form>
   );
 }
