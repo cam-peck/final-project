@@ -328,19 +328,38 @@ app.get('/api/progress', async (req, res, next) => {
 
 app.post('/api/restDays', async (req, res, next) => {
   const { userId } = req.user;
-  const { date, isCustom, isWeeklyDay } = req.body;
-  if (!date || !isCustom || !isWeeklyDay) {
-    throw new ClientError(400, 'date, isCustom, and isWeeklyDay are required fields.');
+  const { newRestDays } = req.body;
+  if (!newRestDays) {
+    throw new ClientError(400, 'newRestDays is a required field.');
   }
   const restDaySql = `
   INSERT INTO "restDays" ("userId", "date", "isCustom", "isWeeklyDay")
   VALUES ($1, $2, $3, $4)
   RETURNING *
   `;
-  const params = [userId, date, isCustom, isWeeklyDay];
+  for (let i = 0; i < newRestDays.length; i++) {
+    const { date, isCustom, isWeeklyDay } = newRestDays[i];
+    const params = [userId, date, isCustom, isWeeklyDay];
+    try {
+      const restDaySqlResult = await db.query(restDaySql, params);
+      res.json(restDaySqlResult);
+    } catch (err) {
+      next(err);
+    }
+  }
+});
+
+app.get('/api/restDays', async (req, res, next) => {
+  const { userId } = req.user;
+  const restDaySql = `
+  SELECT "date", "isCustom", "isWeeklyDay"
+  FROM "restDays"
+  WHERE "userId" = $1
+  `;
+  const params = [userId];
   try {
     const restDaySqlResult = await db.query(restDaySql, params);
-    res.json(restDaySqlResult);
+    res.json(restDaySqlResult.rows);
   } catch (err) {
     next(err);
   }

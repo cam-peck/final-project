@@ -1,14 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
+import { AppContext } from '../../lib';
 import { addYears, subYears, formatISO } from 'date-fns';
 import WeekdaySelector from '../inputs/weekday-selector';
 import CustomRestDays from '../progress-squares/custom-rest-days';
 import DatePicker from 'react-datepicker';
+import LoadingSpinner from '../loading-spinner';
 
 export default function RestDayForm(props) {
-  const [restData, setRestData] = useState(props.restData);
+  // State Data //
+  const [newRestDays, setNewRestDays] = useState([]);
+  const [restData, setRestData] = useState([]);
   const [weeklyRestDay, setWeeklyRestDay] = useState('None');
   const [customRestDay, setCustomRestDay] = useState(undefined);
   const [restDayDuplicateError, setRestDayDuplicateError] = useState(false);
+  const [fetchingData, setFetchingData] = useState(false);
+
+  // Context Data //
+  const { user } = useContext(AppContext);
+  const { closeModal } = props;
+
+  // Assist Functions //
+  useEffect(() => {
+    async function fetchData() {
+      const req = {
+        method: 'GET',
+        headers: {
+          'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
+        },
+        user
+      };
+      try {
+        const response = await fetch('api/restDays', req);
+        const result = await response.json();
+        if (result.error) {
+          // this.setState({ timeoutError: true });
+          return;
+        }
+        setRestData(result);
+      } catch (err) {
+        console.error('An error occured!', err);
+        // this.setState({ networkError: true });
+      }
+    }
+    fetchData();
+  }, [user]);
+
   const addCustomRestDay = event => {
     const isoDate = formatISO(customRestDay);
     if (restData.find(restDay => restDay.date.split('T')[0] === isoDate.split('T')[0])) { // TODO: add error handling here for duplicates!
@@ -17,21 +53,48 @@ export default function RestDayForm(props) {
       const newRestDay = {
         date: isoDate.split('T')[0] + 'T00:00:00.000Z',
         isCustom: true,
-        isWeekly: false
+        isWeeklyDay: false
       };
       const newRestData = restData.slice();
       newRestData.push(newRestDay);
+      newRestDays.push(newRestDay);
       setRestData(newRestData);
       setRestDayDuplicateError(false);
     }
   };
-  const submitForm = event => {
+
+  const submitForm = async event => {
     event.preventDefault();
-    console.log('Form Submitted');
+    setFetchingData(true);
+    const body = JSON.stringify({
+      newRestDays
+    });
+    const req = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+        'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
+      },
+      user,
+      body
+    };
+    try {
+      const response = await fetch('api/restDays', req);
+      const result = await response.json();
+      setFetchingData(false);
+      if (result.error) {
+        // this.setState({ timeoutError: true });
+        return;
+      }
+      closeModal();
+    } catch (err) {
+      console.error('An error occured!', err);
+      // this.setState({ networkError: true });
+    }
   };
-  const { closeModal } = props;
   return (
     <form className="flex flex-col gap-4" onSubmit={ event => submitForm(event) }>
+      { fetchingData === true ? <LoadingSpinner /> : ''}
       <div>
         <WeekdaySelector value={weeklyRestDay} onChange={event => setWeeklyRestDay(event.target.value) }/>
       </div>

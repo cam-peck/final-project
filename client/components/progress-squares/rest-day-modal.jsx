@@ -8,7 +8,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 // 3: Add delete functionality (or an issue for it) for rest days that are already added -- add a snackbar for confirmation
 
 export default function RestDayModal(props) {
-  const { closeModal, restData } = props;
+  const { closeModal } = props;
   return (
     <section>
       <div onClick={event => { if (event.target.id === 'background') { closeModal(); } }} id="background" className="w-full overflow-y-scroll h-screen fixed flex justify-center items-center top-0 left-0 bg-gray-800 bg-opacity-30 z-10">
@@ -28,7 +28,7 @@ export default function RestDayModal(props) {
             <div className="font-roboto text-md max-w-lg mb-4">
               <div className="mb-4 flex flex-col gap-4">
                 <div className="w-full flex flex-col gap-4">
-                  <RestDayForm restData={restData} closeModal={closeModal}/>
+                  <RestDayForm closeModal={closeModal}/>
                 </div>
               </div>
             </div>
