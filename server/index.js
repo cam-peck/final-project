@@ -77,6 +77,7 @@ app.post('/api/auth/sign-in', async (req, res, next) => {
 });
 
 app.use(authorizationMiddleware);
+
 // CRUD Runs Routes //
 
 app.post('/api/runs', async (req, res, next) => {
@@ -320,6 +321,26 @@ app.get('/api/progress', async (req, res, next) => {
     const runDates = squaresSqlResult.rows;
     const restDates = restDaysSqlResult.rows;
     res.json({ runDates, restDates });
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post('/api/restDays', async (req, res, next) => {
+  const { userId } = req.user;
+  const { date, isCustom, isWeeklyDay } = req.body;
+  if (!date || !isCustom || !isWeeklyDay) {
+    throw new ClientError(400, 'date, isCustom, and isWeeklyDay are required fields.');
+  }
+  const restDaySql = `
+  INSERT INTO "restDays" ("userId", "date", "isCustom", "isWeeklyDay")
+  VALUES ($1, $2, $3, $4)
+  RETURNING *
+  `;
+  const params = [userId, date, isCustom, isWeeklyDay];
+  try {
+    const restDaySqlResult = await db.query(restDaySql, params);
+    res.json(restDaySqlResult);
   } catch (err) {
     next(err);
   }
