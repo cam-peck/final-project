@@ -8,9 +8,12 @@ export default function RestDayForm(props) {
   const [restData, setRestData] = useState(props.restData);
   const [weeklyRestDay, setWeeklyRestDay] = useState('None');
   const [customRestDay, setCustomRestDay] = useState(undefined);
+  const [restDayDuplicateError, setRestDayDuplicateError] = useState(false);
   const addCustomRestDay = e => {
     const isoDate = formatISO(customRestDay);
-    if (!restData.find(restDay => restDay.date.split('T')[0] === isoDate.split('T')[0])) {
+    if (restData.find(restDay => restDay.date.split('T')[0] === isoDate.split('T')[0])) { // TODO: add error handling here for duplicates!
+      setRestDayDuplicateError(true);
+    } else {
       const newRestDay = {
         date: isoDate.split('T')[0] + 'T00:00:00.000Z',
         isCustom: true,
@@ -19,6 +22,7 @@ export default function RestDayForm(props) {
       const newRestData = restData.slice();
       newRestData.push(newRestDay);
       setRestData(newRestData);
+      setRestDayDuplicateError(false);
     }
   };
   return (
@@ -32,9 +36,10 @@ export default function RestDayForm(props) {
           <CustomRestDays restData={restData}/>
         </div>
         <div className="flex">
-          <DatePicker selected={customRestDay} onChange={date => setCustomRestDay(date)} className="w-full rounded-tl-lg rounded-bl-lg px-3 py-3.5 border border-r-0 border-gray-300 focus:outline-blue-500" dateFormat='MM/dd/yyy' maxDate={addYears(new Date(), 10)} minDate={subYears(new Date(), 100)} placeholderText='Click to add a custom date.' id='rest-date-picker' />
-          <button onClick={event => addCustomRestDay(event.target.value)} className="w-4/12 border border-l-0 border-blue-300 bg-blue-500 text-white text-xl rounded-tr-lg rounded-br-lg" type="button">+</button>
+          <DatePicker selected={customRestDay} onChange={date => setCustomRestDay(date)} className={`w-full rounded-tl-lg rounded-bl-lg px-3 py-3.5 border border-r-0 ${restDayDuplicateError ? 'border-red-500' : 'border-gray-300'} focus:outline-blue-500`} dateFormat='MM/dd/yyy' maxDate={addYears(new Date(), 10)} minDate={subYears(new Date(), 100)} placeholderText='Click to add a custom date.' id='rest-date-picker' />
+          <button onClick={event => addCustomRestDay(event.target.value)} className={`w-4/12 border border-l-0 ${restDayDuplicateError ? 'border-red-500' : 'border-blue-300'} bg-blue-500 text-white text-xl rounded-tr-lg rounded-br-lg`} type="button">+</button>
         </div>
+        { restDayDuplicateError ? <p className='text-red-500 italic font-lora pl-0.5 text-sm'>That date has already been added.</p> : '' }
       </div>
     </section>
   );
