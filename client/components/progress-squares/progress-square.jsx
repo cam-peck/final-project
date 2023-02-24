@@ -13,6 +13,11 @@ export default function ProgressSquare(props) {
     setHoveredIndex(null);
   };
 
+  let squareFillColor;
+  if (square.runStatus === 'run') squareFillColor = '#279E09';
+  else if (square.runStatus === 'rest') squareFillColor = 'blue';
+  else if (square.runStatus === 'norun') squareFillColor = 'lightgray';
+
   return (
     <div onMouseLeave={() => hideLabel()}>
       {square.date.split('T')[0].split('-')[2] === '01' // add month labels on top of chart
@@ -22,7 +27,7 @@ export default function ProgressSquare(props) {
       <div className="relative">
         {/* Square */}
         <svg id={square.date} height="20" width="20">
-          <rect onMouseOver={() => showLabel(index)} width="20" height="20" rx="5" fill={square.runStatus === 'run' ? '#279E09' : 'lightgray'} />
+          <rect onMouseOver={() => showLabel(index)} width="20" height="20" rx="5" fill={squareFillColor} />
         </svg>
         {/* Label */}
         <div onMouseLeave={hideLabel} className={`${index === hoveredIndex ? 'flex' : 'hidden'} w-32 justify-center absolute ${index > 349 ? 'right-4 -top-[8px]' : '-right-14 -top-[36px]'} z-10 bg-black text-white opacity-70 p-2 rounded-lg`}>
