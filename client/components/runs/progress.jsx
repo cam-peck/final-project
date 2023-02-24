@@ -16,6 +16,7 @@ export default class Progress extends React.Component {
       fetchingData: true,
       networkError: false
     };
+    this.toggleNetworkError = this.toggleNetworkError.bind(this);
   }
 
   async componentDidMount() {
@@ -43,6 +44,10 @@ export default class Progress extends React.Component {
     }
   }
 
+  toggleNetworkError() {
+    this.setState({ networkError: !this.state.networkError });
+  }
+
   render() {
     if (this.state.networkError) {
       return <NetworkError />;
@@ -51,12 +56,13 @@ export default class Progress extends React.Component {
       return <LoadingSpinner />;
     }
     const { yearlyRunData, workoutData } = this.state;
+    const { toggleNetworkError } = this;
     const nextWeeksWorkouts = getNextWeeksWorkouts(workoutData);
     return (
       <section className="pl-6 pr-6 max-w-6xl mx-auto mt-6 mb-4">
         <h1 className="font-lora font-medium text-2xl mb-6">My Progress</h1>
         <div className='mb-4'>
-          <ProgressSquares runData={yearlyRunData}/>
+          <ProgressSquares runData={yearlyRunData} toggleNetworkError={toggleNetworkError}/>
         </div>
         <div className="flex flex-col md:flex-row">
           <div className='w-full md:pr-4 md:w-6/12 lg:w-6/12 mb-4'>

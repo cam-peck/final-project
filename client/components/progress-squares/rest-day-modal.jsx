@@ -1,18 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import RestDayForm from '../forms/rest-day-form';
 import 'react-datepicker/dist/react-datepicker.css';
+import LoadingSpinner from '../loading-spinner';
 
 // TODOs
-// 1: Lots of form hooking up on the Rest Days modal for form controls -- where to keep in state?
-// 2: Clean up Custom Rest Days so that spacing is correct and color scheme looks better
+// 1: Add weekly rest day functionality
 // 3: Add delete functionality (or an issue for it) for rest days that are already added -- add a snackbar for confirmation
 
 export default function RestDayModal(props) {
-  const { closeModal } = props;
+  const [fetchingData, setFetchingData] = useState(false);
+  const { closeModal, toggleNetworkError } = props;
   return (
     <section>
       <div onClick={event => { if (event.target.id === 'background') { closeModal(); } }} id="background" className="w-full overflow-y-scroll h-screen fixed flex justify-center items-center top-0 left-0 bg-gray-800 bg-opacity-30 z-10">
         <div className="absolute tall:relative bg-white rounded-xl p-6 max-w-xl min-w-[260px] w-[85%] top-10 tall:top-0 ml-6 mr-6">
+          { fetchingData === true ? <LoadingSpinner /> : ''}
           <button onClick={closeModal} className="absolute -top-4 -right-5 w-10 h-10 rounded-full bg-red-600 text-white"><i className="fa-regular fa-xl fa-circle-xmark" /></button>
           {/* content */}
           <div className="pl-1 mt-2">
@@ -28,7 +30,7 @@ export default function RestDayModal(props) {
             <div className="font-roboto text-md max-w-lg mb-4">
               <div className="mb-4 flex flex-col gap-4">
                 <div className="w-full flex flex-col gap-4">
-                  <RestDayForm closeModal={closeModal}/>
+                  <RestDayForm closeModal={closeModal} setFetchingData={setFetchingData} toggleNetworkError={toggleNetworkError}/>
                 </div>
               </div>
             </div>

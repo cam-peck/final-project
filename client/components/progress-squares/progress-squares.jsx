@@ -45,7 +45,7 @@ export default class ProgressSquares extends React.Component {
   }
 
   render() {
-    const { runData } = this.props;
+    const { runData, toggleNetworkError } = this.props;
     const runningSquareData = formatRunningSquares(runData);
     const runningSquareSumData = getSquaresSumData(runData);
     const { setMouseDown, setMouseUp, drag, ref, toggleRestDayModal } = this;
@@ -54,7 +54,7 @@ export default class ProgressSquares extends React.Component {
     return (
       <div className="bg-white pl-6 pr-6 pt-5 pb-3 rounded-xl border border-gray-300 shadow-sm">
         <ProgressSquareHeader sumData={runningSquareSumData} toggleRestDayModal={toggleRestDayModal}/>
-        {restMenuIsOpen ? <RestDayModal closeModal={toggleRestDayModal}/> : '' }
+        {restMenuIsOpen ? <RestDayModal closeModal={toggleRestDayModal} toggleNetworkError={toggleNetworkError} /> : '' }
         <hr className="border"/>
         <div ref={ref} onMouseDown={event => setMouseDown(event)} onMouseUp={setMouseUp} onMouseMove={event => drag(event)} onMouseLeave={setMouseUp} className="overflow-scroll active:cursor-grabbing active:scale-[1.01]">
           <div className="flex">
