@@ -10,6 +10,7 @@ CREATE TABLE "public"."users" (
 	"email" TEXT NOT NULL UNIQUE,
 	"dateOfBirth" DATE NOT NULL,
 	"password" TEXT NOT NULL,
+  "weeklyRestDay" TEXT NOT NULL default 'None',
 	"createdAt" TIMESTAMPTZ NOT NULL default now(),
 	CONSTRAINT "users_pk" PRIMARY KEY ("userId")
 ) WITH (

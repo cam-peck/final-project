@@ -35,7 +35,7 @@ app.post('/api/auth/sign-up', async (req, res, next) => {
     const hashedPassword = await argon2.hash(password);
     const sql = `
       INSERT INTO "users" ("displayName", "profilePhoto", "email", "dateOfBirth", "password")
-      VALUES ($1, $2, $3, $4, $5)
+      VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING "userId", "displayName", "profilePhoto", "email", "dateOfBirth", "createdAt";
       `;
     const params = [displayName, profilePhoto, email, dateOfBirth, hashedPassword];
@@ -377,6 +377,28 @@ app.get('/api/profile', async (req, res, next) => {
     const result = await db.query(profileSql, params);
     const [profileData] = result.rows;
     res.send(profileData);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.put('/api/profile/weeklyRestDay', async (req, res, next) => {
+  const { userId } = req.user;
+  const { weeklyRestDay } = req.body;
+  if (!weeklyRestDay) {
+    throw new ClientError(400, 'weeklyRestDay is a required field');
+  }
+  const weeklyRestDaySql = `
+     UPDATE "users"
+        SET "weeklyRestDay" = $2
+      WHERE "userId" = $1
+  RETURNING "displayName", "weeklyRestDay";
+  `;
+  const params = [userId, weeklyRestDay];
+  try {
+    const result = await db.query(weeklyRestDaySql, params);
+    const restDayData = result.rows;
+    res.send(restDayData);
   } catch (err) {
     next(err);
   }

@@ -6,6 +6,7 @@ import CustomRestDays from '../progress-squares/custom-rest-days';
 import DatePicker from 'react-datepicker';
 
 export default function RestDayForm(props) {
+
   // State Data //
   const [newRestDays, setNewRestDays] = useState([]);
   const [restData, setRestData] = useState([]);
@@ -19,7 +20,7 @@ export default function RestDayForm(props) {
 
   // Assist Functions //
   useEffect(() => {
-    async function fetchData() {
+    async function fetchRestData() {
       const req = {
         method: 'GET',
         headers: {
@@ -38,7 +39,7 @@ export default function RestDayForm(props) {
       }
     }
     setFetchingData(true);
-    fetchData();
+    fetchRestData();
   }, [user, setFetchingData, toggleNetworkError]);
 
   const addCustomRestDay = event => {
@@ -62,11 +63,33 @@ export default function RestDayForm(props) {
   const submitForm = async event => {
     event.preventDefault();
     setFetchingData(true);
+    if (newRestDays.length !== 0) {
+      const body = JSON.stringify({
+        newRestDays
+      });
+      const req = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
+        },
+        user,
+        body
+      };
+      try {
+        await fetch('api/restDays', req);
+        setFetchingData(false);
+        closeModal();
+      } catch (err) {
+        console.error('An error occured!', err);
+        toggleNetworkError();
+      }
+    }
     const body = JSON.stringify({
-      newRestDays
+      weeklyRestDay
     });
     const req = {
-      method: 'POST',
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json; charset=utf-8',
         'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
@@ -75,7 +98,9 @@ export default function RestDayForm(props) {
       body
     };
     try {
-      await fetch('api/restDays', req);
+      const result = await fetch('api/profile/weeklyRestDay', req);
+      const data = await result.json();
+      console.log('weeklyRestDay result: ', data);
       setFetchingData(false);
       closeModal();
     } catch (err) {
@@ -83,6 +108,7 @@ export default function RestDayForm(props) {
       toggleNetworkError();
     }
   };
+
   return (
     <form className="flex flex-col gap-4" onSubmit={ event => submitForm(event) }>
       <div>
