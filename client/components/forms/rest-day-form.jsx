@@ -121,8 +121,8 @@ export default function RestDayForm(props) {
         <WeekdaySelector value={weeklyRestDay} onChange={event => setWeeklyRestDay(event.target.value) }/>
       </div>
       <div className='flex flex-col gap-2 mb-2'>
-        <div>
-          <p className="font-lora font-medium text-md mb-2">Custom Rest Days</p>
+        <p className="font-lora font-medium text-md mb-2">Custom Rest Days</p>
+        <div className="max-h-40 overflow-y-scroll mb-2">
           <CustomRestDays restData={restData}/>
         </div>
         <div className="flex">
