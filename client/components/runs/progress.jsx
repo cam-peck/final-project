@@ -7,6 +7,7 @@ import NetworkError from '../network-error';
 import WorkoutCard from '../cards/workout-card';
 
 export default function Progress(props) {
+
   const [yearlyRunData, setYearlyRunData] = useState([]);
   const [yearlyRestData, setYearlyRestData] = useState([]);
   const [workoutData, setYearlyWorkoutData] = useState([]);
@@ -38,7 +39,7 @@ export default function Progress(props) {
       }
     }
     fetchData();
-  });
+  }, [user]);
 
   const toggleNetworkError = e => {
     setNetworkError(true);
