@@ -70,8 +70,6 @@ CREATE TABLE "public"."workouts" (
 CREATE TABLE "public"."restDays" (
 	"restId" serial NOT NULL,
 	"date" DATE NOT NULL,
-  "isCustom" BOOLEAN NOT NULL,
-  "isWeeklyDay" BOOLEAN NOT NULL,
 	"userId" integer NOT NULL,
 	CONSTRAINT "restDays_pk" PRIMARY KEY ("restId")
 ) WITH (

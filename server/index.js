@@ -308,19 +308,11 @@ app.get('/api/progress', async (req, res, next) => {
     FROM "runs"
    WHERE "userId" = $1
   `;
-  const restDaysSql = `
-  SELECT "date", "isCustom", "isWeeklyDay"
-  FROM "restDays"
-  WHERE "userId" = $1
-  ORDER BY "date" DESC
-  `;
   const params = [userId];
   try {
     const squaresSqlResult = await db.query(squaresSql, params);
-    const restDaysSqlResult = await db.query(restDaysSql, params);
     const runDates = squaresSqlResult.rows;
-    const restDates = restDaysSqlResult.rows;
-    res.json({ runDates, restDates });
+    res.json({ runDates });
   } catch (err) {
     next(err);
   }
@@ -333,13 +325,13 @@ app.post('/api/restDays', async (req, res, next) => {
     throw new ClientError(400, 'newRestDays is a required field.');
   }
   const restDaySql = `
-  INSERT INTO "restDays" ("userId", "date", "isCustom", "isWeeklyDay")
-  VALUES ($1, $2, $3, $4)
+  INSERT INTO "restDays" ("userId", "date")
+  VALUES ($1, $2)
   RETURNING *
   `;
   for (let i = 0; i < newRestDays.length; i++) {
-    const { date, isCustom, isWeeklyDay } = newRestDays[i];
-    const params = [userId, date, isCustom, isWeeklyDay];
+    const { date } = newRestDays[i];
+    const params = [userId, date];
     try {
       const restDaySqlResult = await db.query(restDaySql, params);
       res.json(restDaySqlResult);
@@ -352,9 +344,10 @@ app.post('/api/restDays', async (req, res, next) => {
 app.get('/api/restDays', async (req, res, next) => {
   const { userId } = req.user;
   const restDaySql = `
-  SELECT "date", "isCustom", "isWeeklyDay"
+  SELECT "date"
   FROM "restDays"
   WHERE "userId" = $1
+  ORDER BY "date" DESC
   `;
   const params = [userId];
   try {

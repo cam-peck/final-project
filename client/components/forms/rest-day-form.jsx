@@ -8,10 +8,10 @@ import DatePicker from 'react-datepicker';
 export default function RestDayForm(props) {
 
   // State Data //
-  const [newRestDays, setNewRestDays] = useState([]);
-  const [restData, setRestData] = useState([]);
-  const [weeklyRestDay, setWeeklyRestDay] = useState('None');
-  const [customRestDay, setCustomRestDay] = useState(undefined);
+  const [newRestDays, setNewRestDays] = useState([]); // tracks newly added days only
+  const [restData, setRestData] = useState([]); // tracks all rest days
+  const [weeklyRestDay, setWeeklyRestDay] = useState('None'); // stores a day of the week
+  const [customRestDay, setCustomRestDay] = useState(undefined); // stores the current data on the date input
   const [restDayDuplicateError, setRestDayDuplicateError] = useState(false);
 
   // Context Data & Props //
@@ -48,15 +48,13 @@ export default function RestDayForm(props) {
       setRestDayDuplicateError(true);
     } else {
       const newRestDay = {
-        date: isoDate.split('T')[0] + 'T00:00:00.000Z',
-        isCustom: true,
-        isWeeklyDay: false
+        date: isoDate.split('T')[0] + 'T00:00:00.000Z'
       };
       const newRestData = restData.slice();
       newRestData.push(newRestDay);
       newRestDays.push(newRestDay);
       setRestData(newRestData);
-      setRestDayDuplicateError(false);
+      if (restDayDuplicateError) setRestDayDuplicateError(false);
     }
   };
 
@@ -98,9 +96,7 @@ export default function RestDayForm(props) {
       body
     };
     try {
-      const result = await fetch('api/profile/weeklyRestDay', req);
-      const data = await result.json();
-      console.log('weeklyRestDay result: ', data);
+      await fetch('api/profile/weeklyRestDay', req);
       setFetchingData(false);
       closeModal();
     } catch (err) {
