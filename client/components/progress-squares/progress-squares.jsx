@@ -13,7 +13,7 @@ export default function ProgressSquares(props) {
 
   const ref = useRef(null);
 
-  const { runData, toggleNetworkError } = props;
+  const { runData, toggleNetworkError, restData, setRestData, weeklyRestDay, setWeeklyRestDay } = props;
   const runningSquareData = formatRunningSquares(runData);
   const runningSquareSumData = getSquaresSumData(runData);
 
@@ -45,7 +45,11 @@ export default function ProgressSquares(props) {
   return (
     <div className="bg-white pl-6 pr-6 pt-5 pb-3 rounded-xl border border-gray-300 shadow-sm">
       <ProgressSquareHeader sumData={runningSquareSumData} toggleRestDayModal={toggleRestDayModal}/>
-      {restMenuIsOpen ? <RestDayModal closeModal={toggleRestDayModal} toggleNetworkError={toggleNetworkError} /> : '' }
+      {
+        restMenuIsOpen === true
+          ? <RestDayModal restData={restData} setRestData={setRestData} weeklyRestDay={weeklyRestDay} setWeeklyRestDay={setWeeklyRestDay} closeModal={toggleRestDayModal} toggleNetworkError={toggleNetworkError} />
+          : ''
+      }
       <hr className="border"/>
       <div ref={ref} onMouseDown={event => setMouseDown(event)} onMouseUp={setMouseUp} onMouseMove={event => drag(event)} onMouseLeave={setMouseUp} className="overflow-scroll active:cursor-grabbing active:scale-[1.01]">
         <div className="flex">

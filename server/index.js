@@ -377,9 +377,9 @@ app.get('/api/profile', async (req, res, next) => {
 
 app.put('/api/profile/weeklyRestDay', async (req, res, next) => {
   const { userId } = req.user;
-  const { weeklyRestDay } = req.body;
-  if (!weeklyRestDay) {
-    throw new ClientError(400, 'weeklyRestDay is a required field');
+  const { tempWeeklyRestDay } = req.body;
+  if (!tempWeeklyRestDay) {
+    throw new ClientError(400, 'tempWeeklyRestDay is a required field');
   }
   const weeklyRestDaySql = `
      UPDATE "users"
@@ -387,7 +387,7 @@ app.put('/api/profile/weeklyRestDay', async (req, res, next) => {
       WHERE "userId" = $1
   RETURNING "displayName", "weeklyRestDay";
   `;
-  const params = [userId, weeklyRestDay];
+  const params = [userId, tempWeeklyRestDay];
   try {
     const result = await db.query(weeklyRestDaySql, params);
     const restDayData = result.rows;

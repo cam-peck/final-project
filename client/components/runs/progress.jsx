@@ -10,6 +10,7 @@ export default function Progress(props) {
 
   const [yearlyRunData, setYearlyRunData] = useState([]);
   const [yearlyRestData, setYearlyRestData] = useState([]);
+  const [weeklyRestDay, setWeeklyRestDay] = useState('None');
   const [workoutData, setYearlyWorkoutData] = useState([]);
   const [fetchingData, setFetchingData] = useState(true);
   const [networkError, setNetworkError] = useState(false);
@@ -41,6 +42,39 @@ export default function Progress(props) {
     fetchData();
   }, [user]);
 
+  useEffect(() => {
+    async function fetchRestData() {
+      const restDataReq = {
+        method: 'GET',
+        headers: {
+          'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
+        },
+        user
+      };
+      const weeklyRestDayReq = {
+        method: 'GET',
+        headers: {
+          'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
+        },
+        user
+      };
+      try {
+        const restDataResponse = await fetch('api/restDays', restDataReq);
+        const restDataResult = await restDataResponse.json();
+        const weeklyRestDayResponse = await fetch('api/profile', weeklyRestDayReq);
+        const weeklyRestDayResult = await weeklyRestDayResponse.json();
+        setYearlyRestData(restDataResult);
+        setWeeklyRestDay(weeklyRestDayResult.weeklyRestDay);
+        setFetchingData(false);
+      } catch (err) {
+        console.error('An error occured!', err);
+        toggleNetworkError();
+      }
+    }
+    setFetchingData(true);
+    fetchRestData();
+  }, [user, setFetchingData]);
+
   const toggleNetworkError = e => {
     setNetworkError(true);
   };
@@ -57,7 +91,14 @@ export default function Progress(props) {
     <section className="pl-6 pr-6 max-w-6xl mx-auto mt-6 mb-4">
       <h1 className="font-lora font-medium text-2xl mb-6">My Progress</h1>
       <div className='mb-4'>
-        <ProgressSquares runData={yearlyRunData} toggleNetworkError={toggleNetworkError}/>
+        <ProgressSquares
+          runData={yearlyRunData}
+          restData={yearlyRestData}
+          setRestData={setYearlyRestData}
+          weeklyRestDay={weeklyRestDay}
+          setWeeklyRestDay={setWeeklyRestDay}
+          toggleNetworkError={toggleNetworkError}
+        />
       </div>
       <div className="flex flex-col md:flex-row">
         <div className='w-full md:pr-4 md:w-6/12 lg:w-6/12 mb-4'>
