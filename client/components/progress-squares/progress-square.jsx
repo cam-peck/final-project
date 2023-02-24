@@ -15,7 +15,7 @@ export default function ProgressSquare(props) {
 
   let squareFillColor;
   if (square.runStatus === 'run') squareFillColor = '#279E09';
-  else if (square.runStatus === 'rest') squareFillColor = 'blue';
+  else if (square.runStatus === 'rest') squareFillColor = '#1976D2';
   else if (square.runStatus === 'norun') squareFillColor = 'lightgray';
 
   return (
