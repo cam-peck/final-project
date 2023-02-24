@@ -361,7 +361,7 @@ app.get('/api/restDays', async (req, res, next) => {
 app.get('/api/profile', async (req, res, next) => {
   const { userId } = req.user;
   const profileSql = `
-  SELECT "displayName", "email", "dateOfBirth"
+  SELECT "displayName", "email", "dateOfBirth", "weeklyRestDay"
     FROM "users"
    WHERE "userId" = $1;
   `;

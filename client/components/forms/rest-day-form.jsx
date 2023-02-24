@@ -21,7 +21,14 @@ export default function RestDayForm(props) {
   // Assist Functions //
   useEffect(() => {
     async function fetchRestData() {
-      const req = {
+      const restDataReq = {
+        method: 'GET',
+        headers: {
+          'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
+        },
+        user
+      };
+      const weeklyRestDayReq = {
         method: 'GET',
         headers: {
           'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
@@ -29,9 +36,12 @@ export default function RestDayForm(props) {
         user
       };
       try {
-        const response = await fetch('api/restDays', req);
-        const result = await response.json();
-        setRestData(result);
+        const restDataResponse = await fetch('api/restDays', restDataReq);
+        const restDataResult = await restDataResponse.json();
+        const weeklyRestDayResponse = await fetch('api/profile', weeklyRestDayReq);
+        const weeklyRestDayResult = await weeklyRestDayResponse.json();
+        setRestData(restDataResult);
+        setWeeklyRestDay(weeklyRestDayResult.weeklyRestDay);
         setFetchingData(false);
       } catch (err) {
         console.error('An error occured!', err);
@@ -51,9 +61,10 @@ export default function RestDayForm(props) {
         date: isoDate.split('T')[0] + 'T00:00:00.000Z'
       };
       const newRestData = restData.slice();
-      newRestData.push(newRestDay);
+      newRestData.unshift(newRestDay);
       newRestDays.push(newRestDay);
       setRestData(newRestData);
+      setNewRestDays(newRestDays);
       if (restDayDuplicateError) setRestDayDuplicateError(false);
     }
   };
@@ -77,7 +88,6 @@ export default function RestDayForm(props) {
       try {
         await fetch('api/restDays', req);
         setFetchingData(false);
-        closeModal();
       } catch (err) {
         console.error('An error occured!', err);
         toggleNetworkError();
@@ -98,11 +108,11 @@ export default function RestDayForm(props) {
     try {
       await fetch('api/profile/weeklyRestDay', req);
       setFetchingData(false);
-      closeModal();
     } catch (err) {
       console.error('An error occured!', err);
       toggleNetworkError();
     }
+    closeModal();
   };
 
   return (
