@@ -9,7 +9,8 @@ import LoadingSpinner from '../loading-spinner';
 
 export default function RestDayModal(props) {
   const [fetchingData, setFetchingData] = useState(false);
-  const { closeModal, toggleNetworkError } = props;
+  const { closeModal, toggleNetworkError, restData, setRestData, weeklyRestDay, setWeeklyRestDay } = props;
+
   return (
     <section>
       <div onClick={event => { if (event.target.id === 'background') { closeModal(); } }} id="background" className="w-full overflow-y-scroll h-screen fixed flex justify-center items-center top-0 left-0 bg-gray-800 bg-opacity-30 z-10">
@@ -30,7 +31,7 @@ export default function RestDayModal(props) {
             <div className="font-roboto text-md max-w-lg mb-4">
               <div className="mb-4 flex flex-col gap-4">
                 <div className="w-full flex flex-col gap-4">
-                  <RestDayForm closeModal={closeModal} setFetchingData={setFetchingData} toggleNetworkError={toggleNetworkError}/>
+                  <RestDayForm closeModal={closeModal} restData={restData} setRestData={setRestData} weeklyRestDay={weeklyRestDay} setWeeklyRestDay={setWeeklyRestDay} setFetchingData={setFetchingData} toggleNetworkError={toggleNetworkError}/>
                 </div>
               </div>
             </div>

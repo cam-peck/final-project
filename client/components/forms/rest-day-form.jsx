@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { AppContext } from '../../lib';
 import { addYears, subYears, formatISO } from 'date-fns';
 import WeekdaySelector from '../inputs/weekday-selector';
@@ -7,64 +7,36 @@ import DatePicker from 'react-datepicker';
 
 export default function RestDayForm(props) {
 
+  const { closeModal, setFetchingData, toggleNetworkError, restData, setRestData, weeklyRestDay, setWeeklyRestDay } = props;
+
   // State Data //
-  const [newRestDays, setNewRestDays] = useState([]); // tracks newly added days only
-  const [restData, setRestData] = useState([]); // tracks all rest days
-  const [weeklyRestDay, setWeeklyRestDay] = useState('None'); // stores a day of the week
+  const [tempRestData, setTempRestData] = useState(restData); // tracks newly added days only
+  const [tempWeeklyRestDay, setTempWeeklyRestDay] = useState(weeklyRestDay);
+  const [newRestDays, setNewRestDays] = useState([]); // tracks newly added days
   const [customRestDay, setCustomRestDay] = useState(undefined); // stores the current data on the date input
   const [restDayDuplicateError, setRestDayDuplicateError] = useState(false);
 
   // Context Data & Props //
   const { user } = useContext(AppContext);
-  const { closeModal, setFetchingData, toggleNetworkError } = props;
 
   // Assist Functions //
-  useEffect(() => {
-    async function fetchRestData() {
-      const restDataReq = {
-        method: 'GET',
-        headers: {
-          'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
-        },
-        user
-      };
-      const weeklyRestDayReq = {
-        method: 'GET',
-        headers: {
-          'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
-        },
-        user
-      };
-      try {
-        const restDataResponse = await fetch('api/restDays', restDataReq);
-        const restDataResult = await restDataResponse.json();
-        const weeklyRestDayResponse = await fetch('api/profile', weeklyRestDayReq);
-        const weeklyRestDayResult = await weeklyRestDayResponse.json();
-        setRestData(restDataResult);
-        setWeeklyRestDay(weeklyRestDayResult.weeklyRestDay);
-        setFetchingData(false);
-      } catch (err) {
-        console.error('An error occured!', err);
-        toggleNetworkError();
-      }
-    }
-    setFetchingData(true);
-    fetchRestData();
-  }, [user, setFetchingData, toggleNetworkError]);
-
   const addCustomRestDay = event => {
     const isoDate = formatISO(customRestDay);
-    if (restData.find(restDay => restDay.date.split('T')[0] === isoDate.split('T')[0])) { // TODO: add error handling here for duplicates!
+    if (tempRestData.find(restDay => restDay.date.split('T')[0] === isoDate.split('T')[0])) { // TODO: add error handling here for duplicates!
       setRestDayDuplicateError(true);
     } else {
       const newRestDay = {
         date: isoDate.split('T')[0] + 'T00:00:00.000Z'
       };
-      const newRestData = restData.slice();
-      newRestData.unshift(newRestDay);
-      newRestDays.push(newRestDay);
-      setRestData(newRestData);
-      setNewRestDays(newRestDays);
+      // Add the new rest day to temp data //
+      const newTempRestData = tempRestData.slice();
+      newTempRestData.unshift(newRestDay);
+      setTempRestData(newTempRestData);
+      // Add the new rest day to new rest days for submit later //
+      const newTempNewRestDays = newRestDays.slice();
+      newTempNewRestDays.push(newRestDay);
+      setNewRestDays(newTempNewRestDays);
+      // Cleanup duplicates error if it existed previously
       if (restDayDuplicateError) setRestDayDuplicateError(false);
     }
   };
@@ -87,6 +59,7 @@ export default function RestDayForm(props) {
       };
       try {
         await fetch('api/restDays', req);
+        setRestData(tempRestData); // update parent progress component with new data
         setFetchingData(false);
       } catch (err) {
         console.error('An error occured!', err);
@@ -94,7 +67,7 @@ export default function RestDayForm(props) {
       }
     }
     const body = JSON.stringify({
-      weeklyRestDay
+      tempWeeklyRestDay
     });
     const req = {
       method: 'PUT',
@@ -107,6 +80,7 @@ export default function RestDayForm(props) {
     };
     try {
       await fetch('api/profile/weeklyRestDay', req);
+      setWeeklyRestDay(tempWeeklyRestDay); // update parent progress component with new data
       setFetchingData(false);
     } catch (err) {
       console.error('An error occured!', err);
@@ -118,12 +92,12 @@ export default function RestDayForm(props) {
   return (
     <form className="flex flex-col gap-4" onSubmit={ event => submitForm(event) }>
       <div>
-        <WeekdaySelector value={weeklyRestDay} onChange={event => setWeeklyRestDay(event.target.value) }/>
+        <WeekdaySelector value={tempWeeklyRestDay} onChange={event => setTempWeeklyRestDay(event.target.value) }/>
       </div>
       <div className='flex flex-col gap-2 mb-2'>
         <p className="font-lora font-medium text-md mb-2">Custom Rest Days</p>
         <div className="max-h-40 overflow-y-scroll mb-2">
-          <CustomRestDays restData={restData}/>
+          <CustomRestDays restData={tempRestData}/>
         </div>
         <div className="flex">
           <DatePicker selected={customRestDay} onChange={date => setCustomRestDay(date)} className={`w-full rounded-tl-lg rounded-bl-lg px-3 py-3.5 border border-r-0 ${restDayDuplicateError ? 'border-red-500' : 'border-gray-300'} focus:outline-blue-500`} dateFormat='MM/dd/yyy' maxDate={addYears(new Date(), 10)} minDate={subYears(new Date(), 100)} placeholderText='Click to add a custom date.' id='rest-date-picker' autoComplete="false"/>
