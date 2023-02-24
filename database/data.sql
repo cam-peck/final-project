@@ -222,3 +222,27 @@ values (1, '12-23-2022', 'Mile repeats to get ready for raceday & strides after.
 
 insert into "workouts" ("userId", "date", "description", "warmupDistance", "warmupDistanceUnits", "warmupNotes", "workoutDistance", "workoutDistanceUnits", "workoutNotes", "cooldownDistance", "cooldownDistanceUnits", "cooldownNotes")
 values (1, '12-22-2022', 'Weekly long run', 0, 'miles', '', 8.34, 'miles', '7:30 / mile STEADY', 0, 'miles', '');
+
+insert into "restDays" ("userId", "date")
+values (1, '12-22-2022');
+
+insert into "restDays" ("userId", "date")
+values (1, '12-23-2022');
+
+insert into "restDays" ("userId", "date")
+values (1, '12-24-2022');
+
+insert into "restDays" ("userId", "date")
+values (1, '1-18-2023');
+
+insert into "restDays" ("userId", "date")
+values (1, '12-19-2022');
+
+insert into "restDays" ("userId", "date")
+values (1, '12-18-2022');
+
+insert into "restDays" ("userId", "date")
+values (1, '12-17-2022');
+
+insert into "restDays" ("userId", "date")
+values (1, '1-15-2023');

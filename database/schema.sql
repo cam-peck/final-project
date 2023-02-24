@@ -1,7 +1,5 @@
 set client_min_messages to warning;
 
--- DANGER: this is NOT how to do it in the real world.
--- `drop schema` INSTANTLY ERASES EVERYTHING.
 drop schema "public" cascade;
 create schema "public";
 
@@ -12,6 +10,7 @@ CREATE TABLE "public"."users" (
 	"email" TEXT NOT NULL UNIQUE,
 	"dateOfBirth" DATE NOT NULL,
 	"password" TEXT NOT NULL,
+  "weeklyRestDay" TEXT NOT NULL default 'None',
 	"createdAt" TIMESTAMPTZ NOT NULL default now(),
 	CONSTRAINT "users_pk" PRIMARY KEY ("userId")
 ) WITH (
@@ -68,7 +67,17 @@ CREATE TABLE "public"."workouts" (
   OIDS=FALSE
 );
 
+CREATE TABLE "public"."restDays" (
+	"restId" serial NOT NULL,
+	"date" DATE NOT NULL,
+	"userId" integer NOT NULL,
+	CONSTRAINT "restDays_pk" PRIMARY KEY ("restId")
+) WITH (
+  OIDS=FALSE
+);
+
 ALTER TABLE "runs" ADD CONSTRAINT "runs_fk0" FOREIGN KEY ("userId") REFERENCES "users"("userId");
 ALTER TABLE "gpxData" ADD CONSTRAINT "gpxData_fk0" FOREIGN KEY ("userId") REFERENCES "users"("userId");
 ALTER TABLE "gpxData" ADD CONSTRAINT "gpxData_fk1" FOREIGN KEY ("entryId") REFERENCES "runs"("entryId");
 ALTER TABLE "workouts" ADD CONSTRAINT "workouts_fk0" FOREIGN KEY ("userId") REFERENCES "users"("userId");
+ALTER TABLE "restDays" ADD CONSTRAINT "restDays_pk" FOREIGN KEY ("userId") REFERENCES "users"("userId");

@@ -35,7 +35,7 @@ app.post('/api/auth/sign-up', async (req, res, next) => {
     const hashedPassword = await argon2.hash(password);
     const sql = `
       INSERT INTO "users" ("displayName", "profilePhoto", "email", "dateOfBirth", "password")
-      VALUES ($1, $2, $3, $4, $5)
+      VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING "userId", "displayName", "profilePhoto", "email", "dateOfBirth", "createdAt";
       `;
     const params = [displayName, profilePhoto, email, dateOfBirth, hashedPassword];
@@ -77,6 +77,7 @@ app.post('/api/auth/sign-in', async (req, res, next) => {
 });
 
 app.use(authorizationMiddleware);
+
 // CRUD Runs Routes //
 
 app.post('/api/runs', async (req, res, next) => {
@@ -309,9 +310,49 @@ app.get('/api/progress', async (req, res, next) => {
   `;
   const params = [userId];
   try {
-    const result = await db.query(squaresSql, params);
-    const runDates = result.rows;
-    res.json(runDates);
+    const squaresSqlResult = await db.query(squaresSql, params);
+    const runDates = squaresSqlResult.rows;
+    res.json({ runDates });
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post('/api/restDays', async (req, res, next) => {
+  const { userId } = req.user;
+  const { newRestDays } = req.body;
+  if (!newRestDays) {
+    throw new ClientError(400, 'newRestDays is a required field.');
+  }
+  const restDaySql = `
+  INSERT INTO "restDays" ("userId", "date")
+  VALUES ($1, $2)
+  RETURNING *
+  `;
+  for (let i = 0; i < newRestDays.length; i++) {
+    const { date } = newRestDays[i];
+    const params = [userId, date];
+    try {
+      const restDaySqlResult = await db.query(restDaySql, params);
+      res.json(restDaySqlResult);
+    } catch (err) {
+      next(err);
+    }
+  }
+});
+
+app.get('/api/restDays', async (req, res, next) => {
+  const { userId } = req.user;
+  const restDaySql = `
+  SELECT "date"
+  FROM "restDays"
+  WHERE "userId" = $1
+  ORDER BY "date" DESC
+  `;
+  const params = [userId];
+  try {
+    const restDaySqlResult = await db.query(restDaySql, params);
+    res.json(restDaySqlResult.rows);
   } catch (err) {
     next(err);
   }
@@ -320,7 +361,7 @@ app.get('/api/progress', async (req, res, next) => {
 app.get('/api/profile', async (req, res, next) => {
   const { userId } = req.user;
   const profileSql = `
-  SELECT "displayName", "email", "dateOfBirth"
+  SELECT "displayName", "email", "dateOfBirth", "weeklyRestDay"
     FROM "users"
    WHERE "userId" = $1;
   `;
@@ -329,6 +370,28 @@ app.get('/api/profile', async (req, res, next) => {
     const result = await db.query(profileSql, params);
     const [profileData] = result.rows;
     res.send(profileData);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.put('/api/profile/weeklyRestDay', async (req, res, next) => {
+  const { userId } = req.user;
+  const { weeklyRestDay } = req.body;
+  if (!weeklyRestDay) {
+    throw new ClientError(400, 'weeklyRestDay is a required field');
+  }
+  const weeklyRestDaySql = `
+     UPDATE "users"
+        SET "weeklyRestDay" = $2
+      WHERE "userId" = $1
+  RETURNING "displayName", "weeklyRestDay";
+  `;
+  const params = [userId, weeklyRestDay];
+  try {
+    const result = await db.query(weeklyRestDaySql, params);
+    const restDayData = result.rows;
+    res.send(restDayData);
   } catch (err) {
     next(err);
   }
