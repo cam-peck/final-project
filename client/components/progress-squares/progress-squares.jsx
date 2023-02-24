@@ -14,7 +14,7 @@ export default function ProgressSquares(props) {
   const ref = useRef(null);
 
   const { runData, toggleNetworkError, restData, setRestData, weeklyRestDay, setWeeklyRestDay } = props;
-  const runningSquareData = formatRunningSquares(runData);
+  const runningSquareData = formatRunningSquares(runData, restData);
   const runningSquareSumData = getSquaresSumData(runData);
 
   useEffect(() => {
