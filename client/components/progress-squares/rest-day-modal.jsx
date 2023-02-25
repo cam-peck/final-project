@@ -4,8 +4,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import LoadingSpinner from '../loading-spinner';
 
 // TODOs
-// 1: Ensure state between rest days modal and progres is linked --> need one source for the data for viewing
-// 3: Add delete functionality (or an issue for it) for rest days that are already added -- add a snackbar for confirmation
+// 1: Add delete functionality (or an issue for it) for rest days that are already added -- add a snackbar for confirmation
 
 export default function RestDayModal(props) {
   const [fetchingData, setFetchingData] = useState(false);
