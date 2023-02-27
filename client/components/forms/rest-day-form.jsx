@@ -161,7 +161,11 @@ export default function RestDayForm(props) {
       <div className='flex flex-col gap-2 mb-2'>
         <p className="font-lora font-medium text-md mb-2">Custom Rest Days</p>
         <div className="max-h-40 overflow-y-scroll mb-2">
-          <CustomRestDays restData={tempRestData} deleteRestDay={deleteRestDay}/>
+          { tempRestData.length !== 0
+            ? <CustomRestDays restData={tempRestData} deleteRestDay={deleteRestDay} />
+            : <p className="text-center italic pt-8 pb-8">No custom rest days found...</p>
+          }
+
         </div>
         <div className="flex">
           <DatePicker selected={customRestDay} onChange={date => setCustomRestDay(date)} className={`w-full rounded-tl-lg rounded-bl-lg px-3 py-3.5 border border-r-0 ${restDayDuplicateError ? 'border-red-500' : 'border-gray-300'} focus:outline-blue-500`} dateFormat='MM/dd/yyy' maxDate={addYears(new Date(), 10)} minDate={subYears(new Date(), 100)} placeholderText='Click to add a custom date.' id='rest-date-picker' autoComplete="false"/>
