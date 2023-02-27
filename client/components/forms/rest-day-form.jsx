@@ -27,6 +27,7 @@ export default function RestDayForm(props) {
     if (tempRestData.find(restDay => restDay.date.split('T')[0] === isoDate.split('T')[0])) {
       setRestDayDuplicateError(true);
     } else {
+      let newRestDay;
       // Check if day was deleted and then readded AND was already in DB
       const readdedSavedDay = restData.filter(savedDay => savedDay.date.split('T')[0] === isoDate.split('T')[0]);
       if (readdedSavedDay.length !== 0) {
@@ -35,11 +36,12 @@ export default function RestDayForm(props) {
         const newTempDeletedDays = tempDeletedDays.slice();
         newTempDeletedDays.splice(indexToDelete, 1);
         setTempDeletedDays(newTempDeletedDays);
+        newRestDay = readdedSavedDay[0];
+      } else {
+        newRestDay = {
+          date: isoDate.split('T')[0] + 'T00:00:00.000Z'
+        };
       }
-      // Add the new rest day to the tempRestData Array //
-      const newRestDay = {
-        date: isoDate.split('T')[0] + 'T00:00:00.000Z'
-      };
       const newTempRestData = tempRestData.slice();
       newTempRestData.unshift(newRestDay);
       setTempRestData(newTempRestData);
@@ -78,7 +80,26 @@ export default function RestDayForm(props) {
     event.preventDefault();
     setFetchingData(true);
     if (tempDeletedDays.length !== 0) {
-      console.log('deleting days: ', tempDeletedDays);
+      const body = JSON.stringify({
+        tempDeletedDays
+      });
+      const req = {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
+        },
+        user,
+        body
+      };
+      try {
+        await fetch('api/restDays', req);
+        setRestData(tempRestData); // update parent progress component with new data
+        setFetchingData(false);
+      } catch (err) {
+        console.error('An error occured!', err);
+        toggleNetworkError();
+      }
     }
     if (newRestDays.length !== 0) {
       const body = JSON.stringify({

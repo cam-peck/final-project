@@ -8,9 +8,9 @@ export default function CustomRestDays(props) {
     <div className="grid grid-cols-1 x2s:grid-cols-2 sm:grid-cols-3 gap-3 mb-2">
       {
         restData.map((restDay, index) => {
-          const { date } = restDay;
+          const { date, restId } = restDay;
           return (
-            <div className="flex justify-between items-center border-2 border-blue-900 px-2.5 pr-1 py-1.5 rounded-lg" key={index}>
+            <div className="flex justify-between items-center border-2 border-blue-900 px-2.5 pr-1 py-1.5 rounded-lg" key={index} id={restId}>
               {/* Date */}
               <div className="pr-2.5">
                 {format(new Date(removeTz(date)), 'MM/dd/yyyy')}

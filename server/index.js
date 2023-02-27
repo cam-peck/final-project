@@ -348,7 +348,7 @@ app.post('/api/restDays', async (req, res, next) => {
 app.get('/api/restDays', async (req, res, next) => {
   const { userId } = req.user;
   const restDaySql = `
-  SELECT "date"
+  SELECT "date", "restId"
   FROM "restDays"
   WHERE "userId" = $1
   ORDER BY "date" DESC
@@ -364,10 +364,10 @@ app.get('/api/restDays', async (req, res, next) => {
 
 app.delete('/api/restDays', async (req, res, next) => {
   const { userId } = req.user;
-  const { restId } = req.body;
+  const { tempDeletedDays } = req.body;
   try {
-    if (!restId) {
-      throw new ClientError(400, 'restId is a required field.');
+    if (!tempDeletedDays) {
+      throw new ClientError(400, 'tempDeletedDays is a required field.');
     }
     const restDaySql = `
    DELETE
@@ -375,9 +375,13 @@ app.delete('/api/restDays', async (req, res, next) => {
     WHERE "userId" = $1 AND "restId" = $2
 RETURNING *;
   `;
-    const params = [userId, restId];
-    const restDaySqlResult = await db.query(restDaySql, params);
-    res.json(restDaySqlResult.rows);
+    const deletedDays = [];
+    for (let i = 0; i < tempDeletedDays.length; i++) {
+      const params = [userId, tempDeletedDays[i].restId];
+      const restDaySqlResult = await db.query(restDaySql, params);
+      deletedDays.push(restDaySqlResult);
+    }
+    res.json(deletedDays.rows);
   } catch (err) {
     next(err);
   }
