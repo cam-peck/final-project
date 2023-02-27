@@ -28,10 +28,10 @@ app.use(express.json({ limit: '10mb' }));
 
 app.post('/api/auth/sign-up', async (req, res, next) => {
   const { displayName, profilePhoto, email, dateOfBirth, password } = req.body;
-  if (!displayName || !profilePhoto || !email || !dateOfBirth || !password) {
-    throw new ClientError(400, 'displayName, profilePhoto, email, dateOfBirth, and password are required fields.');
-  }
   try {
+    if (!displayName || !profilePhoto || !email || !dateOfBirth || !password) {
+      throw new ClientError(400, 'displayName, profilePhoto, email, dateOfBirth, and password are required fields.');
+    }
     const hashedPassword = await argon2.hash(password);
     const sql = `
       INSERT INTO "users" ("displayName", "profilePhoto", "email", "dateOfBirth", "password")
@@ -49,17 +49,17 @@ app.post('/api/auth/sign-up', async (req, res, next) => {
 
 app.post('/api/auth/sign-in', async (req, res, next) => {
   const { email, password } = req.body;
-  if (!email || !password) {
-    throw new ClientError(401, 'invalid login');
-  }
-  const sql = `
-  SELECT "userId",
-         "password"
-    FROM "users"
-   WHERE "email" = $1;
-  `;
-  const params = [email];
   try {
+    if (!email || !password) {
+      throw new ClientError(401, 'invalid login');
+    }
+    const sql = `
+    SELECT "userId",
+           "password"
+      FROM "users"
+     WHERE "email" = $1;
+    `;
+    const params = [email];
     // Query the db for the password and user //
     const result = await db.query(sql, params);
     const [user] = result.rows;
@@ -83,22 +83,22 @@ app.use(authorizationMiddleware);
 app.post('/api/runs', async (req, res, next) => {
   const { userId } = req.user;
   const { title, description, date, durationHours, durationMinutes, durationSeconds, distance, distanceUnits, hasGpx } = req.body;
-  if (!title || !description || !date || !durationHours || !durationMinutes || !durationSeconds || !distance || !distanceUnits) {
-    throw new ClientError(400, 'title, description, date, durationHours, durationMinutes, durationSeconds, distance, and distanceUnits are required fields.');
-  }
-  const duration = `${durationHours}:${durationMinutes}:${durationSeconds}`;
-  const insertRunSql = `
+  try {
+    if (!title || !description || !date || !durationHours || !durationMinutes || !durationSeconds || !distance || !distanceUnits) {
+      throw new ClientError(400, 'title, description, date, durationHours, durationMinutes, durationSeconds, distance, and distanceUnits are required fields.');
+    }
+    const duration = `${durationHours}:${durationMinutes}:${durationSeconds}`;
+    const insertRunSql = `
   INSERT INTO "runs" ("userId", "title", "description", "date", "duration", "distance", "distanceUnits", "hasGpx")
   VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
   RETURNING *;
   `;
-  const insertGpxSql = `
+    const insertGpxSql = `
   INSERT INTO "gpxData" ("userId", "entryId", "latitude", "longitude", "elevation", "time")
        VALUES ($1, $2, $3, $4, $5, $6)
     RETURNING *;
   `;
-  const insertRunParams = [userId, title, description, date, duration, distance, distanceUnits, hasGpx];
-  try {
+    const insertRunParams = [userId, title, description, date, duration, distance, distanceUnits, hasGpx];
     const result = await db.query(insertRunSql, insertRunParams);
     const [newRun] = result.rows;
     if (hasGpx === true) {
@@ -167,57 +167,62 @@ ORDER BY "time";
 app.get('/api/runs/:entryId', async (req, res, next) => {
   const { userId } = req.user;
   const { entryId } = req.params;
-  if (!entryId) {
-    throw new ClientError(400, 'entryId is a required paramter as /api/runs/<parameter-id-here>');
-  }
-  const getRunSql = `
+  try {
+    if (!entryId) {
+      throw new ClientError(400, 'entryId is a required paramter as /api/runs/<parameter-id-here>');
+    }
+    const getRunSql = `
   SELECT "title", "description", "date", "duration", "distance", "distanceUnits", "hasGpx"
     FROM "runs"
    WHERE "userId" = $1 AND "entryId" = $2;
   `;
-  const getGpxSql = `
+    const getGpxSql = `
   SELECT "latitude", "longitude", "elevation", "time"
     FROM "gpxData"
    WHERE "userId" = $1 AND "entryId" = $2
 ORDER BY "time";
   `;
-  const params = [userId, entryId];
-  // Grab run-data first //
-  const runResult = await db.query(getRunSql, params);
-  const [runData] = runResult.rows;
-  if (!runData) {
-    res.status(404).json(`Error: Your id: ${entryId}, does not exist.`);
-    return;
-  }
-  // Grab gpx-data if it exists next //
-  const gpxData = [];
-  if (runData.hasGpx) {
-    const gpxResult = await db.query(getGpxSql, params);
-    const stringGpxData = gpxResult.rows;
-    for (let i = 0; i < stringGpxData.length; i++) {
-      const currentPoint = {};
-      currentPoint.lat = parseFloat(stringGpxData[i].latitude);
-      currentPoint.lng = parseFloat(stringGpxData[i].longitude);
-      currentPoint.elevation = stringGpxData[i].elevation;
-      currentPoint.time = stringGpxData[i].time;
-      gpxData.push(currentPoint);
+    const params = [userId, entryId];
+    // Grab run-data first //
+    const runResult = await db.query(getRunSql, params);
+    const [runData] = runResult.rows;
+    if (!runData) {
+      res.status(404).json(`Error: Your id: ${entryId}, does not exist.`);
+      return;
     }
+    // Grab gpx-data if it exists next //
+    const gpxData = [];
+    if (runData.hasGpx) {
+      const gpxResult = await db.query(getGpxSql, params);
+      const stringGpxData = gpxResult.rows;
+      for (let i = 0; i < stringGpxData.length; i++) {
+        const currentPoint = {};
+        currentPoint.lat = parseFloat(stringGpxData[i].latitude);
+        currentPoint.lng = parseFloat(stringGpxData[i].longitude);
+        currentPoint.elevation = stringGpxData[i].elevation;
+        currentPoint.time = stringGpxData[i].time;
+        gpxData.push(currentPoint);
+      }
+    }
+    res.json({ runData, gpxData });
+  } catch (err) {
+    next(err);
   }
-  res.json({ runData, gpxData });
 });
 
 app.put('/api/runs/:entryId', async (req, res, next) => {
   const { userId } = req.user;
   const { entryId } = req.params;
   const { title, description, date, durationHours, durationMinutes, durationSeconds, distance, distanceUnits, hasGpx } = req.body;
-  if (!title || !description || !date || !durationHours || !durationMinutes || !durationSeconds || !distance || !distanceUnits) {
-    throw new ClientError(400, 'title, description, date, durationHours, durationMinutes, durationSeconds, distance, and distanceUnits are required fields.');
-  }
-  if (!entryId) {
-    throw new ClientError(400, 'entryId is a required paramter as /api/runs/<parameter-id-here>');
-  }
-  const duration = `${durationHours}:${durationMinutes}:${durationSeconds}`;
-  const updateRunSql = `
+  try {
+    if (!title || !description || !date || !durationHours || !durationMinutes || !durationSeconds || !distance || !distanceUnits) {
+      throw new ClientError(400, 'title, description, date, durationHours, durationMinutes, durationSeconds, distance, and distanceUnits are required fields.');
+    }
+    if (!entryId) {
+      throw new ClientError(400, 'entryId is a required paramter as /api/runs/<parameter-id-here>');
+    }
+    const duration = `${durationHours}:${durationMinutes}:${durationSeconds}`;
+    const updateRunSql = `
   UPDATE "runs"
      SET "title"         = $1,
          "description"   = $2,
@@ -229,20 +234,18 @@ app.put('/api/runs/:entryId', async (req, res, next) => {
    WHERE "entryId" = $8 AND "userId" = $9
    RETURNING *;
   `;
-  const insertNewGpxSql = `
+    const insertNewGpxSql = `
   INSERT INTO "gpxData" ("userId", "entryId", "latitude", "longitude", "elevation", "time")
        VALUES ($1, $2, $3, $4, $5, $6)
     RETURNING *;
   `;
-  const deleteGpxSql = `
+    const deleteGpxSql = `
   DELETE
     FROM "gpxData"
    WHERE "userId" = $1 AND "entryId" IN ($2);
   `;
-  const updateRunParams = [title, description, date, duration, distance, distanceUnits, hasGpx, entryId, userId];
-  const deleteGpxParams = [userId, entryId];
-
-  try {
+    const updateRunParams = [title, description, date, duration, distance, distanceUnits, hasGpx, entryId, userId];
+    const deleteGpxParams = [userId, entryId];
     const result = await db.query(updateRunSql, updateRunParams);
     const [editedRun] = result.rows;
     if (!editedRun) {
@@ -269,22 +272,22 @@ app.put('/api/runs/:entryId', async (req, res, next) => {
 app.delete('/api/runs/:entryId', async (req, res, next) => {
   const { userId } = req.user;
   const { entryId } = req.params;
-  if (!entryId) {
-    throw new ClientError(400, 'entryId is a required paramter as /api/runs/<parameter-id-here>');
-  }
-  const deleteGpxSql = `
+  try {
+    if (!entryId) {
+      throw new ClientError(400, 'entryId is a required paramter as /api/runs/<parameter-id-here>');
+    }
+    const deleteGpxSql = `
    DELETE
      FROM "gpxData"
     WHERE "userId" = $1 AND "entryId" IN ($2);
   `;
-  const deleteRunSql = `
+    const deleteRunSql = `
    DELETE
      FROM "runs"
     WHERE "userId" = $1 AND "entryId" = $2
 RETURNING *;
   `;
-  const params = [userId, entryId];
-  try {
+    const params = [userId, entryId];
     await db.query(deleteGpxSql, params);
     const result = await db.query(deleteRunSql, params);
     const [deletedRow] = result.rows;
@@ -321,30 +324,31 @@ app.get('/api/progress', async (req, res, next) => {
 app.post('/api/restDays', async (req, res, next) => {
   const { userId } = req.user;
   const { newRestDays } = req.body;
-  if (!newRestDays) {
-    throw new ClientError(400, 'newRestDays is a required field.');
-  }
-  const restDaySql = `
+  try {
+    if (!newRestDays) {
+      throw new ClientError(400, 'newRestDays is a required field.');
+    }
+    const restDaySql = `
   INSERT INTO "restDays" ("userId", "date")
   VALUES ($1, $2)
   RETURNING *
   `;
-  for (let i = 0; i < newRestDays.length; i++) {
-    const { date } = newRestDays[i];
-    const params = [userId, date];
-    try {
+    for (let i = 0; i < newRestDays.length; i++) {
+      const { date } = newRestDays[i];
+      const params = [userId, date];
       const restDaySqlResult = await db.query(restDaySql, params);
       res.json(restDaySqlResult);
-    } catch (err) {
-      next(err);
     }
+  } catch (err) {
+    next(err);
   }
-});
+}
+);
 
 app.get('/api/restDays', async (req, res, next) => {
   const { userId } = req.user;
   const restDaySql = `
-  SELECT "date"
+  SELECT "date", "restId"
   FROM "restDays"
   WHERE "userId" = $1
   ORDER BY "date" DESC
@@ -353,6 +357,31 @@ app.get('/api/restDays', async (req, res, next) => {
   try {
     const restDaySqlResult = await db.query(restDaySql, params);
     res.json(restDaySqlResult.rows);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.delete('/api/restDays', async (req, res, next) => {
+  const { userId } = req.user;
+  const { tempDeletedDays } = req.body;
+  try {
+    if (!tempDeletedDays) {
+      throw new ClientError(400, 'tempDeletedDays is a required field.');
+    }
+    const restDaySql = `
+   DELETE
+     FROM "restDays"
+    WHERE "userId" = $1 AND "restId" = $2
+RETURNING *;
+  `;
+    const deletedDays = [];
+    for (let i = 0; i < tempDeletedDays.length; i++) {
+      const params = [userId, tempDeletedDays[i].restId];
+      const restDaySqlResult = await db.query(restDaySql, params);
+      deletedDays.push(restDaySqlResult);
+    }
+    res.json(deletedDays.rows);
   } catch (err) {
     next(err);
   }
@@ -378,17 +407,17 @@ app.get('/api/profile', async (req, res, next) => {
 app.put('/api/profile/weeklyRestDay', async (req, res, next) => {
   const { userId } = req.user;
   const { tempWeeklyRestDay } = req.body;
-  if (!tempWeeklyRestDay) {
-    throw new ClientError(400, 'tempWeeklyRestDay is a required field');
-  }
-  const weeklyRestDaySql = `
+  try {
+    if (!tempWeeklyRestDay) {
+      throw new ClientError(400, 'tempWeeklyRestDay is a required field');
+    }
+    const weeklyRestDaySql = `
      UPDATE "users"
         SET "weeklyRestDay" = $2
       WHERE "userId" = $1
   RETURNING "displayName", "weeklyRestDay";
   `;
-  const params = [userId, tempWeeklyRestDay];
-  try {
+    const params = [userId, tempWeeklyRestDay];
     const result = await db.query(weeklyRestDaySql, params);
     const restDayData = result.rows;
     res.send(restDayData);
@@ -403,25 +432,25 @@ app.post('/api/workouts', async (req, res, next) => {
   const { userId } = req.user;
   const { date, description, warmupDistanceUnits, workoutDistanceUnits, cooldownDistanceUnits } = req.body;
   let { warmupDistance, warmupNotes, workoutDistance, workoutNotes, cooldownDistance, cooldownNotes } = req.body;
-  if (warmupDistance === '') {
-    warmupDistance = 0;
-  }
-  if (workoutDistance === '') {
-    workoutDistance = 0;
-  }
-  if (cooldownDistance === '') {
-    cooldownDistance = 0;
-  }
-  if (!date | !description) {
-    throw new ClientError(400, 'date and description are required fields.');
-  }
-  const workoutSql = `
+  try {
+    if (warmupDistance === '') {
+      warmupDistance = 0;
+    }
+    if (workoutDistance === '') {
+      workoutDistance = 0;
+    }
+    if (cooldownDistance === '') {
+      cooldownDistance = 0;
+    }
+    if (!date | !description) {
+      throw new ClientError(400, 'date and description are required fields.');
+    }
+    const workoutSql = `
   INSERT INTO "workouts" ("userId", "date", "description", "warmupDistance", "warmupDistanceUnits", "warmupNotes", "workoutDistance", "workoutDistanceUnits", "workoutNotes", "cooldownDistance", "cooldownDistanceUnits", "cooldownNotes")
        VALUES ($1, $2, $3, $4, $5, $6 ,$7, $8, $9, $10, $11, $12)
     RETURNING *
   `;
-  const params = [userId, date, description, warmupDistance, warmupDistanceUnits, warmupNotes, workoutDistance, workoutDistanceUnits, workoutNotes, cooldownDistance, cooldownDistanceUnits, cooldownNotes];
-  try {
+    const params = [userId, date, description, warmupDistance, warmupDistanceUnits, warmupNotes, workoutDistance, workoutDistanceUnits, workoutNotes, cooldownDistance, cooldownDistanceUnits, cooldownNotes];
     const result = await db.query(workoutSql, params);
     const [newWorkout] = result.rows;
     res.status(201).send(newWorkout);
@@ -451,16 +480,16 @@ ORDER BY "date" DESC;
 app.get('/api/workouts/:workoutId', async (req, res, next) => {
   const { userId } = req.user;
   const { workoutId } = req.params;
-  if (!workoutId) {
-    throw new ClientError(400, 'workoutId is a required paramter as /api/workouts/<parameter-id-here>');
-  }
-  const sql = `
+  try {
+    if (!workoutId) {
+      throw new ClientError(400, 'workoutId is a required paramter as /api/workouts/<parameter-id-here>');
+    }
+    const sql = `
   SELECT "date", "description", "warmupDistance", "warmupDistanceUnits", "warmupNotes", "workoutDistance", "workoutDistanceUnits", "workoutNotes", "cooldownDistance", "cooldownDistanceUnits", "cooldownNotes"
     FROM "workouts"
    WHERE "userId" = $1 AND "workoutId" = $2;
   `;
-  const params = [userId, workoutId];
-  try {
+    const params = [userId, workoutId];
     const result = await db.query(sql, params);
     const [data] = result.rows;
     if (!data) {
@@ -476,24 +505,25 @@ app.get('/api/workouts/:workoutId', async (req, res, next) => {
 app.put('/api/workouts/:workoutId', async (req, res, next) => {
   const { userId } = req.user;
   const { workoutId } = req.params;
-  if (!workoutId) {
-    throw new ClientError(400, 'workoutId is a required paramter as /api/workouts/<parameter-id-here>');
-  }
-  const { date, description, warmupDistanceUnits, workoutDistanceUnits, cooldownDistanceUnits } = req.body;
-  let { warmupDistance, warmupNotes, workoutDistance, workoutNotes, cooldownDistance, cooldownNotes } = req.body;
-  if (warmupDistance === '') {
-    warmupDistance = 0;
-  }
-  if (workoutDistance === '') {
-    workoutDistance = 0;
-  }
-  if (cooldownDistance === '') {
-    cooldownDistance = 0;
-  }
-  if (!date | !description) {
-    throw new ClientError(400, 'date and description are required fields.');
-  }
-  const sql = `
+  try {
+    if (!workoutId) {
+      throw new ClientError(400, 'workoutId is a required paramter as /api/workouts/<parameter-id-here>');
+    }
+    const { date, description, warmupDistanceUnits, workoutDistanceUnits, cooldownDistanceUnits } = req.body;
+    let { warmupDistance, warmupNotes, workoutDistance, workoutNotes, cooldownDistance, cooldownNotes } = req.body;
+    if (warmupDistance === '') {
+      warmupDistance = 0;
+    }
+    if (workoutDistance === '') {
+      workoutDistance = 0;
+    }
+    if (cooldownDistance === '') {
+      cooldownDistance = 0;
+    }
+    if (!date | !description) {
+      throw new ClientError(400, 'date and description are required fields.');
+    }
+    const sql = `
    UPDATE "workouts"
       SET "date"                  = $1,
           "description"           = $2,
@@ -509,8 +539,7 @@ app.put('/api/workouts/:workoutId', async (req, res, next) => {
     WHERE "workoutId" = $12 AND "userId" = $13
 RETURNING *
   `;
-  const params = [date, description, warmupDistance, warmupDistanceUnits, warmupNotes, workoutDistance, workoutDistanceUnits, workoutNotes, cooldownDistance, cooldownDistanceUnits, cooldownNotes, workoutId, userId];
-  try {
+    const params = [date, description, warmupDistance, warmupDistanceUnits, warmupNotes, workoutDistance, workoutDistanceUnits, workoutNotes, cooldownDistance, cooldownDistanceUnits, cooldownNotes, workoutId, userId];
     const result = await db.query(sql, params);
     const [editedWorkout] = result.rows;
     if (!editedWorkout) {
@@ -526,17 +555,17 @@ RETURNING *
 app.delete('/api/workouts/:workoutId', async (req, res, next) => {
   const { userId } = req.user;
   const { workoutId } = req.params;
-  if (!workoutId) {
-    throw new ClientError(400, 'workoutId is a required paramter as /api/workouts/<parameter-id-here>');
-  }
-  const sql = `
+  try {
+    if (!workoutId) {
+      throw new ClientError(400, 'workoutId is a required paramter as /api/workouts/<parameter-id-here>');
+    }
+    const sql = `
    DELETE
      FROM "workouts"
     WHERE "userId" = $1 AND "workoutId" = $2
 RETURNING *;
   `;
-  const params = [userId, workoutId];
-  try {
+    const params = [userId, workoutId];
     const result = await db.query(sql, params);
     const [deletedWorkout] = result.rows;
     if (!deletedWorkout) {
