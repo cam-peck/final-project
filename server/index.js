@@ -348,7 +348,7 @@ app.post('/api/restDays', async (req, res, next) => {
 app.get('/api/restDays', async (req, res, next) => {
   const { userId } = req.user;
   const restDaySql = `
-  SELECT "date", "restId"
+  SELECT "date"
   FROM "restDays"
   WHERE "userId" = $1
   ORDER BY "date" DESC

@@ -11,6 +11,7 @@ export default function RestDayForm(props) {
 
   // State Data //
   const [tempRestData, setTempRestData] = useState(restData); // tracks newly added days only
+  const [tempDeletedDays, setTempDeletedDays] = useState([]);
   const [tempWeeklyRestDay, setTempWeeklyRestDay] = useState(weeklyRestDay);
   const [newRestDays, setNewRestDays] = useState([]); // tracks newly added days
   const [customRestDay, setCustomRestDay] = useState(undefined); // stores the current data on the date input
@@ -22,28 +23,55 @@ export default function RestDayForm(props) {
   // Assist Functions //
   const addCustomRestDay = event => {
     const isoDate = formatISO(customRestDay);
-    if (tempRestData.find(restDay => restDay.date.split('T')[0] === isoDate.split('T')[0])) { // TODO: add error handling here for duplicates!
+    // Check if the day has already been added //
+    if (tempRestData.find(restDay => restDay.date.split('T')[0] === isoDate.split('T')[0])) {
       setRestDayDuplicateError(true);
     } else {
+      // Check if day was deleted and then readded AND was already in DB
+      const readdedSavedDay = restData.filter(savedDay => savedDay.date.split('T')[0] === isoDate.split('T')[0]);
+      if (readdedSavedDay.length !== 0) {
+        // Remove the day from deleted becayse we readded it //
+        const indexToDelete = tempDeletedDays.findIndex(deletedDay => deletedDay.date.split('T')[0] === readdedSavedDay[0].date.split('T')[0]);
+        const newTempDeletedDays = tempDeletedDays.slice();
+        newTempDeletedDays.splice(indexToDelete, 1);
+        setTempDeletedDays(newTempDeletedDays);
+      }
+      // Add the new rest day to the tempRestData Array //
       const newRestDay = {
         date: isoDate.split('T')[0] + 'T00:00:00.000Z'
       };
-      // Add the new rest day to temp data //
       const newTempRestData = tempRestData.slice();
       newTempRestData.unshift(newRestDay);
       setTempRestData(newTempRestData);
-      // Add the new rest day to new rest days for submit later //
-      const newTempNewRestDays = newRestDays.slice();
-      newTempNewRestDays.push(newRestDay);
-      setNewRestDays(newTempNewRestDays);
+      // Add the new rest day to new rest days for submit later if it isn't already in the db //
+      if (readdedSavedDay.length === 0) {
+        const newTempNewRestDays = newRestDays.slice();
+        newTempNewRestDays.push(newRestDay);
+        setNewRestDays(newTempNewRestDays);
+      }
       // Cleanup duplicates error if it existed previously
       if (restDayDuplicateError) setRestDayDuplicateError(false);
     }
   };
 
+  const deleteRestDay = (restIndexToDelete, restObjToDelete) => {
+    if (newRestDays.find(restDay => restObjToDelete.date.split('T')[0] === restDay.date.split('T')[0])) { // check if day is in newRestDays
+      // TODO: implement this pseudocode! if it is, remove it from new rest days and don't add to deleted array
+    }
+    const newTempRestData = tempRestData.slice();
+    newTempRestData.splice(restIndexToDelete, 1);
+    setTempRestData(newTempRestData);
+    const newTempDeletedDays = tempDeletedDays.slice();
+    newTempDeletedDays.push(restObjToDelete);
+    setTempDeletedDays(newTempDeletedDays);
+  };
+
   const submitForm = async event => {
     event.preventDefault();
     setFetchingData(true);
+    if (tempDeletedDays.length !== 0) {
+      // console.log('deleting days: ', tempDeletedDays);
+    }
     if (newRestDays.length !== 0) {
       const body = JSON.stringify({
         newRestDays
@@ -97,7 +125,7 @@ export default function RestDayForm(props) {
       <div className='flex flex-col gap-2 mb-2'>
         <p className="font-lora font-medium text-md mb-2">Custom Rest Days</p>
         <div className="max-h-40 overflow-y-scroll mb-2">
-          <CustomRestDays restData={tempRestData}/>
+          <CustomRestDays restData={tempRestData} deleteRestDay={deleteRestDay}/>
         </div>
         <div className="flex">
           <DatePicker selected={customRestDay} onChange={date => setCustomRestDay(date)} className={`w-full rounded-tl-lg rounded-bl-lg px-3 py-3.5 border border-r-0 ${restDayDuplicateError ? 'border-red-500' : 'border-gray-300'} focus:outline-blue-500`} dateFormat='MM/dd/yyy' maxDate={addYears(new Date(), 10)} minDate={subYears(new Date(), 100)} placeholderText='Click to add a custom date.' id='rest-date-picker' autoComplete="false"/>
