@@ -55,22 +55,30 @@ export default function RestDayForm(props) {
   };
 
   const deleteRestDay = (restIndexToDelete, restObjToDelete) => {
-    if (newRestDays.find(restDay => restObjToDelete.date.split('T')[0] === restDay.date.split('T')[0])) { // check if day is in newRestDays
-      // TODO: implement this pseudocode! if it is, remove it from new rest days and don't add to deleted array
+    // Check if the deleted day was a newly added day //
+    const newRestDaysIndexToRemove = newRestDays.findIndex(restDay => restObjToDelete.date.split('T')[0] === restDay.date.split('T')[0]);
+    // Remove from new rest days //
+    if (newRestDaysIndexToRemove !== -1) {
+      const newRestDaysCopy = newRestDays.slice();
+      newRestDaysCopy.splice(newRestDaysIndexToRemove, 1);
+      setNewRestDays(newRestDaysCopy);
     }
     const newTempRestData = tempRestData.slice();
     newTempRestData.splice(restIndexToDelete, 1);
     setTempRestData(newTempRestData);
-    const newTempDeletedDays = tempDeletedDays.slice();
-    newTempDeletedDays.push(restObjToDelete);
-    setTempDeletedDays(newTempDeletedDays);
+    // Add to the deleted array unless it was a newly added day //
+    if (newRestDaysIndexToRemove === -1) {
+      const newTempDeletedDays = tempDeletedDays.slice();
+      newTempDeletedDays.push(restObjToDelete);
+      setTempDeletedDays(newTempDeletedDays);
+    }
   };
 
   const submitForm = async event => {
     event.preventDefault();
     setFetchingData(true);
     if (tempDeletedDays.length !== 0) {
-      // console.log('deleting days: ', tempDeletedDays);
+      console.log('deleting days: ', tempDeletedDays);
     }
     if (newRestDays.length !== 0) {
       const body = JSON.stringify({
