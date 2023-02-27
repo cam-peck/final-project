@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { AppContext } from '../../lib';
-import { addYears, subYears, formatISO } from 'date-fns';
+import { addYears, subYears, formatISO, format } from 'date-fns';
 import WeekdaySelector from '../inputs/weekday-selector';
 import CustomRestDays from '../progress-squares/custom-rest-days';
 import DatePicker from 'react-datepicker';
@@ -16,6 +16,7 @@ export default function RestDayForm(props) {
   const [newRestDays, setNewRestDays] = useState([]); // tracks newly added days
   const [customRestDay, setCustomRestDay] = useState(undefined); // stores the current data on the date input
   const [restDayDuplicateError, setRestDayDuplicateError] = useState(false);
+  const [weeklyRestDayError, setWeeklyRestDayError] = useState(false);
 
   // Context Data & Props //
   const { user } = useContext(AppContext);
@@ -26,34 +27,40 @@ export default function RestDayForm(props) {
     // Check if the day has already been added //
     if (tempRestData.find(restDay => restDay.date.split('T')[0] === isoDate.split('T')[0])) {
       setRestDayDuplicateError(true);
-    } else {
-      let newRestDay;
-      // Check if day was deleted and then readded AND was already in DB
-      const readdedSavedDay = restData.filter(savedDay => savedDay.date.split('T')[0] === isoDate.split('T')[0]);
-      if (readdedSavedDay.length !== 0) {
-        // Remove the day from deleted becayse we readded it //
-        const indexToDelete = tempDeletedDays.findIndex(deletedDay => deletedDay.date.split('T')[0] === readdedSavedDay[0].date.split('T')[0]);
-        const newTempDeletedDays = tempDeletedDays.slice();
-        newTempDeletedDays.splice(indexToDelete, 1);
-        setTempDeletedDays(newTempDeletedDays);
-        newRestDay = readdedSavedDay[0];
-      } else {
-        newRestDay = {
-          date: isoDate.split('T')[0] + 'T00:00:00.000Z'
-        };
-      }
-      const newTempRestData = tempRestData.slice();
-      newTempRestData.unshift(newRestDay);
-      setTempRestData(newTempRestData);
-      // Add the new rest day to new rest days for submit later if it isn't already in the db //
-      if (readdedSavedDay.length === 0) {
-        const newTempNewRestDays = newRestDays.slice();
-        newTempNewRestDays.push(newRestDay);
-        setNewRestDays(newTempNewRestDays);
-      }
-      // Cleanup duplicates error if it existed previously
-      if (restDayDuplicateError) setRestDayDuplicateError(false);
+      return;
     }
+    // Check if the day being added is a weeklyRestDay //
+    if (format(customRestDay, 'EEEE') === tempWeeklyRestDay) {
+      setWeeklyRestDayError(true);
+      return;
+    }
+    let newRestDay;
+    // Check if day was deleted and then readded AND was already in DB
+    const readdedSavedDay = restData.filter(savedDay => savedDay.date.split('T')[0] === isoDate.split('T')[0]);
+    if (readdedSavedDay.length !== 0) {
+      // Remove the day from deleted becayse we readded it //
+      const indexToDelete = tempDeletedDays.findIndex(deletedDay => deletedDay.date.split('T')[0] === readdedSavedDay[0].date.split('T')[0]);
+      const newTempDeletedDays = tempDeletedDays.slice();
+      newTempDeletedDays.splice(indexToDelete, 1);
+      setTempDeletedDays(newTempDeletedDays);
+      newRestDay = readdedSavedDay[0];
+    } else {
+      newRestDay = {
+        date: isoDate.split('T')[0] + 'T00:00:00.000Z'
+      };
+    }
+    const newTempRestData = tempRestData.slice();
+    newTempRestData.unshift(newRestDay);
+    setTempRestData(newTempRestData);
+    // Add the new rest day to new rest days for submit later if it isn't already in the db //
+    if (readdedSavedDay.length === 0) {
+      const newTempNewRestDays = newRestDays.slice();
+      newTempNewRestDays.push(newRestDay);
+      setNewRestDays(newTempNewRestDays);
+    }
+    // Cleanup errors if existed previously
+    if (restDayDuplicateError) setRestDayDuplicateError(false);
+    if (weeklyRestDayError) setWeeklyRestDayError(false);
   };
 
   const deleteRestDay = (restIndexToDelete, restObjToDelete) => {
@@ -161,6 +168,7 @@ export default function RestDayForm(props) {
           <button onClick={event => addCustomRestDay(event.target.value)} className={`w-4/12 border border-l-0 ${restDayDuplicateError ? 'border-red-500' : 'border-blue-300'} bg-blue-500 text-white text-xl rounded-tr-lg rounded-br-lg`} type="button">+</button>
         </div>
         { restDayDuplicateError ? <p className='text-red-500 italic font-lora pl-0.5 text-sm'>That date has already been added.</p> : '' }
+        { weeklyRestDayError ? <p className='text-red-500 italic font-lora pl-0.5 text-sm'>That date is already a weekly rest day.</p> : ''}
       </div>
       <div className="flex justify-end gap-2">
         <button type="button" onClick={closeModal} className="w-1/2 sm:w-1/4 bg-red-500 transition-colors ease-in-out duration-300 hover:bg-red-600 text-white p-3 rounded-lg font-bold mb-2">Cancel</button>
