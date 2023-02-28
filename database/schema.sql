@@ -80,4 +80,4 @@ ALTER TABLE "runs" ADD CONSTRAINT "runs_fk0" FOREIGN KEY ("userId") REFERENCES "
 ALTER TABLE "gpxData" ADD CONSTRAINT "gpxData_fk0" FOREIGN KEY ("userId") REFERENCES "users"("userId");
 ALTER TABLE "gpxData" ADD CONSTRAINT "gpxData_fk1" FOREIGN KEY ("entryId") REFERENCES "runs"("entryId");
 ALTER TABLE "workouts" ADD CONSTRAINT "workouts_fk0" FOREIGN KEY ("userId") REFERENCES "users"("userId");
-ALTER TABLE "restDays" ADD CONSTRAINT "restDays_pk" FOREIGN KEY ("userId") REFERENCES "users"("userId");
+ALTER TABLE "restDays" ADD CONSTRAINT "restDays_pk0" FOREIGN KEY ("userId") REFERENCES "users"("userId");
