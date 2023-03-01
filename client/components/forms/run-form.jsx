@@ -49,6 +49,7 @@ export default function RunForm(props) {
         const response = await fetch(`/api/runs/${entryId}`, req);
         if (response.status === 404) {
           setIdError(true);
+          setFetchingData(false);
           return;
         }
         const result = await response.json();
@@ -169,7 +170,7 @@ export default function RunForm(props) {
           <div className="w-full">
             <p className="font-lora font-md text-md font-medium pb-2" >Date</p>
             <DatePicker className="w-full rounded-lg px-3 py-3.5 border border-gray-300 focus:outline-blue-500 mb-4" selected={date} onChange={date => setDate(date)} dateFormat='MM/dd/yyy' maxDate={new Date()} minDate={subYears(new Date(), 80)} disabled={hasGpx} required/>
-            <DistanceInput integerName='distance' integerValue={distance} distanceTypeName='distanceUnits' distanceTypeValue={distanceUnits} onChange={event => setDistance(event.target.value)} disabled={hasGpx}/>
+            <DistanceInput integerName='distance' integerValue={distance} distanceTypeName='distanceUnits' distanceTypeValue={distanceUnits} onIntegerChange={event => setDistance(event.target.value)} onDistanceUnitChange={event => setDistanceUnits(event.target.value)} disabled={hasGpx}/>
             <DurationInput hourValue={durationHours} minuteValue={durationMinutes} secondValue={durationSeconds} onHourChange={setDurationHours} onMinuteChange={setDurationMinutes} onSecondChange={setDurationSeconds} disabled={hasGpx}/>
             <TextInput type="pace" name="pace" placeholder="0:00 / mi" value={pace} showLabel={true} label="Pace" disabled={hasGpx} readOnly={true}/>
           </div>

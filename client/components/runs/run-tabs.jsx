@@ -1,6 +1,5 @@
 import React from 'react';
 
-// refactor into function component
 export default function RunTabs(props) {
   const { children } = props;
 
