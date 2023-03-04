@@ -1,28 +1,20 @@
-import React from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import FilteredWorkouts from './filtered-workouts';
 import TextInput from './inputs/text-input';
 import NetworkError from './network-error';
 import LoadingSpinner from './loading-spinner';
 import { AppContext, filterWorkouts } from '../lib';
 
-export default class MyWorkouts extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      workoutData: [],
-      fetchingData: false,
-      networkError: false,
-      searchText: ''
-    };
-    this.deleteWorkout = this.deleteWorkout.bind(this);
-    this.handleSearchChange = this.handleSearchChange.bind(this);
-  }
+export default function MyWorkouts(props) {
+  const [workoutData, setWorkoutData] = useState([]);
+  const [searchText, setSearchText] = useState('');
+  const [fetchingData, setFetchingData] = useState(true);
+  const [networkError, setNetworkError] = useState(false);
 
-  componentDidMount() {
-    this.setState({
-      fetchingData: true
-    }, async () => {
-      const { user } = this.context;
+  const { user } = useContext(AppContext);
+
+  useEffect(() => {
+    const fetchData = async () => {
       const req = {
         method: 'GET',
         headers: {
@@ -33,80 +25,56 @@ export default class MyWorkouts extends React.Component {
       try {
         const response = await fetch('/api/workouts', req);
         const result = await response.json();
-        this.setState({
-          workoutData: result,
-          fetchingData: false
-        });
+        setWorkoutData(result);
+        setFetchingData(false);
       } catch (err) {
         console.error('There was an error!', err);
-        this.setState({
-          networkError: true
-        });
+        setNetworkError(true);
       }
-    });
-  }
+    };
+    fetchData();
+  }, [user]);
 
-  deleteWorkout(workoutId) {
-    this.setState({
-      fetchingData: true
-    }, async () => {
-      const { user } = this.context;
-      const { workoutData } = this.state;
-      const req = {
-        method: 'DELETE',
-        headers: {
-          'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
-        },
-        user
-      };
-      try {
-        const response = await fetch('/api/workouts/' + workoutId, req);
-        await response.json();
-        const indexToRemove = workoutData.findIndex(workoutData => workoutData.workoutId === workoutId);
-        const newWorkoutData = Array.from(workoutData);
-        newWorkoutData.splice(indexToRemove, 1);
-        this.setState({
-          workoutData: newWorkoutData,
-          fetchingData: false
-        });
-      } catch (err) {
-        console.error('There was an error!', err);
-        this.setState({
-          networkError: true
-        });
-      }
-    });
-  }
-
-  handleSearchChange(event) {
-    this.setState({ searchText: event.target.value });
-  }
-
-  render() {
-    if (this.state.networkError) {
-      return <NetworkError />;
+  const deleteWorkout = async workoutId => {
+    setFetchingData(true);
+    const req = {
+      method: 'DELETE',
+      headers: {
+        'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
+      },
+      user
+    };
+    try {
+      const response = await fetch('/api/workouts/' + workoutId, req);
+      await response.json();
+      const indexToRemove = workoutData.findIndex(workoutData => workoutData.workoutId === workoutId);
+      const newWorkoutData = Array.from(workoutData);
+      newWorkoutData.splice(indexToRemove, 1);
+      setWorkoutData(newWorkoutData);
+      setFetchingData(false);
+    } catch (err) {
+      console.error('There was an error!', err);
+      setNetworkError(true);
     }
-    if (this.state.fetchingData) {
-      return <LoadingSpinner />;
-    }
-    const { workoutData, searchText } = this.state;
-    const { deleteWorkout } = this;
-    const filteredWorkouts = filterWorkouts(searchText, workoutData);
-    return (
-      <>
-        <header>
-          <h1 className="text-2xl font-lora font-medium mb-4">My Workouts</h1>
-          <TextInput placeholder="Search by date, description, or notes..." type="text" name="searchbar" id="searchbar" value={searchText} onChange={this.handleSearchChange} disabled={workoutData.length === 0}/>
-        </header>
-        <section>
-          {
+  };
+
+  if (networkError) return <NetworkError />;
+  if (fetchingData) return <LoadingSpinner />;
+
+  const filteredWorkouts = filterWorkouts(searchText, workoutData);
+  return (
+    <>
+      <header>
+        <h1 className="text-2xl font-lora font-medium mb-4">My Workouts</h1>
+        <TextInput placeholder="Search by date, description, or notes..." type="text" name="searchbar" id="searchbar" value={searchText} onChange={event => setSearchText(event.target.value)} disabled={workoutData.length === 0}/>
+      </header>
+      <section>
+        {
             workoutData.length === 0
               ? <p className="text-center italic">No workouts found... Add a workout using the &quot;+&quot; button in the bottom right.</p>
               : filteredWorkouts.length !== 0 ? <FilteredWorkouts workoutData={filteredWorkouts} deleteWorkout={deleteWorkout} /> : <p className='italic text-center'>No workouts found with your search parameters...</p>
           }
-        </section>
-      </>
-    );
-  }
+      </section>
+    </>
+  );
 }
-MyWorkouts.contextType = AppContext;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import jwtDecode from 'jwt-decode';
 import Home from './pages/home';
 import Auth from './pages/auth';
@@ -9,42 +9,35 @@ import Navbar from './components/navbar/navbar';
 import Redirect from './components/redirect';
 import { AppContext, parseRoute } from './lib';
 
-export default class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      user: null,
-      isAuthorizing: true,
-      route: parseRoute(window.location.hash)
-    };
-    this.handleSignIn = this.handleSignIn.bind(this);
-    this.handleSignOut = this.handleSignOut.bind(this);
-  }
+export default function App(props) {
+  const [user, setUser] = useState(null);
+  const [isAuthorizing, setIsAuthorizing] = useState(true);
+  const [route, setRoute] = useState(parseRoute(window.location.hash));
 
-  componentDidMount() {
+  useEffect(() => {
     window.addEventListener('hashchange', () => {
       const hashRoute = parseRoute(window.location.hash);
-      this.setState({ route: hashRoute });
+      setRoute(hashRoute);
     });
     const token = window.localStorage.getItem('runningfuze-project-jwt');
     const user = token ? jwtDecode(token) : null;
-    this.setState({ user, isAuthorizing: false });
-  }
+    setUser(user);
+    setIsAuthorizing(false);
+  }, []);
 
-  handleSignIn(result) {
+  const handleSignIn = result => {
     const { user, token } = result;
     window.localStorage.setItem('runningfuze-project-jwt', token);
-    this.setState({ user });
-  }
+    setUser(user);
+  };
 
-  handleSignOut() {
+  const handleSignOut = () => {
     window.localStorage.removeItem('runningfuze-project-jwt');
-    this.setState({ user: null });
-  }
+    setUser(null);
+  };
 
-  renderPage() {
-    const { path } = this.state.route;
-    const { route } = this.state;
+  const renderPage = () => {
+    const { path } = route;
     if (path === '') {
       return <Redirect to='home?tab=activities' />;
     }
@@ -72,22 +65,17 @@ export default class App extends React.Component {
       } else return <Workouts mode='add' />;
     }
     return <NotFound />;
-  }
+  };
 
-  render() {
-    if (this.state.isAuthorizing) return null;
+  if (isAuthorizing) return null;
+  const contextValue = { user, route, handleSignIn, handleSignOut };
 
-    const { user, route } = this.state;
-    const { handleSignIn, handleSignOut } = this;
-    const contextValue = { user, route, handleSignIn, handleSignOut };
-
-    return (
-      <AppContext.Provider value={contextValue}>
-        <>
-          <Navbar />
-          { this.renderPage() }
-        </>
-      </AppContext.Provider>
-    );
-  }
+  return (
+    <AppContext.Provider value={contextValue}>
+      <>
+        <Navbar />
+        { renderPage() }
+      </>
+    </AppContext.Provider>
+  );
 }

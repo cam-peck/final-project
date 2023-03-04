@@ -3,9 +3,6 @@ import RestDayForm from '../forms/rest-day-form';
 import 'react-datepicker/dist/react-datepicker.css';
 import LoadingSpinner from '../loading-spinner';
 
-// TODOs
-// 1: Add delete functionality (or an issue for it) for rest days that are already added -- add a snackbar for confirmation
-
 export default function RestDayModal(props) {
   const [fetchingData, setFetchingData] = useState(false);
   const { closeModal, toggleNetworkError, restData, setRestData, weeklyRestDay, setWeeklyRestDay } = props;
