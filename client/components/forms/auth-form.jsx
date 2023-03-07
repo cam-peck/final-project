@@ -123,7 +123,7 @@ export default function AuthForm(props) {
               ? <p className="font-roboto text-center">Already have an account? <a href="#sign-in" className="font-roboto text-blue-500 underline">Sign in</a> </p>
               : <div className="flex gap-2">
                 <button type="button" onClick={oneClickSignIn} className="w-1/2 bg-orange-400 transition-colors ease-in-out duration-300 text-white p-3 rounded-lg font-bold text-lg">Try me out!</button>
-                <a className="w-1/2 bg-green-500 transition-colors ease-in-out duration-300 text-white p-3 rounded-lg font-bold text-lg text-center" href="#sign-up" >Register</a>
+                <button type="button" onClick={() => { window.location.hash = '#sign-up'; }} className="w-1/2 bg-green-500 transition-colors ease-in-out duration-300 text-white p-3 rounded-lg font-bold text-lg text-center">Register</button>
               </div>
           }
         { fetchingData === true

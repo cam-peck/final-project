@@ -72,10 +72,8 @@ export default function App(props) {
 
   return (
     <AppContext.Provider value={contextValue}>
-      <>
-        <Navbar />
-        { renderPage() }
-      </>
+      <Navbar />
+      { renderPage() }
     </AppContext.Provider>
   );
 }
