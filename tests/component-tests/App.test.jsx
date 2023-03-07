@@ -1,21 +1,11 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { AppContext } from '../../client/lib';
-import Auth from '../../client/pages/auth';
+import App from '../../client/app';
 
-const handleSignIn = jest.fn();
-const handleSignOut = jest.fn();
-const route = { path: 'sign-in' };
-const user = null;
-
-const context = { handleSignIn, handleSignOut, route, user };
-
-test('renders the landing page', async () => {
+test('renders the landing page page', async () => {
   render(
-    <AppContext.Provider value={context}>
-      <Auth />
-    </AppContext.Provider>
+    <App />
   );
 
   expect(screen.getAllByRole('button')).toHaveLength(3);
