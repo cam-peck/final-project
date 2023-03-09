@@ -7,7 +7,7 @@ export default function Runs(props) {
   const { user } = useContext(AppContext);
   const { mode, entryId } = props;
 
-  if (!user) return <Redirect to='sign-in' />;
+  if (!user) return <Redirect to='#' />;
 
   return (
     <main>

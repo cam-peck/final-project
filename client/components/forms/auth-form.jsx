@@ -43,8 +43,8 @@ export default function AuthForm(props) {
       const response = await fetch(`/api/auth/${action}`, req);
       const result = await response.json();
       if (action === 'sign-up') {
-        resetState();
-        window.location.hash = 'sign-in';
+        // resetState();
+        window.location.hash = '';
       } else if (result.user && result.token) {
         resetState();
         onSignIn(result);
@@ -95,15 +95,17 @@ export default function AuthForm(props) {
     : 'Log in';
   const registerAccountInputs = action === 'sign-up'
     ? <>
-      <TextInput type="text" name="displayName" placeholder="Display Name" value={displayName} showLabel={false} onChange={event => setDisplayName(event.target.value)} />
-      <DatePicker className="w-full rounded-lg px-3 py-3.5 border border-gray-300 focus:outline-blue-500 mb-4" selected={dateOfBirth} onChange={date => setDateOfBirth(date)} dateFormat='MM/dd/yyy' maxDate={subYears(new Date(), 10)} minDate={subYears(new Date(), 100)} placeholderText='Date of Birth' required />
+      <TextInput type="text" name="displayName" placeholder="Display Name" value={displayName} label='Display Name' showLabel={false} onChange={event => setDisplayName(event.target.value)} />
+      <div data-testid='signup-datepicker'>
+        <DatePicker className="w-full rounded-lg px-3 py-3.5 border border-gray-300 focus:outline-blue-500 mb-4" selected={dateOfBirth} onChange={date => setDateOfBirth(date)} dateFormat='MM/dd/yyy' maxDate={subYears(new Date(), 10)} minDate={subYears(new Date(), 100)} placeholderText='Date of Birth' required />
+      </div>
     </>
     : '';
   return (
     <div className="max-w-md mx-auto">
       <form className="pl-4 pr-4 w-full" onSubmit={handleSubmit}>
-        <TextInput type="email" name="email" placeholder="Email Address" value={email} showLabel={false} onChange={event => setEmail(event.target.value)}/>
-        <TextInput type="password" name="password" placeholder="Password" value={password} showLabel={false} onChange={event => setPassword(event.target.value)} />
+        <TextInput type="email" name="email" placeholder="Email Address" value={email} label='email' showLabel={false} onChange={event => setEmail(event.target.value)}/>
+        <TextInput type="password" name="password" placeholder="Password" value={password} label='password' showLabel={false} onChange={event => setPassword(event.target.value)} />
         {registerAccountInputs}
         {
           signInWasInvalid
