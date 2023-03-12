@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { AppContext } from '../../lib';
-import Auth from '../auth';
+import { AppContext } from '../lib';
+import Auth from '../pages/auth';
 
 describe('Tests for auth page component', () => {
 
