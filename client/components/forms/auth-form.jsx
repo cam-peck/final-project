@@ -43,7 +43,7 @@ export default function AuthForm(props) {
       const response = await fetch(`/api/auth/${action}`, req);
       const result = await response.json();
       if (action === 'sign-up') {
-        // resetState();
+        resetState();
         window.location.hash = '';
       } else if (result.user && result.token) {
         resetState();
