@@ -10,7 +10,7 @@ export default function Home(props) {
   const { user } = useContext(AppContext);
   const { tab } = props;
 
-  if (!user) return <Redirect to='sign-in' />;
+  if (!user) return <Redirect to='#' />;
   return (
     <main>
       <RunTabs tab={tab}>

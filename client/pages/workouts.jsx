@@ -9,7 +9,7 @@ export default function Workouts(props) {
   const { user, route } = useContext(AppContext);
   const { mode, workoutId } = props;
 
-  if (!user) return <Redirect to="sign-in"/>;
+  if (!user) return <Redirect to="#"/>;
   const renderMe = route.path === 'workout-form'
     ? <WorkoutForm mode={mode} workoutId={workoutId} />
     : <MyWorkouts />;

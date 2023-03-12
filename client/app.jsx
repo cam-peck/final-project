@@ -6,7 +6,6 @@ import Runs from './pages/runs';
 import Workouts from './pages/workouts';
 import NotFound from './pages/not-found';
 import Navbar from './components/navbar/navbar';
-import Redirect from './components/redirect';
 import { AppContext, parseRoute } from './lib';
 
 export default function App(props) {
@@ -38,17 +37,14 @@ export default function App(props) {
 
   const renderPage = () => {
     const { path } = route;
-    if (path === '') {
-      return <Redirect to='home?tab=activities' />;
+    if (path === '' || path === 'sign-up') {
+      return <Auth />;
     }
-    if (path === 'home') {
+    if (path === 'home' || (path === '#' && user)) {
       const homeId = route.params.get('tab');
       const validIds = ['progress', 'activities', 'profile'];
       if (!validIds.includes(homeId)) return <NotFound />;
       return <Home tab={homeId}/>;
-    }
-    if (path === 'sign-in' || path === 'sign-up') {
-      return <Auth />;
     }
     if (path === 'run-form') {
       const mode = route.params.get('mode');
@@ -72,10 +68,8 @@ export default function App(props) {
 
   return (
     <AppContext.Provider value={contextValue}>
-      <>
-        <Navbar />
-        { renderPage() }
-      </>
+      <Navbar />
+      { renderPage() }
     </AppContext.Provider>
   );
 }
