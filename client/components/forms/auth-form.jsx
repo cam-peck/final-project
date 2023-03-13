@@ -6,7 +6,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import LoadingSpinner from '../loading-spinner';
 
 export default function AuthForm(props) {
-  const { action, onSignIn } = props;
+  const { action, handleSignIn } = props;
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -47,7 +47,7 @@ export default function AuthForm(props) {
         window.location.hash = '';
       } else if (result.user && result.token) {
         resetState();
-        onSignIn(result);
+        handleSignIn(result);
         window.location.hash = '#home?tab=activities';
       } else {
         setSignInWasInvalid(true);
@@ -77,7 +77,7 @@ export default function AuthForm(props) {
       const result = await response.json();
       if (result.user && result.token) {
         resetState();
-        onSignIn(result);
+        handleSignIn(result);
         window.location.hash = '#home?tab=activities';
       } else {
         setSignInWasInvalid(true);

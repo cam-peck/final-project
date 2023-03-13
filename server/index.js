@@ -8,6 +8,7 @@ const staticMiddleware = require('./static-middleware');
 const authorizationMiddleware = require('./authorization-middleware');
 const errorMiddleware = require('./error-middleware');
 const timeout = require('connect-timeout');
+const path = require('path');
 
 const db = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
@@ -23,6 +24,10 @@ app.use(timeout('15s'));
 app.use(staticMiddleware);
 
 app.use(express.json({ limit: '10mb' }));
+
+app.get('/*', function (req, res) {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 // Auth Routes //
 
