@@ -5,7 +5,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const ClientError = require('./client-error');
 const staticMiddleware = require('./static-middleware');
-const authorizationMiddleware = require('./authorization-middleware');
+const addUserInformation = require('./authorization-middleware');
 const errorMiddleware = require('./error-middleware');
 const timeout = require('connect-timeout');
 const path = require('path');
@@ -24,10 +24,6 @@ app.use(timeout('15s'));
 app.use(staticMiddleware);
 
 app.use(express.json({ limit: '10mb' }));
-
-app.get('/*', function (req, res) {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
 
 // Auth Routes //
 
@@ -81,10 +77,9 @@ app.post('/api/auth/sign-in', async (req, res, next) => {
   }
 });
 
-app.use(authorizationMiddleware);
+// AUTH ROUTES //
 
 // CRUD Runs Routes //
-
 app.post('/api/runs', async (req, res, next) => {
   const { userId } = req.user;
   const { title, description, date, durationHours, durationMinutes, durationSeconds, distance, distanceUnits, hasGpx } = req.body;
@@ -123,15 +118,17 @@ app.post('/api/runs', async (req, res, next) => {
 });
 
 app.get('/api/runs', async (req, res, next) => {
-  const { userId } = req.user;
-  const sql = `
+  try {
+    addUserInformation(req, res, next);
+    const { userId } = req.user;
+    const sql = `
    SELECT "title", "description", "date", "duration", "distance", "distanceUnits", "entryId", "hasGpx"
      FROM "runs"
     WHERE "userId" = $1
  ORDER BY "date" DESC
   `;
-  const params = [userId];
-  try {
+    const params = [userId];
+
     const result = await db.query(sql, params);
     const data = result.rows;
     res.json(data);
@@ -141,15 +138,16 @@ app.get('/api/runs', async (req, res, next) => {
 });
 
 app.get('/api/runs/gpxData', async (req, res, next) => {
-  const { userId } = req.user;
-  const sql = `
+  try {
+    addUserInformation(req, res, next);
+    const { userId } = req.user;
+    const sql = `
   SELECT "entryId", "latitude", "longitude", "elevation", "time"
     FROM "gpxData"
    WHERE "userId" = $1
 ORDER BY "time";
   `;
-  const params = [userId];
-  try {
+    const params = [userId];
     const result = await db.query(sql, params);
     const gpxData = result.rows;
     const gpxObj = {};
@@ -578,6 +576,14 @@ RETURNING *;
     } else {
       res.json(deletedWorkout);
     }
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get('/*', (req, res, next) => {
+  try {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
   } catch (err) {
     next(err);
   }
