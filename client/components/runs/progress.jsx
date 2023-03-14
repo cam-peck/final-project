@@ -31,8 +31,14 @@ export default function Progress(props) {
         const progressResult = await progressResponse.json();
         const workoutResponse = await fetch('/api/workouts', req);
         const workoutResult = await workoutResponse.json();
+        const restDataResponse = await fetch('/api/restDays', req);
+        const restDataResult = await restDataResponse.json();
+        const weeklyRestDayResponse = await fetch('/api/profile', req);
+        const weeklyRestDayResult = await weeklyRestDayResponse.json();
         setYearlyRunData(progressResult.runDates);
         setYearlyWorkoutData(workoutResult);
+        setYearlyRestData(restDataResult);
+        setWeeklyRestDay(weeklyRestDayResult.weeklyRestDay);
         setFetchingData(false);
       } catch (err) {
         console.error('An error occured!', err);
@@ -41,39 +47,6 @@ export default function Progress(props) {
     }
     fetchData();
   }, [user]);
-
-  useEffect(() => {
-    async function fetchRestData() {
-      const restDataReq = {
-        method: 'GET',
-        headers: {
-          'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
-        },
-        user
-      };
-      const weeklyRestDayReq = {
-        method: 'GET',
-        headers: {
-          'X-Access-Token': localStorage.getItem('runningfuze-project-jwt')
-        },
-        user
-      };
-      try {
-        const restDataResponse = await fetch('api/restDays', restDataReq);
-        const restDataResult = await restDataResponse.json();
-        const weeklyRestDayResponse = await fetch('api/profile', weeklyRestDayReq);
-        const weeklyRestDayResult = await weeklyRestDayResponse.json();
-        setYearlyRestData(restDataResult);
-        setWeeklyRestDay(weeklyRestDayResult.weeklyRestDay);
-        setFetchingData(false);
-      } catch (err) {
-        console.error('An error occured!', err);
-        toggleNetworkError();
-      }
-    }
-    setFetchingData(true);
-    fetchRestData();
-  }, [user, setFetchingData]);
 
   const toggleNetworkError = e => {
     setNetworkError(true);

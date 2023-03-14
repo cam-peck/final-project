@@ -51,7 +51,7 @@ export default function AuthForm(props) {
       } else if (result.user && result.token) {
         resetState();
         handleSignIn(result);
-        navigate('/home');
+        navigate('/home/activites');
       } else {
         setSignInWasInvalid(true);
         setFetchingData(false);
@@ -81,7 +81,7 @@ export default function AuthForm(props) {
       if (result.user && result.token) {
         resetState();
         handleSignIn(result);
-        navigate('/home');
+        navigate('/home/activities');
       } else {
         setSignInWasInvalid(true);
         setFetchingData(false);

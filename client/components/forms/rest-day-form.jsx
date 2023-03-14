@@ -100,7 +100,7 @@ export default function RestDayForm(props) {
         body
       };
       try {
-        await fetch('api/restDays', req);
+        await fetch('/api/restDays', req);
         setRestData(tempRestData); // update parent progress component with new data
         setFetchingData(false);
       } catch (err) {
@@ -122,7 +122,7 @@ export default function RestDayForm(props) {
         body
       };
       try {
-        await fetch('api/restDays', req);
+        await fetch('/api/restDays', req);
         setRestData(tempRestData); // update parent progress component with new data
         setFetchingData(false);
       } catch (err) {
@@ -143,7 +143,7 @@ export default function RestDayForm(props) {
       body
     };
     try {
-      await fetch('api/profile/weeklyRestDay', req);
+      await fetch('/api/profile/weeklyRestDay', req);
       setWeeklyRestDay(tempWeeklyRestDay); // update parent progress component with new data
       setFetchingData(false);
     } catch (err) {

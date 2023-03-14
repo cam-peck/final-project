@@ -35,34 +35,6 @@ export default function App(props) {
     navigate('/');
   };
 
-  // const renderPage = () => {
-  //   const { path } = route;
-  //   if (path === '' || path === 'sign-up') {
-  //     return <Auth />;
-  //   }
-  //   if (path === 'home' || (path === '#' && user)) {
-  //     const homeId = route.params.get('tab');
-  //     const validIds = ['progress', 'activities', 'profile'];
-  //     if (!validIds.includes(homeId)) return <NotFound />;
-  //     return <Home tab={homeId}/>;
-  //   }
-  //   if (path === 'run-form') {
-  //     const mode = route.params.get('mode');
-  //     if (mode === 'edit') {
-  //       const editId = route.params.get('entryId');
-  //       return <Runs mode='edit' entryId={editId} />;
-  //     } else return <Runs mode='add' />;
-  //   }
-  //   if (path === 'workout-form' || path === 'workouts') {
-  //     const mode = route.params.get('mode');
-  //     if (mode === 'edit') {
-  //       const editId = route.params.get('workoutId');
-  //       return <Workouts mode='edit' workoutId={editId} />;
-  //     } else return <Workouts mode='add' />;
-  //   }
-  //   return <NotFound />;
-  // };
-
   if (isAuthorizing) return null;
   const contextValue = { user, handleSignIn, handleSignOut };
 
@@ -72,7 +44,9 @@ export default function App(props) {
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/home" element={<Home tab="activities"/>} />
+        <Route path="/home/activities" element={<Home tab="activities"/>} />
+        <Route path="/home/progress" element={<Home tab="progress" />} />
+        <Route path="/home/profile" element={<Home tab="profile" />} />
       </Routes>
     </AppContext.Provider>
   );

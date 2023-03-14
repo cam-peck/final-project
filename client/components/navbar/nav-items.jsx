@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function NavItems(props) {
   const { drawerIsOpen } = props;
-
+  const navigate = useNavigate();
   const [myRunsNavIsOpen, setMyRunsNavIsOpen] = useState(false);
 
   const handleClick = event => {
     if (event.target.tagName === 'BUTTON' && myRunsNavIsOpen === false) {
       if (drawerIsOpen) {
-        window.location.hash = '#home?tab=activities';
+        navigate('/home/activities');
       } else {
         setMyRunsNavIsOpen(true);
       }
@@ -33,9 +34,9 @@ export default function NavItems(props) {
         My Runs
       </button>
       <div onClick={handleClick} className={`absolute top-16 left-2 ${showMyRuns} z-10 flex-col bg-gray-100 text-black rounded-sm shadow-md`}>
-        <a className="hover:bg-blue-300 w-40 py-4 text-center" href="#home?tab=progress">Progress</a>
-        <a className="hover:bg-blue-300 w-40 py-4 text-center" href="#home?tab=activities">Activities</a>
-        <a className="hover:bg-blue-300 w-40 py-4 text-center" href="#home?tab=profile">Profile</a>
+        <Link className="hover:bg-blue-300 w-40 py-4 text-center" to="/home/progress">Progress</Link>
+        <Link className="hover:bg-blue-300 w-40 py-4 text-center" to="/home/activities">Activities</Link>
+        <Link className="hover:bg-blue-300 w-40 py-4 text-center" to="/home/profile">Profile</Link>
       </div>
       <a href='#workouts' className={`flex items-center text-lg transition-all ease-in-out duration-200 hover:bg-gray-400 hover:bg-opacity-20 ${myWorkoutsNav}`}>
         <i className="fa-solid fa-dumbbell text-lg pr-3" />
