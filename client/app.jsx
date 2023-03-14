@@ -5,7 +5,7 @@ import LoginPage from './pages/login';
 import RegisterPage from './pages/register';
 import Runs from './pages/runs';
 import Workouts from './pages/workouts';
-// import NotFound from './pages/not-found';
+import NotFound from './pages/not-found';
 import Navbar from './components/navbar/navbar';
 import { AppContext } from './lib';
 import { Routes, Route, useNavigate } from 'react-router-dom';
@@ -58,6 +58,7 @@ export default function App(props) {
           <Route path="upload" element={<Workouts mode="add" />} />
           <Route path=":workoutId" element={<Workouts mode="edit" />} />
         </Route>
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </AppContext.Provider>
   );
