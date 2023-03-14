@@ -11,7 +11,7 @@ import LoadingSpinner from '../loading-spinner';
 import NetworkError from '../network-error';
 import TimeoutError from '../timeout-error';
 import NotFound from '../../pages/not-found';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 export default function RunForm(props) {
   const { mode } = props;
@@ -33,6 +33,7 @@ export default function RunForm(props) {
 
   const { user } = useContext(AppContext);
   const { entryId } = useParams();
+  const navigate = useNavigate();
 
   const fileInputRef = createRef();
 
@@ -137,7 +138,7 @@ export default function RunForm(props) {
         setTimeoutError(true);
         return;
       }
-      window.location.hash = '#home?tab=activities';
+      navigate('/home/activities');
     } catch (err) {
       console.error('An error occured!', err);
       setNetworkError(true);

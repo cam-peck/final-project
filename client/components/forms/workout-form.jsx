@@ -9,7 +9,7 @@ import NetworkError from '../network-error';
 import { subYears, addYears } from 'date-fns';
 import { AppContext, removeTz } from '../../lib';
 import NotFound from '../../pages/not-found';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 export default function WorkoutForm(props) {
   const { mode } = props;
@@ -34,6 +34,7 @@ export default function WorkoutForm(props) {
 
   const { user } = useContext(AppContext);
   const { workoutId } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const prefillForm = async () => {
@@ -114,7 +115,7 @@ export default function WorkoutForm(props) {
       setCooldownDistanceUnits('miles');
       setCooldownNotes('');
       setFetchingData(false);
-      window.location.hash = '#workouts';
+      navigate('/workouts');
     } catch (err) {
       console.error('An error occured!', err);
       setNetworkError(true);
