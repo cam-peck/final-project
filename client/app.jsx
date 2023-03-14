@@ -4,7 +4,7 @@ import Home from './pages/home';
 import LoginPage from './pages/login';
 import RegisterPage from './pages/register';
 import Runs from './pages/runs';
-// import Workouts from './pages/workouts';
+import Workouts from './pages/workouts';
 // import NotFound from './pages/not-found';
 import Navbar from './components/navbar/navbar';
 import { AppContext } from './lib';
@@ -52,6 +52,11 @@ export default function App(props) {
         <Route path="/runs">
           <Route path="upload" element={<Runs mode="add" />} />
           <Route path=":entryId" element={<Runs mode="edit" />} />
+        </Route>
+        <Route path="/workouts">
+          <Route path="" element={<Workouts mode="view" />} />
+          <Route path="upload" element={<Workouts mode="add" />} />
+          <Route path=":workoutId" element={<Workouts mode="edit" />} />
         </Route>
       </Routes>
     </AppContext.Provider>

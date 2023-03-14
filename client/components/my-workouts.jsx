@@ -3,6 +3,7 @@ import FilteredWorkouts from './filtered-workouts';
 import TextInput from './inputs/text-input';
 import NetworkError from './network-error';
 import LoadingSpinner from './loading-spinner';
+import AddButton from '../components/add-button';
 import { AppContext, filterWorkouts } from '../lib';
 
 export default function MyWorkouts(props) {
@@ -75,6 +76,7 @@ export default function MyWorkouts(props) {
               : filteredWorkouts.length !== 0 ? <FilteredWorkouts workoutData={filteredWorkouts} deleteWorkout={deleteWorkout} /> : <p className='italic text-center'>No workouts found with your search parameters...</p>
           }
       </section>
+      <AddButton link='/workouts/upload' />
     </>
   );
 }

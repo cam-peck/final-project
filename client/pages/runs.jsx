@@ -10,7 +10,7 @@ export default function Runs(props) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user) navigate('/home/activities');
+    if (!user) navigate('/');
   }, [user, navigate]);
 
   return (

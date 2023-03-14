@@ -38,10 +38,10 @@ export default function NavItems(props) {
         <Link className="hover:bg-blue-300 w-40 py-4 text-center" to="/home/activities">Activities</Link>
         <Link className="hover:bg-blue-300 w-40 py-4 text-center" to="/home/profile">Profile</Link>
       </div>
-      <a href='#workouts' className={`flex items-center text-lg transition-all ease-in-out duration-200 hover:bg-gray-400 hover:bg-opacity-20 ${myWorkoutsNav}`}>
+      <Link to='/workouts' className={`flex items-center text-lg transition-all ease-in-out duration-200 hover:bg-gray-400 hover:bg-opacity-20 ${myWorkoutsNav}`}>
         <i className="fa-solid fa-dumbbell text-lg pr-3" />
         My Workouts
-      </a>
+      </Link>
     </div>
   );
 }

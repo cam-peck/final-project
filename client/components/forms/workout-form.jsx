@@ -9,9 +9,10 @@ import NetworkError from '../network-error';
 import { subYears, addYears } from 'date-fns';
 import { AppContext, removeTz } from '../../lib';
 import NotFound from '../../pages/not-found';
+import { useParams } from 'react-router-dom';
 
 export default function WorkoutForm(props) {
-  const { mode, workoutId } = props;
+  const { mode } = props;
 
   const [date, setDate] = useState(new Date());
   const [description, setDescription] = useState('');
@@ -32,11 +33,11 @@ export default function WorkoutForm(props) {
   const [idError, setIdError] = useState(false);
 
   const { user } = useContext(AppContext);
+  const { workoutId } = useParams();
 
   useEffect(() => {
     const prefillForm = async () => {
       setFetchingData(true);
-      const workoutId = Number(props.workoutId);
       const req = {
         method: 'GET',
         headers: {
@@ -80,7 +81,7 @@ export default function WorkoutForm(props) {
     if (mode === 'edit') {
       prefillForm();
     }
-  }, [mode, props.workoutId, user]);
+  }, [mode, user, workoutId]);
 
   const handleSubmit = async event => {
     event.preventDefault();
