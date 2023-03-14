@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import AuthForm from '../components/forms/auth-form';
+import { BrowserRouter } from 'react-router-dom';
 
 const { getByLabelText, getByTestId } = screen;
 
@@ -9,7 +10,7 @@ describe('Tests for auth form component', () => {
 
   describe('Tests for sign-up form', () => {
 
-    beforeEach(() => render(<AuthForm action='sign-up' />));
+    beforeEach(() => render(<AuthForm action='sign-up' />, { wrapper: BrowserRouter }));
 
     test('Renders the appropriate inputs', async () => {
 
@@ -49,7 +50,7 @@ describe('Tests for auth form component', () => {
     });
 
     test('Updates the value in the date field', async () => {
-      const birthdayInput = getByTestId('signup-datepicker').firstChild.firstChild.firstChild;
+      const birthdayInput = getByTestId('signup-datepicker').firstChild.firstChild.firstChild.nextSibling;
       fireEvent.change(birthdayInput, { target: { value: '09/10/1991' } });
 
       expect(birthdayInput.value).toBe('09/10/1991');
@@ -87,7 +88,8 @@ describe('Tests for auth form component', () => {
   });
 
   describe('Tests for sign-in form', () => {
-    beforeEach(() => render(<AuthForm />));
+    beforeEach(() => render(<AuthForm />, { wrapper: BrowserRouter }));
+
     test('Renders the appropriate inputs for sign-in', async () => {
       const emailInput = getByLabelText(/email/i);
       const passwordInput = getByLabelText(/password/i);

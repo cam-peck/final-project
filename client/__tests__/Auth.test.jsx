@@ -1,8 +1,9 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { AppContext } from '../lib';
-import Auth from '../pages/auth';
+import App from '../app';
+import { BrowserRouter } from 'react-router-dom';
 
 describe('Tests for auth page component', () => {
 
@@ -15,22 +16,28 @@ describe('Tests for auth page component', () => {
 
   test('renders the sign-in page if the user has not signed-in', async () => {
     render(
-      <AppContext.Provider value={context}>
-        <Auth />
-      </AppContext.Provider>
+      <BrowserRouter>
+        <AppContext.Provider value={context}>
+          <App />
+        </AppContext.Provider>
+      </BrowserRouter>
+
     );
 
     expect(screen.getAllByRole('button')).toHaveLength(3);
   });
 
-  test('renders the sign-up page when the path changes', async () => {
-    context.route = { path: 'sign-up' };
+  test('renders the sign-up page when register is clicked', async () => {
     render(
-      <AppContext.Provider value={context}>
-        <Auth />
-      </AppContext.Provider>
+      <BrowserRouter>
+        <AppContext.Provider value={context}>
+          <App />
+        </AppContext.Provider>
+      </BrowserRouter>
     );
 
+    const registerButton = screen.getByText('Register');
+    fireEvent.click(registerButton);
     expect(screen.getAllByRole('button')).toHaveLength(1);
   });
 
