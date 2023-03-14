@@ -3,9 +3,11 @@ import { format } from 'date-fns';
 import { removeTz } from '../../lib';
 import EditDeleteMenu from '../edit-delete-menu';
 import DeleteSnackbar from '../delete-snackbar';
+import { useNavigate } from 'react-router-dom';
 
 export default function WorkoutCard(props) {
   const { editDeleteEnabled, deleteWorkout } = props;
+  const navigate = useNavigate();
 
   const [toggleMenuIsOpen, setToggleMenuIsOpen] = useState(false);
   const [snackbarIsOpen, setSnackBarIsOpen] = useState(false);
@@ -21,7 +23,7 @@ export default function WorkoutCard(props) {
   const handleClick = (event, entryId) => {
     event.preventDefault();
     if (event.target.id === 'edit') {
-      window.location.hash = `#workout-form?mode=edit&workoutId=${workoutId}`;
+      navigate(`/workouts/${workoutId}`);
     }
     if (event.target.id === 'delete') {
       setSnackBarIsOpen(true);

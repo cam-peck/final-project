@@ -4,9 +4,10 @@ import DatePicker from 'react-datepicker';
 import { subYears } from 'date-fns';
 import 'react-datepicker/dist/react-datepicker.css';
 import LoadingSpinner from '../loading-spinner';
+import { useNavigate } from 'react-router-dom';
 
 export default function AuthForm(props) {
-  const { action, onSignIn } = props;
+  const { action, handleSignIn } = props;
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -16,6 +17,8 @@ export default function AuthForm(props) {
   const [signInWasInvalid, setSignInWasInvalid] = useState(false);
   const [fetchingData, setFetchingData] = useState(false);
   const [networkError, setNetworkError] = useState(false);
+
+  const navigate = useNavigate();
 
   const resetState = () => {
     setEmail('');
@@ -44,11 +47,11 @@ export default function AuthForm(props) {
       const result = await response.json();
       if (action === 'sign-up') {
         resetState();
-        window.location.hash = '';
+        navigate('/');
       } else if (result.user && result.token) {
         resetState();
-        onSignIn(result);
-        window.location.hash = '#home?tab=activities';
+        handleSignIn(result);
+        navigate('/home/activites');
       } else {
         setSignInWasInvalid(true);
         setFetchingData(false);
@@ -77,8 +80,8 @@ export default function AuthForm(props) {
       const result = await response.json();
       if (result.user && result.token) {
         resetState();
-        onSignIn(result);
-        window.location.hash = '#home?tab=activities';
+        handleSignIn(result);
+        navigate('/home/activities');
       } else {
         setSignInWasInvalid(true);
         setFetchingData(false);
@@ -122,10 +125,10 @@ export default function AuthForm(props) {
         </div>
         {
             action === 'sign-up'
-              ? <p className="font-roboto text-center">Already have an account? <a href="#" className="font-roboto text-blue-500 underline">Sign in</a> </p>
+              ? <p className="font-roboto text-center">Already have an account? <span onClick={() => navigate('/')} className="font-roboto text-blue-500 underline hover:cursor-pointer">Sign in</span > </p>
               : <div className="flex gap-2">
                 <button type="button" onClick={oneClickSignIn} className="w-1/2 bg-orange-400 transition-colors ease-in-out duration-300 text-white p-3 rounded-lg font-bold text-lg">Try me out!</button>
-                <button type="button" onClick={() => { window.location.hash = 'sign-up'; }} className="w-1/2 bg-green-500 transition-colors ease-in-out duration-300 text-white p-3 rounded-lg font-bold text-lg text-center">Register</button>
+                <button type="button" onClick={() => { navigate('/register'); }} className="w-1/2 bg-green-500 transition-colors ease-in-out duration-300 text-white p-3 rounded-lg font-bold text-lg text-center">Register</button>
               </div>
           }
         { fetchingData === true

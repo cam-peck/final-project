@@ -1,16 +1,20 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import RunTabs from '../components/runs/run-tabs';
 import Progress from '../components/runs/progress';
 import Activities from '../components/runs/activities';
 import Profile from '../components/runs/profile';
-import Redirect from '../components/redirect';
+import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../lib';
 
 export default function Home(props) {
   const { user } = useContext(AppContext);
   const { tab } = props;
+  const navigate = useNavigate();
 
-  if (!user) return <Redirect to='#' />;
+  useEffect(() => {
+    if (!user) navigate('/', 'User Not Authorized!');
+  }, [user, navigate]);
+
   return (
     <main>
       <RunTabs tab={tab}>

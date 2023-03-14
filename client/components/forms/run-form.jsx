@@ -11,9 +11,10 @@ import LoadingSpinner from '../loading-spinner';
 import NetworkError from '../network-error';
 import TimeoutError from '../timeout-error';
 import NotFound from '../../pages/not-found';
+import { useParams, useNavigate } from 'react-router-dom';
 
 export default function RunForm(props) {
-  const { mode, entryId } = props;
+  const { mode } = props;
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -31,12 +32,14 @@ export default function RunForm(props) {
   const [idError, setIdError] = useState(false);
 
   const { user } = useContext(AppContext);
+  const { entryId } = useParams();
+  const navigate = useNavigate();
+
   const fileInputRef = createRef();
 
   useEffect(() => {
     const prefillForm = async () => {
       setFetchingData(true);
-      const entryId = Number(props.entryId);
       const req = {
         method: 'GET',
         headers: {
@@ -135,7 +138,7 @@ export default function RunForm(props) {
         setTimeoutError(true);
         return;
       }
-      window.location.hash = '#home?tab=activities';
+      navigate('/home/activities');
     } catch (err) {
       console.error('An error occured!', err);
       setNetworkError(true);

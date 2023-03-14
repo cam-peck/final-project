@@ -1,26 +1,26 @@
-import React, { useContext } from 'react';
-import Redirect from '../components/redirect';
+import React, { useContext, useEffect } from 'react';
 import { AppContext } from '../lib';
 import WorkoutForm from '../components/forms/workout-form';
-import AddButton from '../components/add-button';
 import MyWorkouts from '../components/my-workouts';
+import { useNavigate } from 'react-router-dom';
 
 export default function Workouts(props) {
-  const { user, route } = useContext(AppContext);
+  const { user } = useContext(AppContext);
   const { mode, workoutId } = props;
+  const navigate = useNavigate();
 
-  if (!user) return <Redirect to="#"/>;
-  const renderMe = route.path === 'workout-form'
-    ? <WorkoutForm mode={mode} workoutId={workoutId} />
-    : <MyWorkouts />;
-  const addWorkoutButton = route.path === 'workouts'
-    ? <AddButton href='#workout-form?mode=add'/>
-    : '';
+  useEffect(() => {
+    if (!user) navigate('/');
+  }, [user, navigate]);
+
   return (
     <main>
       <section className="max-w-6xl mx-auto mt-6 px-6">
-        {renderMe}
-        {addWorkoutButton}
+        {
+          mode === 'view'
+            ? <MyWorkouts />
+            : <WorkoutForm mode={mode} workoutId={workoutId} />
+        }
       </section>
     </main>
   );

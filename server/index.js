@@ -8,6 +8,7 @@ const staticMiddleware = require('./static-middleware');
 const authorizationMiddleware = require('./authorization-middleware');
 const errorMiddleware = require('./error-middleware');
 const timeout = require('connect-timeout');
+const path = require('path');
 
 const db = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
@@ -76,11 +77,10 @@ app.post('/api/auth/sign-in', async (req, res, next) => {
   }
 });
 
-app.use(authorizationMiddleware);
+// AUTH ROUTES //
 
 // CRUD Runs Routes //
-
-app.post('/api/runs', async (req, res, next) => {
+app.post('/api/runs', authorizationMiddleware, async (req, res, next) => {
   const { userId } = req.user;
   const { title, description, date, durationHours, durationMinutes, durationSeconds, distance, distanceUnits, hasGpx } = req.body;
   try {
@@ -117,16 +117,19 @@ app.post('/api/runs', async (req, res, next) => {
   }
 });
 
-app.get('/api/runs', async (req, res, next) => {
-  const { userId } = req.user;
+// AUTH ROUTES //
+
+app.get('/api/runs', authorizationMiddleware, async (req, res, next) => {
   const sql = `
    SELECT "title", "description", "date", "duration", "distance", "distanceUnits", "entryId", "hasGpx"
      FROM "runs"
     WHERE "userId" = $1
  ORDER BY "date" DESC
   `;
-  const params = [userId];
   try {
+    const { userId } = req.user;
+    const params = [userId];
+
     const result = await db.query(sql, params);
     const data = result.rows;
     res.json(data);
@@ -135,16 +138,16 @@ app.get('/api/runs', async (req, res, next) => {
   }
 });
 
-app.get('/api/runs/gpxData', async (req, res, next) => {
-  const { userId } = req.user;
+app.get('/api/runs/gpxData', authorizationMiddleware, async (req, res, next) => {
   const sql = `
   SELECT "entryId", "latitude", "longitude", "elevation", "time"
     FROM "gpxData"
    WHERE "userId" = $1
 ORDER BY "time";
   `;
-  const params = [userId];
   try {
+    const { userId } = req.user;
+    const params = [userId];
     const result = await db.query(sql, params);
     const gpxData = result.rows;
     const gpxObj = {};
@@ -164,7 +167,7 @@ ORDER BY "time";
 
 });
 
-app.get('/api/runs/:entryId', async (req, res, next) => {
+app.get('/api/runs/:entryId', authorizationMiddleware, async (req, res, next) => {
   const { userId } = req.user;
   const { entryId } = req.params;
   try {
@@ -210,7 +213,7 @@ ORDER BY "time";
   }
 });
 
-app.put('/api/runs/:entryId', async (req, res, next) => {
+app.put('/api/runs/:entryId', authorizationMiddleware, async (req, res, next) => {
   const { userId } = req.user;
   const { entryId } = req.params;
   const { title, description, date, durationHours, durationMinutes, durationSeconds, distance, distanceUnits, hasGpx } = req.body;
@@ -269,7 +272,7 @@ app.put('/api/runs/:entryId', async (req, res, next) => {
   }
 });
 
-app.delete('/api/runs/:entryId', async (req, res, next) => {
+app.delete('/api/runs/:entryId', authorizationMiddleware, async (req, res, next) => {
   const { userId } = req.user;
   const { entryId } = req.params;
   try {
@@ -303,7 +306,7 @@ RETURNING *;
 
 // Running Tab Routes //
 
-app.get('/api/progress', async (req, res, next) => {
+app.get('/api/progress', authorizationMiddleware, async (req, res, next) => {
   const { userId } = req.user;
 
   const squaresSql = `
@@ -321,7 +324,7 @@ app.get('/api/progress', async (req, res, next) => {
   }
 });
 
-app.post('/api/restDays', async (req, res, next) => {
+app.post('/api/restDays', authorizationMiddleware, async (req, res, next) => {
   const { userId } = req.user;
   const { newRestDays } = req.body;
   try {
@@ -345,7 +348,7 @@ app.post('/api/restDays', async (req, res, next) => {
 }
 );
 
-app.get('/api/restDays', async (req, res, next) => {
+app.get('/api/restDays', authorizationMiddleware, async (req, res, next) => {
   const { userId } = req.user;
   const restDaySql = `
   SELECT "date", "restId"
@@ -362,7 +365,7 @@ app.get('/api/restDays', async (req, res, next) => {
   }
 });
 
-app.delete('/api/restDays', async (req, res, next) => {
+app.delete('/api/restDays', authorizationMiddleware, async (req, res, next) => {
   const { userId } = req.user;
   const { tempDeletedDays } = req.body;
   try {
@@ -387,7 +390,7 @@ RETURNING *;
   }
 });
 
-app.get('/api/profile', async (req, res, next) => {
+app.get('/api/profile', authorizationMiddleware, async (req, res, next) => {
   const { userId } = req.user;
   const profileSql = `
   SELECT "displayName", "email", "dateOfBirth", "weeklyRestDay"
@@ -404,7 +407,7 @@ app.get('/api/profile', async (req, res, next) => {
   }
 });
 
-app.put('/api/profile/weeklyRestDay', async (req, res, next) => {
+app.put('/api/profile/weeklyRestDay', authorizationMiddleware, async (req, res, next) => {
   const { userId } = req.user;
   const { tempWeeklyRestDay } = req.body;
   try {
@@ -428,7 +431,7 @@ app.put('/api/profile/weeklyRestDay', async (req, res, next) => {
 
 // CRUD Workout Routes //
 
-app.post('/api/workouts', async (req, res, next) => {
+app.post('/api/workouts', authorizationMiddleware, async (req, res, next) => {
   const { userId } = req.user;
   const { date, description, warmupDistanceUnits, workoutDistanceUnits, cooldownDistanceUnits } = req.body;
   let { warmupDistance, warmupNotes, workoutDistance, workoutNotes, cooldownDistance, cooldownNotes } = req.body;
@@ -459,7 +462,7 @@ app.post('/api/workouts', async (req, res, next) => {
   }
 });
 
-app.get('/api/workouts', async (req, res, next) => {
+app.get('/api/workouts', authorizationMiddleware, async (req, res, next) => {
   const { userId } = req.user;
   const sql = `
   SELECT "date", "description", "warmupDistance", "warmupDistanceUnits", "warmupNotes", "workoutDistance", "workoutDistanceUnits", "workoutNotes", "cooldownDistance", "cooldownDistanceUnits", "cooldownNotes", "workoutId"
@@ -477,7 +480,7 @@ ORDER BY "date" DESC;
   }
 });
 
-app.get('/api/workouts/:workoutId', async (req, res, next) => {
+app.get('/api/workouts/:workoutId', authorizationMiddleware, async (req, res, next) => {
   const { userId } = req.user;
   const { workoutId } = req.params;
   try {
@@ -502,7 +505,7 @@ app.get('/api/workouts/:workoutId', async (req, res, next) => {
   }
 });
 
-app.put('/api/workouts/:workoutId', async (req, res, next) => {
+app.put('/api/workouts/:workoutId', authorizationMiddleware, async (req, res, next) => {
   const { userId } = req.user;
   const { workoutId } = req.params;
   try {
@@ -552,7 +555,7 @@ RETURNING *
   }
 });
 
-app.delete('/api/workouts/:workoutId', async (req, res, next) => {
+app.delete('/api/workouts/:workoutId', authorizationMiddleware, async (req, res, next) => {
   const { userId } = req.user;
   const { workoutId } = req.params;
   try {
@@ -573,6 +576,14 @@ RETURNING *;
     } else {
       res.json(deletedWorkout);
     }
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get('/*', (req, res, next) => {
+  try {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
   } catch (err) {
     next(err);
   }
