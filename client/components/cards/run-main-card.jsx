@@ -5,12 +5,14 @@ import EditDeleteMenu from '../edit-delete-menu';
 import Map from '../gmaps/map';
 import NoGpxFound from '../gmaps/no-gpx-found';
 import { format } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
 
 export default function RunMainCard(props) {
   const { title, date, description, distance, distanceUnits, duration, closeModal, entryId, gpxData, deleteRun } = props;
 
   const [toggleMenuIsOpen, setToggleMenuIsOpen] = useState(false);
   const [snackbarIsOpen, setSnackBarIsOpen] = useState(false);
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setToggleMenuIsOpen(!toggleMenuIsOpen);
@@ -23,7 +25,7 @@ export default function RunMainCard(props) {
   const handleClick = (event, entryId) => {
     event.preventDefault();
     if (event.target.id === 'edit') {
-      window.location.hash = `#run-form?mode=edit&entryId=${entryId}`;
+      navigate(`/runs/${entryId}`);
     }
     if (event.target.id === 'delete') {
       setSnackBarIsOpen(true);

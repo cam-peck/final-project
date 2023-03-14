@@ -110,7 +110,7 @@ export default function Activities(props) {
               ? <p className="text-center italic">No runs found... Add a run using the &quot;+&quot; button in the bottom right.</p>
               : filteredRuns.length !== 0 ? <FilteredRuns runData={filteredRuns} gpxData={gpxData} openModal={openModal} /> : <p className='italic text-center'>No runs found with your search parameters...</p>
             }
-        <AddButton href="#run-form?mode=add" />
+        <AddButton link="/runs/upload" />
       </section>
       {modal}
     </>

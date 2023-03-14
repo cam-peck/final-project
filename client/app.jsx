@@ -3,7 +3,7 @@ import jwtDecode from 'jwt-decode';
 import Home from './pages/home';
 import LoginPage from './pages/login';
 import RegisterPage from './pages/register';
-// import Runs from './pages/runs';
+import Runs from './pages/runs';
 // import Workouts from './pages/workouts';
 // import NotFound from './pages/not-found';
 import Navbar from './components/navbar/navbar';
@@ -44,9 +44,15 @@ export default function App(props) {
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/home/activities" element={<Home tab="activities"/>} />
-        <Route path="/home/progress" element={<Home tab="progress" />} />
-        <Route path="/home/profile" element={<Home tab="profile" />} />
+        <Route path="/home">
+          <Route path="activities" element={<Home tab="activities" />} />
+          <Route path="progress" element={<Home tab="progress" />} />
+          <Route path="profile" element={<Home tab="profile" />} />\
+        </Route>
+        <Route path="/runs">
+          <Route path="upload" element={<Runs mode="add" />} />
+          <Route path=":entryId" element={<Runs mode="edit" />} />
+        </Route>
       </Routes>
     </AppContext.Provider>
   );
