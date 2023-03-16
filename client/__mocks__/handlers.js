@@ -41,5 +41,19 @@ export const handlers = [
         }
       )
     );
+  }),
+  rest.get('/api/profile', (req, res, ctx) => {
+    return res(
+      ctx.status(200),
+      ctx.set('Content-type', 'application/json'),
+      ctx.json(
+        {
+          displayName: 'Cam',
+          email: 'bestestemailever@gmail.com',
+          dateOfBirth: '1991-09-08T00:00:00.000Z',
+          weeklyRestDay: 'Wednesday'
+        }
+      )
+    );
   })
 ];
