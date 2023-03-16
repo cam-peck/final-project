@@ -138,6 +138,7 @@ export default function RunForm(props) {
         setTimeoutError(true);
         return;
       }
+      setFetchingData(false);
       navigate('/home/activities');
     } catch (err) {
       console.error('An error occured!', err);

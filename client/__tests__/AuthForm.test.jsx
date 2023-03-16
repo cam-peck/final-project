@@ -5,6 +5,13 @@ import AuthForm from '../components/forms/auth-form';
 import { BrowserRouter } from 'react-router-dom';
 import { AppContext } from '../lib';
 
+const mockedUseNavigate = jest.fn();
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockedUseNavigate
+}));
+
 const { getByLabelText, getByTestId, getByText } = screen;
 
 describe('Tests for auth form component', () => {
@@ -41,7 +48,7 @@ describe('Tests for auth form component', () => {
       fireEvent.submit(submitButton);
       await waitForElementToBeRemoved(screen.getByTestId('loading-spinner'));
 
-      expect(emailInput.value).toBe('');
+      expect(mockedUseNavigate).toHaveBeenCalledWith('/');
 
     });
   });

@@ -42,6 +42,27 @@ export const handlers = [
       );
     }
   }),
+  rest.post('/api/runs', async (req, res, ctx) => {
+    const result = await req.json();
+    const { title, description, date, durationHours, durationMinutes, durationSeconds, distance, distanceUnits, hasGpx, gpxPath } = result;
+    return res(
+      ctx.status(201),
+      ctx.json([
+        {
+          title,
+          description,
+          date,
+          durationHours,
+          durationMinutes,
+          durationSeconds,
+          distance,
+          distanceUnits,
+          hasGpx,
+          gpxPath
+        }
+      ])
+    );
+  }),
   rest.get('/api/runs', (req, res, ctx) => {
     return res(
       ctx.status(200),
