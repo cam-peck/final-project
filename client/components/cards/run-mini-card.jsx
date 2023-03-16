@@ -28,6 +28,7 @@ export default function RunMiniCard(props) {
         {
           gpxData !== null
             ? <iframe
+              title='run-mini-card-gmaps'
               width="100%"
               height='120px'
               frameBorder="0"
