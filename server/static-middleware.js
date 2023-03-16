@@ -1,10 +1,10 @@
 const path = require('path');
-const expressStaticGzip = require('express-static-gzip');
+const express = require('express');
 
 const publicPath = path.join(__dirname, 'public');
 
 const staticMiddleware = module.exports = [
-  expressStaticGzip(publicPath)
+  express.static(publicPath)
 ];
 
 if (process.env.NODE_ENV === 'development') {
