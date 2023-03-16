@@ -8,7 +8,6 @@ import { useNavigate } from 'react-router-dom';
 
 export default function AuthForm(props) {
   const { action, handleSignIn } = props;
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
@@ -51,7 +50,7 @@ export default function AuthForm(props) {
       } else if (result.user && result.token) {
         resetState();
         handleSignIn(result);
-        navigate('/home/activites');
+        navigate('/home/activities');
       } else {
         setSignInWasInvalid(true);
         setFetchingData(false);
@@ -121,7 +120,7 @@ export default function AuthForm(props) {
             : ''
         }
         <div>
-          <button className="w-full bg-blue-500 transition-colors ease-in-out duration-300 hover:bg-blue-600 text-white p-3 rounded-lg font-bold text-lg mb-2">{formButton}</button>
+          <button type="submit" className="w-full bg-blue-500 transition-colors ease-in-out duration-300 hover:bg-blue-600 text-white p-3 rounded-lg font-bold text-lg mb-2">{formButton}</button>
         </div>
         {
             action === 'sign-up'
