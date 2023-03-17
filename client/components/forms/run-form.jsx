@@ -82,11 +82,7 @@ export default function RunForm(props) {
     if (mode === 'edit') {
       prefillForm();
     }
-  }, [entryId, mode, props.entryId, user]);
-
-  const toggleGpxTrue = () => {
-    setHasGpx(true);
-  };
+  }, [entryId, mode, user]);
 
   const handleGpxData = event => {
     setFetchingData(true);
@@ -168,7 +164,7 @@ export default function RunForm(props) {
       <h1 className="text-3xl font-lora font-bold mb-4">{titleMessage}</h1>
       <section className="md:flex gap-6">
         <div className="md:w-2/4 w-full flex-shrink-0 mt-0.5">
-          <UploadRunCard fileInputRef={fileInputRef} toggleGpxTrue={toggleGpxTrue} handleGpxData={handleGpxData} gpxPath={gpxPath} hasGpx={hasGpx}/>
+          <UploadRunCard fileInputRef={fileInputRef} setHasGpx={setHasGpx} handleGpxData={handleGpxData} gpxPath={gpxPath} hasGpx={hasGpx}/>
         </div>
         <div className="md:flex md:gap-6">
           <div className="w-full">

@@ -83,21 +83,21 @@ app.post('/api/auth/sign-in', async (req, res, next) => {
 app.post('/api/runs', authorizationMiddleware, async (req, res, next) => {
   const { userId } = req.user;
   const { title, description, date, durationHours, durationMinutes, durationSeconds, distance, distanceUnits, hasGpx } = req.body;
-  try {
-    if (!title || !description || !date || !durationHours || !durationMinutes || !durationSeconds || !distance || !distanceUnits) {
-      throw new ClientError(400, 'title, description, date, durationHours, durationMinutes, durationSeconds, distance, and distanceUnits are required fields.');
-    }
-    const duration = `${durationHours}:${durationMinutes}:${durationSeconds}`;
-    const insertRunSql = `
+  const duration = `${durationHours}:${durationMinutes}:${durationSeconds}`;
+  const insertRunSql = `
   INSERT INTO "runs" ("userId", "title", "description", "date", "duration", "distance", "distanceUnits", "hasGpx")
   VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
   RETURNING *;
   `;
-    const insertGpxSql = `
+  const insertGpxSql = `
   INSERT INTO "gpxData" ("userId", "entryId", "latitude", "longitude", "elevation", "time")
        VALUES ($1, $2, $3, $4, $5, $6)
     RETURNING *;
   `;
+  try {
+    if (!title || !description || !date || !durationHours || !durationMinutes || !durationSeconds || !distance || !distanceUnits) {
+      throw new ClientError(400, 'title, description, date, durationHours, durationMinutes, durationSeconds, distance, and distanceUnits are required fields.');
+    }
     const insertRunParams = [userId, title, description, date, duration, distance, distanceUnits, hasGpx];
     const result = await db.query(insertRunSql, insertRunParams);
     const [newRun] = result.rows;
