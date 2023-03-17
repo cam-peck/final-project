@@ -6,9 +6,14 @@ export default function FilteredWorkouts(props) {
   return (
     <div className="md:grid md:grid-cols-2 gap-6 md:gap-8 flex flex-col mb-4">
       {
-        workoutData.map((workout, index) => {
+        workoutData.map(workout => {
           return (
-            <WorkoutCard key={workout.workoutId} data={workout} deleteWorkout={deleteWorkout} editDeleteEnabled={true}/>
+            <WorkoutCard
+              key={workout.workoutId}
+              data={workout}
+              deleteWorkout={deleteWorkout}
+              editDeleteEnabled={true}
+            />
           );
         })
       }
