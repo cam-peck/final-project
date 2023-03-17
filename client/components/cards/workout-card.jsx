@@ -12,22 +12,14 @@ export default function WorkoutCard(props) {
   const [toggleMenuIsOpen, setToggleMenuIsOpen] = useState(false);
   const [snackbarIsOpen, setSnackBarIsOpen] = useState(false);
 
-  const toggleMenu = () => {
-    setToggleMenuIsOpen(!toggleMenuIsOpen);
-  };
-
-  const toggleSnack = () => {
-    setSnackBarIsOpen(!snackbarIsOpen);
-  };
-
-  const handleClick = (event, entryId) => {
+  const handleClick = event => {
     event.preventDefault();
     if (event.target.id === 'edit') {
       navigate(`/workouts/${workoutId}`);
     }
     if (event.target.id === 'delete') {
       setSnackBarIsOpen(true);
-      toggleMenu();
+      setToggleMenuIsOpen(false);
     }
   };
 
@@ -42,7 +34,7 @@ export default function WorkoutCard(props) {
       <div className="mb-1.5 flex flex-col gap-[2px]">
         <div className="flex justify-between relative">
           <h1 className="text-lg x2s:text-2xl">{formattedDate}</h1>
-          <i onClick={toggleMenu} className={`fa-solid fa-lg fa-ellipsis-vertical ${editDeleteEnabled ? '' : 'hidden'} hover:cursor-pointer block pl-2 pt-3 pb-3`} />
+          <i onClick={() => setToggleMenuIsOpen(!toggleMenuIsOpen) } className={`fa-solid fa-lg fa-ellipsis-vertical ${editDeleteEnabled ? '' : 'hidden'} hover:cursor-pointer block pl-2 pt-3 pb-3`} />
           {
             toggleMenuIsOpen === true
               ? <EditDeleteMenu id={workoutId} handleClick={handleClick}/>
@@ -81,7 +73,7 @@ export default function WorkoutCard(props) {
       </div>
       {
         snackbarIsOpen === true
-          ? <DeleteSnackbar isOpen={snackbarIsOpen} toggle={toggleSnack} id={workoutId} handleDelete={handleDelete} left='left-0' top='top-0' right='right-0' bottom='bottom-0' alignItems='items-center'/>
+          ? <DeleteSnackbar isOpen={snackbarIsOpen} toggle={() => setSnackBarIsOpen(!snackbarIsOpen)} id={workoutId} handleDelete={handleDelete} left='left-0' top='top-0' right='right-0' bottom='bottom-0' alignItems='items-center'/>
           : ''
         }
     </section>

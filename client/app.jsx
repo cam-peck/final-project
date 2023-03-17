@@ -13,6 +13,7 @@ import { Routes, Route, useNavigate } from 'react-router-dom';
 export default function App(props) {
   const [user, setUser] = useState(null);
   const [isAuthorizing, setIsAuthorizing] = useState(true);
+  const [myRunsNavIsOpen, setMyRunsNavIsOpen] = useState(false);
 
   const navigate = useNavigate();
 
@@ -21,6 +22,21 @@ export default function App(props) {
     const user = token ? jwtDecode(token) : null;
     setUser(user);
     setIsAuthorizing(false);
+  }, []);
+
+  useEffect(() => {
+    const closeMenus = event => {
+      if ((event.target.tagName === 'BUTTON' && event.target.textContent === 'My Runs')) return;
+      if ((event.target.tagName === 'I' && event.target.classList.contains('fa-solid'))) return;
+      setMyRunsNavIsOpen(false);
+    };
+
+    document.addEventListener('click', event => {
+      closeMenus(event);
+    });
+    return () => document.removeEventListener('click', event => {
+      closeMenus(event);
+    });
   }, []);
 
   const handleSignIn = result => {
@@ -40,7 +56,7 @@ export default function App(props) {
 
   return (
     <AppContext.Provider value={contextValue}>
-      <Navbar />
+      <Navbar myRunsNavIsOpen={myRunsNavIsOpen} setMyRunsNavIsOpen={setMyRunsNavIsOpen}/>
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />

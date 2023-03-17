@@ -14,10 +14,6 @@ export default function RunMainCard(props) {
   const [snackbarIsOpen, setSnackBarIsOpen] = useState(false);
   const navigate = useNavigate();
 
-  const toggleSnack = () => {
-    setSnackBarIsOpen(!snackbarIsOpen);
-  };
-
   const handleClick = (event, entryId) => {
     event.preventDefault();
     if (event.target.id === 'edit') {
@@ -52,7 +48,7 @@ export default function RunMainCard(props) {
           <div className="mb-4">
             <div className="flex justify-between items-center relative mb-1">
               <h1 className="font-lora text-lg md:text-xl font-bold">{title}</h1>
-              <i onClick={() => setToggleMenuIsOpen(true) } className="fa-solid fa-lg fa-ellipsis-vertical hover:cursor-pointer block pl-2 pt-3 pb-3" />
+              <i onClick={() => setToggleMenuIsOpen(!toggleMenuIsOpen) } className="fa-solid fa-lg fa-ellipsis-vertical hover:cursor-pointer block pl-2 pt-3 pb-3" />
               {
                 toggleMenuIsOpen === true
                   ? <EditDeleteMenu id={entryId} handleClick={handleClick} />
@@ -79,7 +75,7 @@ export default function RunMainCard(props) {
       </div>
       {
         snackbarIsOpen === true
-          ? <DeleteSnackbar isOpen={snackbarIsOpen} toggle={toggleSnack} id={entryId} handleDelete={handleDelete} bottom='bottom-8'/>
+          ? <DeleteSnackbar isOpen={snackbarIsOpen} toggle={() => setSnackBarIsOpen(!snackbarIsOpen)} id={entryId} handleDelete={handleDelete} bottom='bottom-8'/>
           : ''
       }
     </div>
