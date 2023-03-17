@@ -25,17 +25,17 @@ export default function App(props) {
   }, []);
 
   useEffect(() => {
-    const closeMenus = event => {
+    const closeNavRunsMenu = event => {
       if ((event.target.tagName === 'BUTTON' && event.target.textContent === 'My Runs')) return;
       if ((event.target.tagName === 'I' && event.target.classList.contains('fa-solid'))) return;
       setMyRunsNavIsOpen(false);
     };
 
     document.addEventListener('click', event => {
-      closeMenus(event);
+      closeNavRunsMenu(event);
     });
     return () => document.removeEventListener('click', event => {
-      closeMenus(event);
+      closeNavRunsMenu(event);
     });
   }, []);
 
