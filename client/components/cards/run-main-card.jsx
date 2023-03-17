@@ -14,14 +14,6 @@ export default function RunMainCard(props) {
   const [snackbarIsOpen, setSnackBarIsOpen] = useState(false);
   const navigate = useNavigate();
 
-  const toggleMenu = () => {
-    setToggleMenuIsOpen(!toggleMenuIsOpen);
-  };
-
-  const toggleSnack = () => {
-    setSnackBarIsOpen(!snackbarIsOpen);
-  };
-
   const handleClick = (event, entryId) => {
     event.preventDefault();
     if (event.target.id === 'edit') {
@@ -29,7 +21,7 @@ export default function RunMainCard(props) {
     }
     if (event.target.id === 'delete') {
       setSnackBarIsOpen(true);
-      toggleMenu();
+      setToggleMenuIsOpen(false);
     }
   };
 
@@ -43,7 +35,7 @@ export default function RunMainCard(props) {
   const formattedDate = format(new Date(dtDateOnly), 'MMMM d, yyyy');
   return (
     <div onClick={event => { if (event.target.id === 'background') { closeModal(); } }} id="background" className="w-full overflow-y-scroll h-screen fixed flex justify-center items-center top-0 left-0 bg-gray-800 bg-opacity-30 z-10">
-      <div className="absolute tall:relative bg-white rounded-xl p-6 max-w-xl min-w-[260px] w-[85%] top-10 tall:top-0 ml-6 mr-6">
+      <div onClick={event => { if (event.target.tagName !== 'I') { setToggleMenuIsOpen(false); } } } className="absolute tall:relative bg-white rounded-xl p-6 max-w-xl min-w-[260px] w-[85%] top-10 tall:top-0 ml-6 mr-6">
         <button onClick={closeModal} className="absolute -top-4 -right-5 w-10 h-10 rounded-full bg-red-600 text-white"><i className="fa-regular fa-xl fa-circle-xmark" /></button>
         {
             gpxData === undefined
@@ -56,7 +48,7 @@ export default function RunMainCard(props) {
           <div className="mb-4">
             <div className="flex justify-between items-center relative mb-1">
               <h1 className="font-lora text-lg md:text-xl font-bold">{title}</h1>
-              <i onClick={toggleMenu} className="fa-solid fa-lg fa-ellipsis-vertical hover:cursor-pointer block pl-2 pt-3 pb-3" />
+              <i onClick={() => setToggleMenuIsOpen(!toggleMenuIsOpen) } className="fa-solid fa-lg fa-ellipsis-vertical hover:cursor-pointer block pl-2 pt-3 pb-3" />
               {
                 toggleMenuIsOpen === true
                   ? <EditDeleteMenu id={entryId} handleClick={handleClick} />
@@ -83,7 +75,7 @@ export default function RunMainCard(props) {
       </div>
       {
         snackbarIsOpen === true
-          ? <DeleteSnackbar isOpen={snackbarIsOpen} toggle={toggleSnack} id={entryId} handleDelete={handleDelete} bottom='bottom-8'/>
+          ? <DeleteSnackbar isOpen={snackbarIsOpen} toggle={() => setSnackBarIsOpen(!snackbarIsOpen)} id={entryId} handleDelete={handleDelete} bottom='bottom-8'/>
           : ''
       }
     </div>

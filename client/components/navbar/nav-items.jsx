@@ -1,21 +1,20 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 export default function NavItems(props) {
-  const { drawerIsOpen } = props;
+  const { drawerIsOpen, myRunsNavIsOpen, setMyRunsNavIsOpen } = props;
   const navigate = useNavigate();
-  const [myRunsNavIsOpen, setMyRunsNavIsOpen] = useState(false);
 
   const handleClick = event => {
-    if (event.target.tagName === 'BUTTON' && myRunsNavIsOpen === false) {
-      if (drawerIsOpen) {
-        navigate('/home/activities');
-      } else {
-        setMyRunsNavIsOpen(true);
+    if (myRunsNavIsOpen === false) {
+      if (event.target.tagName === 'BUTTON' || event.target.tagName === 'I') {
+        if (drawerIsOpen) {
+          navigate('/home/activities'); // on mobile nav to activities page
+        } else {
+          setMyRunsNavIsOpen(true); // on desktop open the dropdown menu
+        }
       }
-    } else {
-      setMyRunsNavIsOpen(false);
-    }
+    } else setMyRunsNavIsOpen(false);
   };
 
   const showMyRuns = myRunsNavIsOpen === true

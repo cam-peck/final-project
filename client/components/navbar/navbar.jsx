@@ -6,10 +6,11 @@ import SignInNavbar from './signin-nav';
 export default function Navbar(props) {
 
   const { user } = useContext(AppContext);
+  const { myRunsNavIsOpen, setMyRunsNavIsOpen } = props;
 
   const navBar = user === null
     ? <SignInNavbar />
-    : <HomeNavbar />;
+    : <HomeNavbar myRunsNavIsOpen={myRunsNavIsOpen} setMyRunsNavIsOpen={setMyRunsNavIsOpen} />;
   return (
     navBar
   );

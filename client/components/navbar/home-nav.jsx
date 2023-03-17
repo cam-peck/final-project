@@ -6,10 +6,12 @@ import { Turn as Hamburger } from 'hamburger-react';
 
 export default function HomeNavbar(props) {
   const { handleSignOut } = useContext(AppContext);
-  const [isOpen, setOpen] = useState(false);
+  const [navDrawerIsOpen, setNavDrawerIsOpen] = useState(false);
 
-  const darkBackground = isOpen
-    ? <div className="bg-gray-900 opacity-40 fixed top-0 left-0 bottom-0 right-0 z-10 transition-all ease-in-out duration-300" onClick={() => { setOpen(false); }} />
+  const { myRunsNavIsOpen, setMyRunsNavIsOpen } = props;
+
+  const darkBackground = navDrawerIsOpen
+    ? <div className="bg-gray-900 opacity-40 fixed top-0 left-0 bottom-0 right-0 z-10 transition-all ease-in-out duration-300" onClick={() => { setNavDrawerIsOpen(false); }} />
     : <div className="bg-gray-900 opacity-0 absolute z-10" />;
 
   return (
@@ -22,7 +24,7 @@ export default function HomeNavbar(props) {
         </div>
         {/* Menu Items */}
         <div className="text-white items-center hidden md:flex">
-          <NavItems />
+          <NavItems myRunsNavIsOpen={myRunsNavIsOpen} setMyRunsNavIsOpen={setMyRunsNavIsOpen}/>
           {/* Sign-out Button */}
           <button onClick={handleSignOut} className="text-white bg-red-500 p-3 rounded-xl flex items-center">
             <i className="fa-solid fa-right-from-bracket text-xl pr-2.5" />
@@ -31,9 +33,9 @@ export default function HomeNavbar(props) {
         </div>
         {/* Hamburger Menu */}
         <div className="md:hidden pt-2 pb-2">
-          <Hamburger size={28} toggled={isOpen} toggle={setOpen} color="white" />
+          <Hamburger size={28} toggled={navDrawerIsOpen} toggle={setNavDrawerIsOpen} color="white" />
         </div>
-        <DrawerMenu setOpen={setOpen} isOpen={isOpen}/>
+        <DrawerMenu setNavDrawerIsOpen={setNavDrawerIsOpen} navDrawerIsOpen={navDrawerIsOpen} myRunsNavIsOpen={myRunsNavIsOpen} setMyRunsNavIsOpen={setMyRunsNavIsOpen} />
         {darkBackground}
       </nav>
     </header>

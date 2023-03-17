@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 export default function Workouts(props) {
   const { user } = useContext(AppContext);
-  const { mode, workoutId } = props;
+  const { mode } = props;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,7 +19,7 @@ export default function Workouts(props) {
         {
           mode === 'view'
             ? <MyWorkouts />
-            : <WorkoutForm mode={mode} workoutId={workoutId} />
+            : <WorkoutForm mode={mode} />
         }
       </section>
     </main>
