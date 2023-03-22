@@ -23,7 +23,7 @@ app.use(timeout('15s'));
 
 app.use(staticMiddleware);
 
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: '5mb' }));
 
 // Auth Routes //
 
