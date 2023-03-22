@@ -87,7 +87,7 @@ export default function RunForm(props) {
   const handleGpxData = event => {
     setFetchingData(true);
     const file = event.target.files[0];
-    if (file.size > 10485760) {
+    if (file.size > 5242880) {
       fileInputRef.current.value = '';
       alert('File is too large. Maximum file size is 10MB.');
       return;
