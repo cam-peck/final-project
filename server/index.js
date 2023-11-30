@@ -11,10 +11,11 @@ const timeout = require('connect-timeout');
 const path = require('path');
 
 const db = new pg.Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  }
+  user: process.env.PGUSER,
+  host: process.env.PGHOST,
+  database: process.env.PGDB,
+  password: process.env.PGPASSWORD,
+  port: process.env.PGPORT
 });
 
 const app = express();
@@ -31,7 +32,10 @@ app.post('/api/auth/sign-up', async (req, res, next) => {
   const { displayName, profilePhoto, email, dateOfBirth, password } = req.body;
   try {
     if (!displayName || !profilePhoto || !email || !dateOfBirth || !password) {
-      throw new ClientError(400, 'displayName, profilePhoto, email, dateOfBirth, and password are required fields.');
+      throw new ClientError(
+        400,
+        'displayName, profilePhoto, email, dateOfBirth, and password are required fields.'
+      );
     }
     const hashedPassword = await argon2.hash(password);
     const sql = `
@@ -39,7 +43,13 @@ app.post('/api/auth/sign-up', async (req, res, next) => {
       VALUES ($1, $2, $3, $4, $5)
       RETURNING "userId", "displayName", "profilePhoto", "email", "dateOfBirth", "createdAt";
       `;
-    const params = [displayName, profilePhoto, email, dateOfBirth, hashedPassword];
+    const params = [
+      displayName,
+      profilePhoto,
+      email,
+      dateOfBirth,
+      hashedPassword
+    ];
     const result = await db.query(sql, params);
     const [user] = result.rows;
     res.status(201).json(user);
@@ -82,7 +92,17 @@ app.post('/api/auth/sign-in', async (req, res, next) => {
 // CRUD Runs Routes //
 app.post('/api/runs', authorizationMiddleware, async (req, res, next) => {
   const { userId } = req.user;
-  const { title, description, date, durationHours, durationMinutes, durationSeconds, distance, distanceUnits, hasGpx } = req.body;
+  const {
+    title,
+    description,
+    date,
+    durationHours,
+    durationMinutes,
+    durationSeconds,
+    distance,
+    distanceUnits,
+    hasGpx
+  } = req.body;
   const duration = `${durationHours}:${durationMinutes}:${durationSeconds}`;
   const insertRunSql = `
   INSERT INTO "runs" ("userId", "title", "description", "date", "duration", "distance", "distanceUnits", "hasGpx")
@@ -95,10 +115,31 @@ app.post('/api/runs', authorizationMiddleware, async (req, res, next) => {
     RETURNING *;
   `;
   try {
-    if (!title || !description || !date || !durationHours || !durationMinutes || !durationSeconds || !distance || !distanceUnits) {
-      throw new ClientError(400, 'title, description, date, durationHours, durationMinutes, durationSeconds, distance, and distanceUnits are required fields.');
+    if (
+      !title ||
+      !description ||
+      !date ||
+      !durationHours ||
+      !durationMinutes ||
+      !durationSeconds ||
+      !distance ||
+      !distanceUnits
+    ) {
+      throw new ClientError(
+        400,
+        'title, description, date, durationHours, durationMinutes, durationSeconds, distance, and distanceUnits are required fields.'
+      );
     }
-    const insertRunParams = [userId, title, description, date, duration, distance, distanceUnits, hasGpx];
+    const insertRunParams = [
+      userId,
+      title,
+      description,
+      date,
+      duration,
+      distance,
+      distanceUnits,
+      hasGpx
+    ];
     const result = await db.query(insertRunSql, insertRunParams);
     const [newRun] = result.rows;
     if (hasGpx === true) {
@@ -106,9 +147,16 @@ app.post('/api/runs', authorizationMiddleware, async (req, res, next) => {
       if (!gpxPath) throw new ClientError(400, 'gpxPath is a required field.');
       const entryId = newRun.entryId;
       for (let i = 0; i < gpxPath.length; i++) {
-        const insertGpxParams = [userId, entryId, gpxPath[i].lat, gpxPath[i].lng, gpxPath[i].elevation, gpxPath[i].time];
+        const insertGpxParams = [
+          userId,
+          entryId,
+          gpxPath[i].lat,
+          gpxPath[i].lng,
+          gpxPath[i].elevation,
+          gpxPath[i].time
+        ];
         const gpxResult = await db.query(insertGpxSql, insertGpxParams);
-        if (!gpxResult) throw new ClientError(404).json('Error: GPS data is invalid.');
+        if (!gpxResult) { throw new ClientError(404).json('Error: GPS data is invalid.'); }
       }
     }
     res.status(201).send(newRun);
@@ -138,94 +186,132 @@ app.get('/api/runs', authorizationMiddleware, async (req, res, next) => {
   }
 });
 
-app.get('/api/runs/gpxData', authorizationMiddleware, async (req, res, next) => {
-  const sql = `
+app.get(
+  '/api/runs/gpxData',
+  authorizationMiddleware,
+  async (req, res, next) => {
+    const sql = `
   SELECT "entryId", "latitude", "longitude", "elevation", "time"
     FROM "gpxData"
    WHERE "userId" = $1
 ORDER BY "time";
   `;
-  try {
-    const { userId } = req.user;
-    const params = [userId];
-    const result = await db.query(sql, params);
-    const gpxData = result.rows;
-    const gpxObj = {};
-    for (let i = 0; i < gpxData.length; i++) {
-      const currentObj = {};
-      currentObj.lat = parseFloat(gpxData[i].latitude);
-      currentObj.lng = parseFloat(gpxData[i].longitude);
-      if (!gpxObj[gpxData[i].entryId]) {
-        gpxObj[gpxData[i].entryId] = [];
+    try {
+      const { userId } = req.user;
+      const params = [userId];
+      const result = await db.query(sql, params);
+      const gpxData = result.rows;
+      const gpxObj = {};
+      for (let i = 0; i < gpxData.length; i++) {
+        const currentObj = {};
+        currentObj.lat = parseFloat(gpxData[i].latitude);
+        currentObj.lng = parseFloat(gpxData[i].longitude);
+        if (!gpxObj[gpxData[i].entryId]) {
+          gpxObj[gpxData[i].entryId] = [];
+        }
+        gpxObj[gpxData[i].entryId].push(currentObj);
       }
-      gpxObj[gpxData[i].entryId].push(currentObj);
+      res.json(gpxObj);
+    } catch (err) {
+      next(err);
     }
-    res.json(gpxObj);
-  } catch (err) {
-    next(err);
   }
+);
 
-});
-
-app.get('/api/runs/:entryId', authorizationMiddleware, async (req, res, next) => {
-  const { userId } = req.user;
-  const { entryId } = req.params;
-  try {
-    if (!entryId) {
-      throw new ClientError(400, 'entryId is a required paramter as /api/runs/<parameter-id-here>');
-    }
-    const getRunSql = `
+app.get(
+  '/api/runs/:entryId',
+  authorizationMiddleware,
+  async (req, res, next) => {
+    const { userId } = req.user;
+    const { entryId } = req.params;
+    try {
+      if (!entryId) {
+        throw new ClientError(
+          400,
+          'entryId is a required paramter as /api/runs/<parameter-id-here>'
+        );
+      }
+      const getRunSql = `
   SELECT "title", "description", "date", "duration", "distance", "distanceUnits", "hasGpx"
     FROM "runs"
    WHERE "userId" = $1 AND "entryId" = $2;
   `;
-    const getGpxSql = `
+      const getGpxSql = `
   SELECT "latitude", "longitude", "elevation", "time"
     FROM "gpxData"
    WHERE "userId" = $1 AND "entryId" = $2
 ORDER BY "time";
   `;
-    const params = [userId, entryId];
-    // Grab run-data first //
-    const runResult = await db.query(getRunSql, params);
-    const [runData] = runResult.rows;
-    if (!runData) {
-      res.status(404).json(`Error: Your id: ${entryId}, does not exist.`);
-      return;
-    }
-    // Grab gpx-data if it exists next //
-    const gpxData = [];
-    if (runData.hasGpx) {
-      const gpxResult = await db.query(getGpxSql, params);
-      const stringGpxData = gpxResult.rows;
-      for (let i = 0; i < stringGpxData.length; i++) {
-        const currentPoint = {};
-        currentPoint.lat = parseFloat(stringGpxData[i].latitude);
-        currentPoint.lng = parseFloat(stringGpxData[i].longitude);
-        currentPoint.elevation = stringGpxData[i].elevation;
-        currentPoint.time = stringGpxData[i].time;
-        gpxData.push(currentPoint);
+      const params = [userId, entryId];
+      // Grab run-data first //
+      const runResult = await db.query(getRunSql, params);
+      const [runData] = runResult.rows;
+      if (!runData) {
+        res.status(404).json(`Error: Your id: ${entryId}, does not exist.`);
+        return;
       }
+      // Grab gpx-data if it exists next //
+      const gpxData = [];
+      if (runData.hasGpx) {
+        const gpxResult = await db.query(getGpxSql, params);
+        const stringGpxData = gpxResult.rows;
+        for (let i = 0; i < stringGpxData.length; i++) {
+          const currentPoint = {};
+          currentPoint.lat = parseFloat(stringGpxData[i].latitude);
+          currentPoint.lng = parseFloat(stringGpxData[i].longitude);
+          currentPoint.elevation = stringGpxData[i].elevation;
+          currentPoint.time = stringGpxData[i].time;
+          gpxData.push(currentPoint);
+        }
+      }
+      res.json({ runData, gpxData });
+    } catch (err) {
+      next(err);
     }
-    res.json({ runData, gpxData });
-  } catch (err) {
-    next(err);
   }
-});
+);
 
-app.put('/api/runs/:entryId', authorizationMiddleware, async (req, res, next) => {
-  const { userId } = req.user;
-  const { entryId } = req.params;
-  const { title, description, date, durationHours, durationMinutes, durationSeconds, distance, distanceUnits, hasGpx } = req.body;
-  try {
-    if (!title || !description || !date || !durationHours || !durationMinutes || !durationSeconds || !distance || !distanceUnits) {
-      throw new ClientError(400, 'title, description, date, durationHours, durationMinutes, durationSeconds, distance, and distanceUnits are required fields.');
-    }
-    if (!entryId) {
-      throw new ClientError(400, 'entryId is a required paramter as /api/runs/<parameter-id-here>');
-    }
-    const duration = `${durationHours}:${durationMinutes}:${durationSeconds}`;
-    const updateRunSql = `
+app.put(
+  '/api/runs/:entryId',
+  authorizationMiddleware,
+  async (req, res, next) => {
+    const { userId } = req.user;
+    const { entryId } = req.params;
+    const {
+      title,
+      description,
+      date,
+      durationHours,
+      durationMinutes,
+      durationSeconds,
+      distance,
+      distanceUnits,
+      hasGpx
+    } = req.body;
+    try {
+      if (
+        !title ||
+        !description ||
+        !date ||
+        !durationHours ||
+        !durationMinutes ||
+        !durationSeconds ||
+        !distance ||
+        !distanceUnits
+      ) {
+        throw new ClientError(
+          400,
+          'title, description, date, durationHours, durationMinutes, durationSeconds, distance, and distanceUnits are required fields.'
+        );
+      }
+      if (!entryId) {
+        throw new ClientError(
+          400,
+          'entryId is a required paramter as /api/runs/<parameter-id-here>'
+        );
+      }
+      const duration = `${durationHours}:${durationMinutes}:${durationSeconds}`;
+      const updateRunSql = `
   UPDATE "runs"
      SET "title"         = $1,
          "description"   = $2,
@@ -237,72 +323,100 @@ app.put('/api/runs/:entryId', authorizationMiddleware, async (req, res, next) =>
    WHERE "entryId" = $8 AND "userId" = $9
    RETURNING *;
   `;
-    const insertNewGpxSql = `
+      const insertNewGpxSql = `
   INSERT INTO "gpxData" ("userId", "entryId", "latitude", "longitude", "elevation", "time")
        VALUES ($1, $2, $3, $4, $5, $6)
     RETURNING *;
   `;
-    const deleteGpxSql = `
+      const deleteGpxSql = `
   DELETE
     FROM "gpxData"
    WHERE "userId" = $1 AND "entryId" IN ($2);
   `;
-    const updateRunParams = [title, description, date, duration, distance, distanceUnits, hasGpx, entryId, userId];
-    const deleteGpxParams = [userId, entryId];
-    const result = await db.query(updateRunSql, updateRunParams);
-    const [editedRun] = result.rows;
-    if (!editedRun) {
-      res.status(404).json(`Error: Your id: ${entryId}, does not exist.`);
-      return;
-    }
-    // old GPS data needs to be deleted before we add new GPS data //
-    if (editedRun.hasGpx) {
-      await db.query(deleteGpxSql, deleteGpxParams);
-      // currently, the only possible scenario is adding new GPS data //
-      const { gpxPath } = req.body;
-      for (let i = 0; i < gpxPath.length; i++) {
-        const insertNewGpxParams = [userId, entryId, gpxPath[i].lat, gpxPath[i].lng, gpxPath[i].elevation, gpxPath[i].time];
-        const gpxPointResult = await db.query(insertNewGpxSql, insertNewGpxParams);
-        if (!gpxPointResult) throw new ClientError(404).json('Error: GPS data is invalid.');
+      const updateRunParams = [
+        title,
+        description,
+        date,
+        duration,
+        distance,
+        distanceUnits,
+        hasGpx,
+        entryId,
+        userId
+      ];
+      const deleteGpxParams = [userId, entryId];
+      const result = await db.query(updateRunSql, updateRunParams);
+      const [editedRun] = result.rows;
+      if (!editedRun) {
+        res.status(404).json(`Error: Your id: ${entryId}, does not exist.`);
+        return;
       }
+      // old GPS data needs to be deleted before we add new GPS data //
+      if (editedRun.hasGpx) {
+        await db.query(deleteGpxSql, deleteGpxParams);
+        // currently, the only possible scenario is adding new GPS data //
+        const { gpxPath } = req.body;
+        for (let i = 0; i < gpxPath.length; i++) {
+          const insertNewGpxParams = [
+            userId,
+            entryId,
+            gpxPath[i].lat,
+            gpxPath[i].lng,
+            gpxPath[i].elevation,
+            gpxPath[i].time
+          ];
+          const gpxPointResult = await db.query(
+            insertNewGpxSql,
+            insertNewGpxParams
+          );
+          if (!gpxPointResult) { throw new ClientError(404).json('Error: GPS data is invalid.'); }
+        }
+      }
+      res.json(editedRun);
+    } catch (err) {
+      next(err);
     }
-    res.json(editedRun);
-  } catch (err) {
-    next(err);
   }
-});
+);
 
-app.delete('/api/runs/:entryId', authorizationMiddleware, async (req, res, next) => {
-  const { userId } = req.user;
-  const { entryId } = req.params;
-  try {
-    if (!entryId) {
-      throw new ClientError(400, 'entryId is a required paramter as /api/runs/<parameter-id-here>');
-    }
-    const deleteGpxSql = `
+app.delete(
+  '/api/runs/:entryId',
+  authorizationMiddleware,
+  async (req, res, next) => {
+    const { userId } = req.user;
+    const { entryId } = req.params;
+    try {
+      if (!entryId) {
+        throw new ClientError(
+          400,
+          'entryId is a required paramter as /api/runs/<parameter-id-here>'
+        );
+      }
+      const deleteGpxSql = `
    DELETE
      FROM "gpxData"
     WHERE "userId" = $1 AND "entryId" IN ($2);
   `;
-    const deleteRunSql = `
+      const deleteRunSql = `
    DELETE
      FROM "runs"
     WHERE "userId" = $1 AND "entryId" = $2
 RETURNING *;
   `;
-    const params = [userId, entryId];
-    await db.query(deleteGpxSql, params);
-    const result = await db.query(deleteRunSql, params);
-    const [deletedRow] = result.rows;
-    if (!deletedRow) {
-      res.status(404).json(`Error: Your id: ${entryId}, does not exist.`);
-    } else {
-      res.json(deletedRow);
+      const params = [userId, entryId];
+      await db.query(deleteGpxSql, params);
+      const result = await db.query(deleteRunSql, params);
+      const [deletedRow] = result.rows;
+      if (!deletedRow) {
+        res.status(404).json(`Error: Your id: ${entryId}, does not exist.`);
+      } else {
+        res.json(deletedRow);
+      }
+    } catch (err) {
+      next(err);
     }
-  } catch (err) {
-    next(err);
   }
-});
+);
 
 // Running Tab Routes //
 
@@ -345,8 +459,7 @@ app.post('/api/restDays', authorizationMiddleware, async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-}
-);
+});
 
 app.get('/api/restDays', authorizationMiddleware, async (req, res, next) => {
   const { userId } = req.user;
@@ -407,34 +520,51 @@ app.get('/api/profile', authorizationMiddleware, async (req, res, next) => {
   }
 });
 
-app.put('/api/profile/weeklyRestDay', authorizationMiddleware, async (req, res, next) => {
-  const { userId } = req.user;
-  const { tempWeeklyRestDay } = req.body;
-  try {
-    if (!tempWeeklyRestDay) {
-      throw new ClientError(400, 'tempWeeklyRestDay is a required field');
-    }
-    const weeklyRestDaySql = `
+app.put(
+  '/api/profile/weeklyRestDay',
+  authorizationMiddleware,
+  async (req, res, next) => {
+    const { userId } = req.user;
+    const { tempWeeklyRestDay } = req.body;
+    try {
+      if (!tempWeeklyRestDay) {
+        throw new ClientError(400, 'tempWeeklyRestDay is a required field');
+      }
+      const weeklyRestDaySql = `
      UPDATE "users"
         SET "weeklyRestDay" = $2
       WHERE "userId" = $1
   RETURNING "displayName", "weeklyRestDay";
   `;
-    const params = [userId, tempWeeklyRestDay];
-    const result = await db.query(weeklyRestDaySql, params);
-    const restDayData = result.rows;
-    res.send(restDayData);
-  } catch (err) {
-    next(err);
+      const params = [userId, tempWeeklyRestDay];
+      const result = await db.query(weeklyRestDaySql, params);
+      const restDayData = result.rows;
+      res.send(restDayData);
+    } catch (err) {
+      next(err);
+    }
   }
-});
+);
 
 // CRUD Workout Routes //
 
 app.post('/api/workouts', authorizationMiddleware, async (req, res, next) => {
   const { userId } = req.user;
-  const { date, description, warmupDistanceUnits, workoutDistanceUnits, cooldownDistanceUnits } = req.body;
-  let { warmupDistance, warmupNotes, workoutDistance, workoutNotes, cooldownDistance, cooldownNotes } = req.body;
+  const {
+    date,
+    description,
+    warmupDistanceUnits,
+    workoutDistanceUnits,
+    cooldownDistanceUnits
+  } = req.body;
+  let {
+    warmupDistance,
+    warmupNotes,
+    workoutDistance,
+    workoutNotes,
+    cooldownDistance,
+    cooldownNotes
+  } = req.body;
   try {
     if (warmupDistance === '') {
       warmupDistance = 0;
@@ -453,7 +583,20 @@ app.post('/api/workouts', authorizationMiddleware, async (req, res, next) => {
        VALUES ($1, $2, $3, $4, $5, $6 ,$7, $8, $9, $10, $11, $12)
     RETURNING *
   `;
-    const params = [userId, date, description, warmupDistance, warmupDistanceUnits, warmupNotes, workoutDistance, workoutDistanceUnits, workoutNotes, cooldownDistance, cooldownDistanceUnits, cooldownNotes];
+    const params = [
+      userId,
+      date,
+      description,
+      warmupDistance,
+      warmupDistanceUnits,
+      warmupNotes,
+      workoutDistance,
+      workoutDistanceUnits,
+      workoutNotes,
+      cooldownDistance,
+      cooldownDistanceUnits,
+      cooldownNotes
+    ];
     const result = await db.query(workoutSql, params);
     const [newWorkout] = result.rows;
     res.status(201).send(newWorkout);
@@ -480,53 +623,79 @@ ORDER BY "date" DESC;
   }
 });
 
-app.get('/api/workouts/:workoutId', authorizationMiddleware, async (req, res, next) => {
-  const { userId } = req.user;
-  const { workoutId } = req.params;
-  try {
-    if (!workoutId) {
-      throw new ClientError(400, 'workoutId is a required paramter as /api/workouts/<parameter-id-here>');
-    }
-    const sql = `
+app.get(
+  '/api/workouts/:workoutId',
+  authorizationMiddleware,
+  async (req, res, next) => {
+    const { userId } = req.user;
+    const { workoutId } = req.params;
+    try {
+      if (!workoutId) {
+        throw new ClientError(
+          400,
+          'workoutId is a required paramter as /api/workouts/<parameter-id-here>'
+        );
+      }
+      const sql = `
   SELECT "date", "description", "warmupDistance", "warmupDistanceUnits", "warmupNotes", "workoutDistance", "workoutDistanceUnits", "workoutNotes", "cooldownDistance", "cooldownDistanceUnits", "cooldownNotes"
     FROM "workouts"
    WHERE "userId" = $1 AND "workoutId" = $2;
   `;
-    const params = [userId, workoutId];
-    const result = await db.query(sql, params);
-    const [data] = result.rows;
-    if (!data) {
-      res.status(404).json(`Error: Your id: ${workoutId}, does not exist.`);
-    } else {
-      res.json(data);
+      const params = [userId, workoutId];
+      const result = await db.query(sql, params);
+      const [data] = result.rows;
+      if (!data) {
+        res.status(404).json(`Error: Your id: ${workoutId}, does not exist.`);
+      } else {
+        res.json(data);
+      }
+    } catch (err) {
+      next(err);
     }
-  } catch (err) {
-    next(err);
   }
-});
+);
 
-app.put('/api/workouts/:workoutId', authorizationMiddleware, async (req, res, next) => {
-  const { userId } = req.user;
-  const { workoutId } = req.params;
-  try {
-    if (!workoutId) {
-      throw new ClientError(400, 'workoutId is a required paramter as /api/workouts/<parameter-id-here>');
-    }
-    const { date, description, warmupDistanceUnits, workoutDistanceUnits, cooldownDistanceUnits } = req.body;
-    let { warmupDistance, warmupNotes, workoutDistance, workoutNotes, cooldownDistance, cooldownNotes } = req.body;
-    if (warmupDistance === '') {
-      warmupDistance = 0;
-    }
-    if (workoutDistance === '') {
-      workoutDistance = 0;
-    }
-    if (cooldownDistance === '') {
-      cooldownDistance = 0;
-    }
-    if (!date | !description) {
-      throw new ClientError(400, 'date and description are required fields.');
-    }
-    const sql = `
+app.put(
+  '/api/workouts/:workoutId',
+  authorizationMiddleware,
+  async (req, res, next) => {
+    const { userId } = req.user;
+    const { workoutId } = req.params;
+    try {
+      if (!workoutId) {
+        throw new ClientError(
+          400,
+          'workoutId is a required paramter as /api/workouts/<parameter-id-here>'
+        );
+      }
+      const {
+        date,
+        description,
+        warmupDistanceUnits,
+        workoutDistanceUnits,
+        cooldownDistanceUnits
+      } = req.body;
+      let {
+        warmupDistance,
+        warmupNotes,
+        workoutDistance,
+        workoutNotes,
+        cooldownDistance,
+        cooldownNotes
+      } = req.body;
+      if (warmupDistance === '') {
+        warmupDistance = 0;
+      }
+      if (workoutDistance === '') {
+        workoutDistance = 0;
+      }
+      if (cooldownDistance === '') {
+        cooldownDistance = 0;
+      }
+      if (!date | !description) {
+        throw new ClientError(400, 'date and description are required fields.');
+      }
+      const sql = `
    UPDATE "workouts"
       SET "date"                  = $1,
           "description"           = $2,
@@ -542,44 +711,66 @@ app.put('/api/workouts/:workoutId', authorizationMiddleware, async (req, res, ne
     WHERE "workoutId" = $12 AND "userId" = $13
 RETURNING *
   `;
-    const params = [date, description, warmupDistance, warmupDistanceUnits, warmupNotes, workoutDistance, workoutDistanceUnits, workoutNotes, cooldownDistance, cooldownDistanceUnits, cooldownNotes, workoutId, userId];
-    const result = await db.query(sql, params);
-    const [editedWorkout] = result.rows;
-    if (!editedWorkout) {
-      res.status(404).json(`Error: Your id: ${workoutId}, does not exist.`);
-    } else {
-      res.json(editedWorkout);
+      const params = [
+        date,
+        description,
+        warmupDistance,
+        warmupDistanceUnits,
+        warmupNotes,
+        workoutDistance,
+        workoutDistanceUnits,
+        workoutNotes,
+        cooldownDistance,
+        cooldownDistanceUnits,
+        cooldownNotes,
+        workoutId,
+        userId
+      ];
+      const result = await db.query(sql, params);
+      const [editedWorkout] = result.rows;
+      if (!editedWorkout) {
+        res.status(404).json(`Error: Your id: ${workoutId}, does not exist.`);
+      } else {
+        res.json(editedWorkout);
+      }
+    } catch (err) {
+      next(err);
     }
-  } catch (err) {
-    next(err);
   }
-});
+);
 
-app.delete('/api/workouts/:workoutId', authorizationMiddleware, async (req, res, next) => {
-  const { userId } = req.user;
-  const { workoutId } = req.params;
-  try {
-    if (!workoutId) {
-      throw new ClientError(400, 'workoutId is a required paramter as /api/workouts/<parameter-id-here>');
-    }
-    const sql = `
+app.delete(
+  '/api/workouts/:workoutId',
+  authorizationMiddleware,
+  async (req, res, next) => {
+    const { userId } = req.user;
+    const { workoutId } = req.params;
+    try {
+      if (!workoutId) {
+        throw new ClientError(
+          400,
+          'workoutId is a required paramter as /api/workouts/<parameter-id-here>'
+        );
+      }
+      const sql = `
    DELETE
      FROM "workouts"
     WHERE "userId" = $1 AND "workoutId" = $2
 RETURNING *;
   `;
-    const params = [userId, workoutId];
-    const result = await db.query(sql, params);
-    const [deletedWorkout] = result.rows;
-    if (!deletedWorkout) {
-      res.status(404).json(`Error: Your id: ${workoutId}, does not exist.`);
-    } else {
-      res.json(deletedWorkout);
+      const params = [userId, workoutId];
+      const result = await db.query(sql, params);
+      const [deletedWorkout] = result.rows;
+      if (!deletedWorkout) {
+        res.status(404).json(`Error: Your id: ${workoutId}, does not exist.`);
+      } else {
+        res.json(deletedWorkout);
+      }
+    } catch (err) {
+      next(err);
     }
-  } catch (err) {
-    next(err);
   }
-});
+);
 
 app.get('/*', (req, res, next) => {
   try {
