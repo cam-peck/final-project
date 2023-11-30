@@ -11,11 +11,7 @@ const timeout = require('connect-timeout');
 const path = require('path');
 
 const db = new pg.Pool({
-  user: process.env.PGUSER,
-  host: process.env.PGHOST,
-  database: process.env.PGDB,
-  password: process.env.PGPASSWORD,
-  port: process.env.PGPORT
+  connectionString: process.env.DATABASE_URL
 });
 
 const app = express();
@@ -156,7 +152,9 @@ app.post('/api/runs', authorizationMiddleware, async (req, res, next) => {
           gpxPath[i].time
         ];
         const gpxResult = await db.query(insertGpxSql, insertGpxParams);
-        if (!gpxResult) { throw new ClientError(404).json('Error: GPS data is invalid.'); }
+        if (!gpxResult) {
+          throw new ClientError(404).json('Error: GPS data is invalid.');
+        }
       }
     }
     res.status(201).send(newRun);
@@ -369,7 +367,9 @@ app.put(
             insertNewGpxSql,
             insertNewGpxParams
           );
-          if (!gpxPointResult) { throw new ClientError(404).json('Error: GPS data is invalid.'); }
+          if (!gpxPointResult) {
+            throw new ClientError(404).json('Error: GPS data is invalid.');
+          }
         }
       }
       res.json(editedRun);
